@@ -1,0 +1,17 @@
+[
+    {
+      "key": 1,
+      "name": "OpenStreetMap",
+      "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    },
+    {
+      "key": 2,
+      "name": "Stamen Terrain",
+      "url": "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png"
+    },
+    {
+      "key": 3,
+      "name": "World Imagery ArcGIS",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+    }
+  ]
