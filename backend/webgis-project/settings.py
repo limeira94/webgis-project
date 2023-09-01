@@ -3,10 +3,14 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY_WG')
+SECRET_KEY = "uok!x@s9m1n9h91@8xf_s&e!b*mshi_(6t21b&5(gt5w$m(5p^"#os.environ.get('SECRET_KEY_WG')
 DEBUG = os.environ.get("DEBUG")=='True'
 
-ALLOWED_HOSTS = []
+GDAL_LIBRARY_PATH = r'C:\Users\limei\Documents\05_VSCode\webgis-project\backend\venv\Lib\site-packages\osgeo\gdal304.dll'
+
+GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH', default=r'C:\Users\limei\Documents\05_VSCode\webgis-project\backend\venv\Lib\site-packages\osgeo\geos_c.dll')
+
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -55,10 +59,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
          'ENGINE': 'django.contrib.gis.db.backends.postgis',
-         'NAME': os.environ.get('DB_NAME_WG'),
-         'USER': os.environ.get('DB_USER_WG'),
-         'PASSWORD': os.environ.get('DB_PASSWORD_WG'),
-         'HOST': os.environ.get("DB_HOST_WG"),
+         'NAME': 'webgis-project',
+         'USER': 'postgres',
+         'PASSWORD': '1234',
+         'HOST': 'localhost',
          'PORT': '5432',
     },
 }
