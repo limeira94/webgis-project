@@ -1,0 +1,22 @@
+.caixa {
+    position: absolute;
+    top: 10px;
+    /* ou a margem desejada do topo */
+    left: 10px;
+    /* ou a margem desejada da esquerda */
+    z-index: 1000;
+    /* para garantir que a caixa apareça acima de outros elementos */
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+    /* Sombra opcional para destaque */
+}
+
+.map-container {
+    width: 100vw;
+    /* 100% da largura da viewport */
+    height: 100vh;
+    /* 100% da altura da viewport */
+    position: relative;
+}
