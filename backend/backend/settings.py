@@ -1,14 +1,22 @@
 from pathlib import Path
 import os
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "uok!x@s9m1n9h91@8xf_s&e!b*mshi_(6t21b&5(gt5w$m(5p^"#os.environ.get('SECRET_KEY_WG')
-DEBUG = os.environ.get("DEBUG")=='True'
+SECRET_KEY = config('SECRET_KEY', default='mydefaultsecretkey')
 
-GDAL_LIBRARY_PATH = r'C:\Users\limei\Documents\05_VSCode\webgis-project\backend\venv\Lib\site-packages\osgeo\gdal304.dll'
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH', default=r'C:\Users\limei\Documents\05_VSCode\webgis-project\backend\venv\Lib\site-packages\osgeo\geos_c.dll')
+GDAL_LIBRARY_PATH = config('GDAL_LIBRARY_PATH', default='')
+
+GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH', default='')
+
+SETTINGS_MODULE = 'backend.settings'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 ALLOWED_HOSTS = ['*']
 
@@ -19,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'main',
 ]
 
@@ -60,9 +69,9 @@ DATABASES = {
     'default': {
          'ENGINE': 'django.contrib.gis.db.backends.postgis',
          'NAME': 'webgis-project',
-         'USER': 'postgres',
-         'PASSWORD': '1234',
-         'HOST': 'localhost',
+         'USER': config("DB_USER_WG"),
+         'PASSWORD': config("DB_PASSWORD_WG"),
+         'HOST': config("DB_HOST_WG"),
          'PORT': '5432',
     },
 }
