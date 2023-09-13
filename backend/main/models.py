@@ -10,5 +10,5 @@ class Shapefile(models.Model):
     
 class GeoJSONFile(models.Model):
     name = models.CharField(max_length=255)
-    geojson = models.PointField()
+    geojson = models.GeometryField()
     

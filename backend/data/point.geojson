@@ -5,7 +5,10 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [-46.633308, -23.550520] 
+                "coordinates": [
+                    -46.633308,
+                    -23.550520
+                ]
             },
             "properties": {
                 "name": "São Paulo",

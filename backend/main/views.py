@@ -79,11 +79,21 @@ class GeoJSONFileUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
-        geojson_data = json.loads(request.data['geojson'].read())
-        geometry = GEOSGeometry(json.dumps(geojson_data['features'][0]['geometry']))
-        name = request.data.get('name', 'Unnamed')
         
-        geo_instance = GeoJSONFile(name=name, geojson=geometry)
-        geo_instance.save()
+        try:
+            geojson_data = json.loads(request.data['geojson'].read())
 
-        return Response({"message": "Data saved successfully"}, status=status.HTTP_201_CREATED)
+            if not isinstance(geojson_data.get('features'), list):
+                raise ValueError('Invalid GeoJSON format')
+        
+            for feature in geojson_data['features']:
+                geometry = GEOSGeometry(json.dumps(feature['geometry']))
+                name = request.data.get('name', 'Unnamed')
+                
+                geo_instance = GeoJSONFile(name=name, geojson=geometry)
+                geo_instance.save()
+
+                return Response({"message": "Data saved successfully"}, status=status.HTTP_201_CREATED)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
