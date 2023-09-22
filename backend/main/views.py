@@ -1,79 +1,23 @@
-import os
-from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.response import Response
 from django.contrib.gis.geos import GEOSGeometry
 
 from rest_framework.parsers import MultiPartParser, FormParser
 import json
 from .models import GeoJSONFile
-from django.http import HttpResponse
-from django.http import JsonResponse, HttpResponseBadRequest
-from .forms import GeoJSONFileForm
-from django.shortcuts import render, redirect
+
+from .utils import get_geojson_bounds
+from django.contrib.auth.models import User
+from .serializers import UserRegister
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+
 
 class HomePageView(APIView):
     def get(self, request):
         return Response({"message": "Hello, world!"}, status=status.HTTP_200_OK)
 
-
-@api_view(['POST'])
-def upload_geojson(request):
-    if request.methos == 'POST':
-        
-        geojson_file = request.FILES['geojson']
-
-        return Response({'message': "Geojson uploaded successfully"})
-    
-
-@api_view(['POST'])
-def serve_geojson(request, geojson_id):
-    geojson_obj = GeoJSONFile.objects.get(pk=geojson_id)
-    
-
-def test_view(request):
-    return HttpResponse("Teste bem-sucedido!")
-
-
-def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
-             
-                        
-class GeoJSONFileAPIView(APIView):
-    def get(self, request, file_id):
-        try:
-            geojson_file = GeoJSONFile.objects.get(id=file_id)
-        except GeoJSONFile.DoesNotExist:
-            return HttpResponseBadRequest("GeoJSON file does not exist")
-        
-        with open(geojson_file.geojson.path, 'r') as f:
-            data = json.load(f)
-            
-        return JsonResponse(data)
-    
-    
-def serve_geojson(request):
-    file_path = os.path.join(os.path.dirname(__file__), '../data/sao_paulo.geojson')
-    
-    with open(file_path, 'r') as file:
-        data = json.load(file)
-        
-    return JsonResponse(data)
-
-
-class UploadGeoJSONFileView(APIView):
-    def post(self, request):
-        form = GeoJSONFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return Response({'message': 'GeoJSON file uploaded successfully'}, status=201)
-        return Response({'errors': form.errors}, status=400)
-    
-    def get(self, request):
-        form = GeoJSONFileForm()
-        return render(request, 'upload.html', {'form': form})
-    
     
 class GeoJSONFileUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
@@ -85,7 +29,9 @@ class GeoJSONFileUploadAPIView(APIView):
 
             if not isinstance(geojson_data.get('features'), list):
                 raise ValueError('Invalid GeoJSON format')
-        
+
+            firts_geometry = geojson_data['features'][0]['geometry']
+            bounds = get_geojson_bounds(firts_geometry)
             for feature in geojson_data['features']:
                 geometry = GEOSGeometry(json.dumps(feature['geometry']))
                 name = request.data.get('name', 'Unnamed')
@@ -93,7 +39,38 @@ class GeoJSONFileUploadAPIView(APIView):
                 geo_instance = GeoJSONFile(name=name, geojson=geometry)
                 geo_instance.save()
 
-                return Response({"message": "Data saved successfully"}, status=status.HTTP_201_CREATED)
+                return Response({
+                    "message": "Data saved successfully",
+                    "bounds": bounds
+                }, status=status.HTTP_201_CREATED)
         
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserRegistrarionView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRegister
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class LoginAPIView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        user = authenticate(username=username, password=password)
+        
+        if user is None:
+            return Response({'detail': 'User not found or wrong password'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        return Response({'access_token': access_token}, status=status.HTTP_200_OK)
+        
