@@ -1,0 +1,27 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "MultiLineString",
+                "coordinates": [
+                    [
+                        [-46.633308, -23.550520],
+                        [-46.638292, -23.554010],
+                        [-46.639200, -23.557680]
+                    ],
+                    [
+                        [-46.635490, -23.558750],
+                        [-46.631000, -23.556000],
+                        [-46.629200, -23.552500]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "MultiLineString Exemplo",
+                "description": "Um MultiLineString de exemplo em São Paulo"
+            }
+        }
+    ]
+}

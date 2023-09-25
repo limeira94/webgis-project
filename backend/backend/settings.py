@@ -1,12 +1,25 @@
+from datetime import timedelta
 from pathlib import Path
 import os
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY_WG')
-DEBUG = os.environ.get("DEBUG")=='True'
+SECRET_KEY = config('SECRET_KEY', default='mydefaultsecretkey')
 
-ALLOWED_HOSTS = []
+DEBUG = True #config('DEBUG', default=False, cast=bool)
+
+GDAL_LIBRARY_PATH = config('GDAL_LIBRARY_PATH', default='')
+
+GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH', default='')
+
+SETTINGS_MODULE = 'backend.settings'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -15,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'main',
 ]
 
@@ -55,10 +69,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
          'ENGINE': 'django.contrib.gis.db.backends.postgis',
-         'NAME': os.environ.get('DB_NAME_WG'),
-         'USER': os.environ.get('DB_USER_WG'),
-         'PASSWORD': os.environ.get('DB_PASSWORD_WG'),
-         'HOST': os.environ.get("DB_HOST_WG"),
+         'NAME': 'webgis-project',
+         'USER': config("DB_USER_WG"),
+         'PASSWORD': config("DB_PASSWORD_WG"),
+         'HOST': config("DB_HOST_WG"),
          'PORT': '5432',
     },
 }
@@ -89,7 +103,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_L10N = True
+#USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
@@ -100,5 +114,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ]
+}
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
 }
