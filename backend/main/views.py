@@ -9,7 +9,7 @@ from .models import GeoJSONFile
 
 from .utils import get_geojson_bounds
 from django.contrib.auth.models import User
-from .serializers import UserRegister
+from .serializers import UserRegister,GeoJsonFileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 
@@ -17,14 +17,29 @@ from django.contrib.auth import authenticate
 class HomePageView(APIView):
     def get(self, request):
         return Response({"message": "Hello, world!"}, status=status.HTTP_200_OK)
+    
+
+class GeoJSONDetailView(APIView):
+    def get(self, request, pk):
+        try:
+            geojson_file = GeoJSONFile.objects.get(pk=pk)
+            serializer = GeoJSONFileSerializer(geojson_file)
+            return Response(serializer.data)
+        except GeoJSONFile.DoesNotExist:
+            return Response({'error': 'GeoJSON file not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class GeoJSONListView(APIView):
+    def get(self, request):
+        geojson_files = GeoJSONFile.objects.all()
+        serializer = GeoJSONFileSerializer(geojson_files, many=True)
+        return Response(serializer.data)
 
     
 class GeoJSONFileUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
-        
-        try:
+        try:   
             geojson_data = json.loads(request.data['geojson'].read())
 
             if not isinstance(geojson_data.get('features'), list):

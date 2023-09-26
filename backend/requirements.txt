@@ -5,7 +5,8 @@ colorama==0.4.6
 Django==4.2.4
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.0
-GDAL @ file:///C:/Users/limei/Documents/05_VSCode/webgis-project/backend/GDAL-3.4.3-cp311-cp311-win_amd64.whl#sha256=f78861fb5115d5c2f8cf3c52a492ff548da9e1256dc84088947379f90e77e5b6
+# GDAL @ file:///C:/Users/limei/Documents/05_VSCode/webgis-project/backend/GDAL-3.4.3-cp311-cp311-win_amd64.whl#sha256=f78861fb5115d5c2f8cf3c52a492ff548da9e1256dc84088947379f90e77e5b6
+GDAL==3.4.0
 ghp-import==2.1.0
 iniconfig==2.0.0
 itsdangerous==2.1.2

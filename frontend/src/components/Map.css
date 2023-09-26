@@ -3,3 +3,47 @@
     height: 100vh;
     width: 100%;
   }
+
+.btn-upload{
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  border: none;
+  background-color: olive;
+}
+
+/* input[type=text] {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  border: none;
+  background-color: olive;
+} */
+
+/* Add this CSS to your stylesheet */
+.file-upload-container {
+  text-align: center;
+  padding: 0px;
+}
+
+.custom-file-input {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.custom-file-input button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  
+}
+
+.custom-file-input span {
+  margin-left: 10px;
+}

@@ -141,3 +141,25 @@ def test_upload_without_geojon_field(client):
     assert 'error' in response.data
     assert GeoJSONFile.objects.count() == 0
     
+
+import os
+@pytest.mark.django_db
+def test_successful_geojson_upload_multiple_polygon(client):
+    url = reverse('upload_geojson_api')
+    path = './tests/data'
+    files = [os.path.join(path,i) for i in os.listdir(path) if i.endswith(".geojson")]
+    # geojson_path = './tests/data/multipolygon.geojson'
+    n = 1
+    for geojson_path in files:
+        with open(geojson_path, 'r') as file:
+            data = {
+                'id':n,
+                'name': 'Teste',
+                'geojson': file
+            }
+            response = client.post(url, data, format='multipart')
+        assert response.status_code == 201
+        assert GeoJSONFile.objects.count() == n
+        # print(GeoJSONFile.objects.get())
+        #assert GeoJSONFile.objects.get().name == 'Teste'
+        n+=1
