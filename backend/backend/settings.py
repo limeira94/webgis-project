@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
          'ENGINE': 'django.contrib.gis.db.backends.postgis',
-         'NAME': 'webgis-project',
+         'NAME': config("DB_NAME_WG"),#'webgis-project',
          'USER': config("DB_USER_WG"),
          'PASSWORD': config("DB_PASSWORD_WG"),
          'HOST': config("DB_HOST_WG"),
