@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework import status, generics
 from rest_framework.response import Response
 from django.contrib.gis.geos import GEOSGeometry
+from django.http import Http404
 
 from rest_framework.parsers import MultiPartParser, FormParser
 import json
@@ -9,7 +10,7 @@ from .models import GeoJSONFile
 
 from .utils import get_geojson_bounds
 from django.contrib.auth.models import User
-from .serializers import UserRegister,GeoJsonFileSerializer
+from .serializers import UserRegister, GeoJsonFileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 
@@ -23,17 +24,29 @@ class GeoJSONDetailView(APIView):
     def get(self, request, pk):
         try:
             geojson_file = GeoJSONFile.objects.get(pk=pk)
-            serializer = GeoJSONFileSerializer(geojson_file)
+            serializer = GeoJsonFileSerializer(geojson_file)
             return Response(serializer.data)
         except GeoJSONFile.DoesNotExist:
             return Response({'error': 'GeoJSON file not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    def delete(self, request, pk):
+        try:
+            geojson_file = GeoJSONFile.objects.get(pk=pk)
+            geojson_file.delete()
+            return Response({'message': 'GeoJSON file deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except GeoJSONFile.DoesNotExist:
+            return Response({'error': 'GeoJSON file not found'}, status=status.HTTP_404_NOT_FOUND)        
 
 class GeoJSONListView(APIView):
     def get(self, request):
         geojson_files = GeoJSONFile.objects.all()
-        serializer = GeoJSONFileSerializer(geojson_files, many=True)
+        serializer = GeoJsonFileSerializer(geojson_files, many=True)
         return Response(serializer.data)
+    
 
+    def delete(self, request):
+        GeoJSONFile.objects.all().delete()
+        return Response({'message': 'All GeoJSON files deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
     
 class GeoJSONFileUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)

@@ -13,9 +13,11 @@ import {
   Marker,
   Popup,
   useMap,
+  GeoJSON
 } from 'react-leaflet';
 import L from 'leaflet';
 delete L.Icon.Default.prototype._getIconUrl;
+var parse = require('wellknown');
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -23,46 +25,43 @@ L.Icon.Default.mergeOptions({
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+function parseGeoJSON(data) {
+  return data.map(item => ({
+    type: 'Feature',
+    geometry: parse(item.geojson.split(';')[1]),
+    properties: { 
+      id:item.id,
+      name: item.name 
+    },
+  }));
+};
+
 const Homepage = () => {
 
     const [geojsons, setGeoJSONs] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
-
-    useEffect(() => {
-      const fetchData = async () => {
+    
+  useEffect(() => {
+      const getAllGeojsons = async () => {
         try {
-          const response = await fetch('/api/geojson/');
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          setGeoJSONs(data);
+          const response = await axios.get('http://127.0.0.1:8000/api/main/geojson/');
+
+          const parsedGeoJSON = parseGeoJSON(response.data);
+          setGeoJSONs(parsedGeoJSON)
         } catch (error) {
           console.error('Error fetching GeoJSON data:', error);
         }
-      };
-    
-      fetchData();
-    }, []);
-
-    useEffect(() => {
-      const map = useMap();
-
-      const geojsonLayer = L.geoJSON(geojsons, {
-      });
-      geojsonLayer.addTo(map); 
-    
-      if (geojsons.length > 0) {
-        map.fitBounds(geojsonLayer.getBounds());
       }
-    }, [geojsons, map]);
-   
-    
-    // const handleFileChange = (event) => {
-    //   const file = event.target.files[0];
-    //   setSelectedFile(file);
-    //   console.log(file)
-    // };
+
+      getAllGeojsons();
+  }, []);
+
+  var style = {
+    "color": "#ff7800",
+    "weight": 5,
+    "opacity": 0.65
+};
+
     const handleFileChange = async (event) => {
       const file = event.target.files[0];
       
@@ -72,7 +71,7 @@ const Homepage = () => {
           formData.append('geojson', file);
           console.log(file)
   
-          const response = await axios.post('http://127.0.0.1:8000/upload-api/', formData, {
+          const response = await axios.post('http://127.0.0.1:8000/api/main/upload/', formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
@@ -97,6 +96,19 @@ const Homepage = () => {
       fileInputRef.current.click();
     };
 
+    const handleDeleteClick = (id) => {
+      axios
+        .delete(`http://127.0.0.1:8000/api/main/geojson/`)
+        .then((response) => {
+          console.log('GeoJSON deleted successfully');
+          setGeoJSONs([])
+          // setGeoJSONs((prevGeojsons) => prevGeojsons.filter((geojson) => geojson.id !== id));
+        })
+        .catch((error) => {
+          console.error('Error deleting GeoJSON:', error);
+        });
+    };
+
     const tileLayers = tileLayersData.map((layer) => ({
         key: layer.key,
         name: layer.name,
@@ -119,6 +131,12 @@ return (
           </a>
         </div>
       </div>
+
+      <div className='delete-button'>
+        <a className="btn-floating btn-large waves-effect waves-light red " onClick={handleDeleteClick}>
+            <i className="material-icons">delete</i>
+          </a>
+      </div>
       <MapContainer className='map-container'
                       center={[51.505,-0.09]}
                       zoom={5}
@@ -132,6 +150,21 @@ return (
             </LayersControl.BaseLayer>
           ))}
         </LayersControl>
+
+        {geojsons.map((geojson, index) => (
+            <GeoJSON
+              key={index}
+              data={{
+                type: 'FeatureCollection',
+                features: [geojson],
+              }}
+              style={style}
+              onEachFeature={(feature, layer) => {
+                
+                layer.bindPopup(String(feature.properties.id));
+              }}
+            />
+          ))}
         <ZoomControl position="bottomright"/>
     </MapContainer>
     </>
