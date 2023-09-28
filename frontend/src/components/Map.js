@@ -37,7 +37,7 @@ function parseGeoJSON(data) {
 };
 
 const API_URL = process.env.API_URL || 'http://127.0.0.1:8000/'
-console.log("API_URL",API_URL)
+
 
 const Homepage = () => {
 
@@ -45,6 +45,7 @@ const Homepage = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     
   useEffect(() => {
+      console.log("API_URL",API_URL);
       const getAllGeojsons = async () => {
         try {
           const response = await axios.get(

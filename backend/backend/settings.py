@@ -20,12 +20,14 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 ALLOWED_HOSTS = [
-    #'*'
-    'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com/'
+    '*'
+    # 'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com/'
+    # 'ec2-3-144-137-244.us-east-2.compute.amazonaws.com'
                  ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  
+    # 'http://localhost:3000',  
+    'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com'
 ]
 
 INSTALLED_APPS = [
