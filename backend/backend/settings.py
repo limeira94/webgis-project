@@ -20,7 +20,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 ALLOWED_HOSTS = [
-    '*'
+    # '*'
+    '172.31.46.41'
+    'ec2-3-144-137-244.us-east-2.compute.amazonaws.com'
     # 'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com/'
     # 'ec2-3-144-137-244.us-east-2.compute.amazonaws.com'
                  ]
