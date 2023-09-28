@@ -5,8 +5,8 @@ from django.views.generic import TemplateView
 from . import views
 # from .views import HomePageView, LoginAPIView, GeoJSONFileUploadAPIView, UserRegistrarionView
 
-def render_react(request):
-    return render(request, "index.html")
+# def render_react(request):
+#     return render(request, "index.html")
 
 urlpatterns = [
     
@@ -16,8 +16,10 @@ urlpatterns = [
     path('api/main/geojson/', views.GeoJSONListView.as_view(), name='get_all_geojson'),
     path('api/main/register/', views.UserRegistrarionView.as_view(), name='user-register'),
     path('api/main/login/', views.LoginAPIView.as_view(), name='user-login'),
-    re_path(r"^$", render_react),
-    re_path(r"^(?:.*)/?$", render_react),
+    # re_path(r"^$", render_react),
+    # re_path(r"^(?:.*)/?$", render_react),
+    path('', TemplateView.as_view(template_name='index.html')),
+    path('map', TemplateView.as_view(template_name='index.html')),
 ]
 
 
