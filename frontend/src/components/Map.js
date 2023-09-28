@@ -36,6 +36,9 @@ function parseGeoJSON(data) {
   }));
 };
 
+const API_URL = process.env.API_URL || 'http://127.0.0.1:8000/'
+console.log("API_URL",API_URL)
+
 const Homepage = () => {
 
     const [geojsons, setGeoJSONs] = useState([]);
@@ -44,7 +47,10 @@ const Homepage = () => {
   useEffect(() => {
       const getAllGeojsons = async () => {
         try {
-          const response = await axios.get('http://127.0.0.1:8000/api/main/geojson/');
+          const response = await axios.get(
+            // 'http://127.0.0.1:8000/api/main/geojson/'
+            `${API_URL}api/main/geojson/`
+            );
 
           const parsedGeoJSON = parseGeoJSON(response.data);
           setGeoJSONs(parsedGeoJSON)
@@ -71,7 +77,10 @@ const Homepage = () => {
           formData.append('geojson', file);
           console.log(file)
   
-          const response = await axios.post('http://127.0.0.1:8000/api/main/upload/', formData, {
+          const response = await axios.post(
+            // 'http://127.0.0.1:8000/api/main/upload/'
+            `${API_URL}api/main/upload/`
+          , formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
@@ -98,7 +107,10 @@ const Homepage = () => {
 
     const handleDeleteClick = (id) => {
       axios
-        .delete(`http://127.0.0.1:8000/api/main/geojson/`)
+        .delete(
+          // `http://127.0.0.1:8000/api/main/geojson/`
+          `${API_URL}api/main/geojson/`
+        )
         .then((response) => {
           console.log('GeoJSON deleted successfully');
           setGeoJSONs([])
