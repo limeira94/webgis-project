@@ -25,7 +25,10 @@ ALLOWED_HOSTS = [
     'ec2-3-144-137-244.us-east-2.compute.amazonaws.com'
     # 'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com/'
     # 'ec2-3-144-137-244.us-east-2.compute.amazonaws.com'
-                 ]
+    ]
+
+if DEBUG:
+    ALLOWED_HOSTS.append('127.0.0.1')
 
 CORS_ALLOWED_ORIGINS = [
     # 'http://localhost:3000',  
@@ -36,6 +39,8 @@ CSRF_TRUSTED_ORIGINS = [
     # 'https://webgis.felipemp.com'
     'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com'
     ]
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 INSTALLED_APPS = [
     'django.contrib.admin',
