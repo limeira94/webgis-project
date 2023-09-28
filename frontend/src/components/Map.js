@@ -36,8 +36,8 @@ function parseGeoJSON(data) {
   }));
 };
 
+console.log(process.env)
 const API_URL = process.env.API_URL || 'http://127.0.0.1:8000/'
-
 
 const Homepage = () => {
 
@@ -77,6 +77,7 @@ const Homepage = () => {
           const formData = new FormData();
           formData.append('geojson', file);
           console.log(file)
+          console.log(API_URL)
   
           const response = await axios.post(
             // 'http://127.0.0.1:8000/api/main/upload/'
