@@ -18,9 +18,9 @@ urlpatterns = [
     path('api/main/login/', views.LoginAPIView.as_view(), name='user-login'),
     # re_path(r"^$", render_react),
     # re_path(r"^(?:.*)/?$", render_react),
-    path('', TemplateView.as_view(template_name='index.html')),
+    path('', TemplateView.as_view(template_name='index.html')), 
     path('map', TemplateView.as_view(template_name='index.html')),
 ]
 
-
+        
 

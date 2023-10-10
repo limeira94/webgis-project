@@ -60,16 +60,26 @@ class GeoJSONFileUploadAPIView(APIView):
 
             firts_geometry = geojson_data['features'][0]['geometry']
             bounds = get_geojson_bounds(firts_geometry)
+            
+            save_instance = []
+            
             for feature in geojson_data['features']:
                 geometry = GEOSGeometry(json.dumps(feature['geometry']))
                 name = request.data.get('name', 'Unnamed')
                 
                 geo_instance = GeoJSONFile(name=name, geojson=geometry)
                 geo_instance.save()
-
+                
+                save_instance.append({
+                    'id': geo_instance.id,
+                    'name': geo_instance.name,
+                    'geojson': json.loads(geo_instance.geojson.geojson)
+                })
+                    
                 return Response({
                     "message": "Data saved successfully",
-                    "bounds": bounds
+                    "bounds": bounds,
+                    "savedGeoJsons": save_instance
                 }, status=status.HTTP_201_CREATED)
         
         except Exception as e:
