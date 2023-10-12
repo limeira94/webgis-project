@@ -10,4 +10,4 @@ COPY . /app/
 
 EXPOSE 8080
 
-CMD ["npm", "start"]
+CMD ["npm", "start", "0.0.0.0:8080"]
