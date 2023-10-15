@@ -37,13 +37,13 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  
     'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
     'http://localhost:8080',
-    'ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
+    'http://ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     # 'https://webgis.felipemp.com'
-    'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
-    'ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
+    #'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
+    'http://ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
     ]
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
@@ -101,8 +101,8 @@ DATABASES = {
          'NAME': config("DB_NAME_WG"),#'webgis-project',
          'USER': config("DB_USER_WG"),
          'PASSWORD': config("DB_PASSWORD_WG"),
-         #'HOST': config("DB_HOST_WG"), --> conexão local
-         'HOST': 'host.docker.internal',
+         'HOST': config("DB_HOST_WG"), # --> conexão local
+         #'HOST': 'host.docker.internal', --> conexão docker local
          'PORT': '5432',
     },
 }
