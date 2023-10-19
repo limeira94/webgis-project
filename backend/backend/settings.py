@@ -33,7 +33,8 @@ if DEBUG:
 
 CORS_ALLOWED_ORIGINS = [
     # 'http://localhost:3000',  
-    'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com'
+    'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
+    'https://webgis.site'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
