@@ -1,13 +1,17 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import GeoJSONFile
+from .models import GeoJSONFile,RasterFile
 
 
 class GeoJsonFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeoJSONFile
         fields = ('id', 'name', 'geojson')
-        
+
+class RasterFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RasterFile
+        fields = ('id', 'name', 'raster')
 
 class UserRegister(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
