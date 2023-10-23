@@ -32,10 +32,13 @@ if DEBUG:
     ALLOWED_HOSTS.append('127.0.0.1')
 
 CORS_ALLOWED_ORIGINS = [
-    # 'http://localhost:3000',  
     'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
     'https://webgis.site'
 ]
+
+if DEBUG:
+    CORS_ALLOWED_ORIGINS.append('http://localhost:3000')
+    # CORS_ORIGIN_ALLOW_ALL = True
 
 CSRF_TRUSTED_ORIGINS = [
     # 'https://webgis.felipemp.com'

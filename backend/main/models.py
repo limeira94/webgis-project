@@ -22,4 +22,7 @@ class GeoJSONFile(models.Model):
 class RasterFile(models.Model):
     name = models.CharField(max_length=100)
     raster = models.FileField(upload_to='rasters/', validators=[validate_file_extension])
+    png = models.FileField(upload_to='rasters/',blank=True,null=True)
+    bounds = models.CharField(max_length=300,default='',null=True,blank=True)
+
 

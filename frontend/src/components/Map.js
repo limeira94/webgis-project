@@ -85,28 +85,33 @@ const getCenterOfGeoJSON = (geojson) => {
 };
 
 const Homepage = () => {
-
+  const [rasters, setRasters] = useState([]);
   const [geojsons, setGeoJSONs] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
 
   useEffect(() => {
-    console.log("API_URL", API_URL);
     const getAllGeojsons = async () => {
       try {
-        const response = await axios.get(
-          // 'http://127.0.0.1:8000/api/main/geojson/'
-          `${API_URL}api/main/geojson/`
-        );
-
+        const response = await axios.get(`${API_URL}api/main/geojson/`);
         const parsedGeoJSON = parseGeoJSON(response.data);
         setGeoJSONs(parsedGeoJSON)
       } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
       }
     }
+    
+    const getAllRasters = async () => {
+      try {
+        const response = await axios.get(`${API_URL}api/main/rasters/`);
+        setRasters(response.data)
+      } catch (error) {
+        console.error('Error fetching Raster data:', error);
+      }
+    }
 
     getAllGeojsons();
+    getAllRasters();
   }, []);
 
   var style = {
@@ -223,7 +228,7 @@ const Homepage = () => {
       <MapContainer className='map-container'
         ref={(map) => {
           if (map) {
-            console.log("Setting map instance");
+            // console.log("Setting map instance");
             setMapInstance(map);
           }
         }}

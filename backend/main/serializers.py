@@ -13,6 +13,18 @@ class RasterFileSerializer(serializers.ModelSerializer):
         model = RasterFile
         fields = ('id', 'name', 'raster')
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+
+        if request and request.method == 'GET':
+            if instance.png.name!='':
+                data['png'] = instance.png  
+            if instance.bounds!='':
+                data['bounds'] = instance.bounds    
+        
+        return data
+
 class UserRegister(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     
