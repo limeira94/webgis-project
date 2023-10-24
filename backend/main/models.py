@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
+import time
+import datetime
 import os
 
 def validate_file_extension(value):    
@@ -20,8 +22,10 @@ class GeoJSONFile(models.Model):
 class RasterFile(models.Model):
     name = models.CharField(max_length=100)
     raster = models.FileField(upload_to='rasters/', validators=[validate_file_extension])
-    png = models.FileField(upload_to='rasters/',blank=True,null=True)
-    bounds = models.CharField(max_length=300,default='',null=True,blank=True)
+    tiles = models.CharField(max_length=300,default='',null=True,blank=True)
+
+    def __str__(self):
+        return self.name
 
     #TODO:
     # Solve problem with render raster
@@ -31,18 +35,33 @@ class RasterFile(models.Model):
     # Other....
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        file = self.raster.url.replace('media/','/media/rasters/')
-        temp = os.path.basename(file).replace('.tif','.vrt')
-        output = f'temp/{temp.replace(".vrt","")}'
-        url = ''
 
-        c = f'gdal_translate -of VRT -ot Byte -scale http://127.0.0.1:8000{file} {temp}'
-        print(c)
-        os.system(c)
-        f = f'gdal2tiles.py {temp} {output}'
-        os.system(f)
-        print(f)
-        super().save(*args, **kwargs)
+        N = 18
+        
+        if self.tiles=="":
+            t1 = time.time()
+            file = self.raster.url
+            bn = os.path.basename(file).replace(".tif","")
+            
+            output = f'media/tiles/{bn}'
+            if not os.path.exists(output):
+                os.makedirs(output)
+
+            temp = os.path.join(output,os.path.basename(output)+'.vrt')
+
+            c = f'gdal_translate -of VRT -ot Byte -scale http://127.0.0.1:8000{file} {temp}'
+            os.system(c)
+            f = f'gdal2tiles.py {temp} {output} -z "1-{N}" '
+            os.system(f)
+            
+            self.tiles = output
+            self.save()
+            d = str(datetime.timedelta(seconds=time.time()-t1))
+            print("#"*50)
+            print(f"TIME TO PROCESS {N} tiles: {d}")
+            print("#"*50)
+
+        
 
         
 
