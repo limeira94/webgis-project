@@ -47,11 +47,19 @@ class RasterFile(models.Model):
             if not os.path.exists(output):
                 os.makedirs(output)
 
-            temp = os.path.join(output,os.path.basename(output)+'.vrt')
+            temp = os.path.join(output,os.path.basename(output)+'.tif')
 
-            c = f'gdal_translate -of VRT -ot Byte -scale http://127.0.0.1:8000{file} {temp}'
+            # w = f'gdalwarp -t_srs EPSG:4326 http://127.0.0.1:8000{file} {temp}'
+            w = f'gdalwarp -t_srs EPSG:4326 .{file} {temp}'
+            print(w)
+            os.system(w)
+
+            temp_vrt = temp.replace('.tif','.vrt')
+            # c = f'gdal_translate -of VRT -ot Byte -scale http://127.0.0.1:8000{file} {temp}'
+            c = f'gdal_translate -of VRT -ot Byte -scale {temp} {temp_vrt}'
             os.system(c)
-            f = f'gdal2tiles.py {temp} {output} -z "1-{N}" '
+
+            f = f'gdal2tiles.py {temp_vrt} {output} -z "1-{N}" '
             os.system(f)
             
             self.tiles = output

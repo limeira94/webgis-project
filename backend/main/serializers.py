@@ -18,10 +18,10 @@ class RasterFileSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
 
         if request and request.method == 'GET':
-            if instance.png.name!='':
-                data['png'] = instance.png  
-            if instance.bounds!='':
-                data['bounds'] = instance.bounds    
+            # if instance.png.name!='':
+            #     data['png'] = instance.png  
+            if instance.tiles!='':
+                data['tiles'] = instance.tiles    
         
         return data
 
