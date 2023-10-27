@@ -9,7 +9,8 @@ import {
   TileLayer,
   ZoomControl,
   LayersControl,
-  GeoJSON
+  GeoJSON,
+  WMSTileLayer
 } from 'react-leaflet';
 import L from 'leaflet';
 delete L.Icon.Default.prototype._getIconUrl;
@@ -297,10 +298,60 @@ const Homepage = () => {
               <TileLayer url={layer.url} key={index} />
             </LayersControl.BaseLayer>
           ))}
+
+
+
+          <LayersControl.Overlay name={"AAAAA"} key={141}>
+            <WMSTileLayer
+                url="http://localhost:8080/geoserver/webgis/wms"
+                params={
+                  {
+                  srs:"EPSG:4326",
+                  format:"image/png",
+                  layers:"webgis:coverage_test",
+                  transparent: true,
+                  opacity:1
+                  }
+                }
+              />
+          </LayersControl.Overlay>
+
+
+
+
+
+
+          
+          {/* Ideia não testada ainda, mas é para usar um unico arquivo jpg, por exemplo */}
+            {/* const bounds = new LatLngBounds([40.712216, -74.22655], [40.773941, -74.12544])
+              <ImageOverlay
+                url="http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg"
+                bounds={bounds}
+                opacity={0.5}
+                zIndex={10}
+              /> */}
+          
+
+
+
           {rasters.map((raster, index) => (
           <LayersControl.Overlay checked name={raster.name} key={index}>
-            <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} tms={1} opacity={1} attribution="" minZoom={1} maxZoom={18} key={index}/>
-            {/* <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} key={index} /> */}
+            
+            <WMSTileLayer
+                url="http://localhost:8080/geoserver/webgis/wms"
+                params={
+                  {
+                  srs:"EPSG:4326",
+                  format:"image/png",
+                  layers:"webgis:coverage_test",
+                  transparent: true,
+                  }
+                }
+              />
+             
+            {/* Aqui o código funciona com TILES gerados por gdal2tiles */}
+            {/* <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} tms={1} opacity={1} attribution="" minZoom={1} maxZoom={18} key={index}/>  */}
+            
           </LayersControl.Overlay>
         ))}
         </LayersControl>

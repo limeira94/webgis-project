@@ -1,0 +1,60 @@
+<coverage>
+<name>coverageViewName</name>
+<nativeName>coverageViewName</nativeName>
+<title>coverageViewName</title>
+<metadata>
+    <entry key="COVERAGE_VIEW">
+        <coverageView>
+            <coverageBands>
+                <coverageBand>
+                    <inputCoverageBands class="singleton-list">
+                        <inputCoverageBand>
+                            <coverageName>coverageViewName</coverageName>
+                            <band>0</band>
+                        </inputCoverageBand>
+                    </inputCoverageBands>
+                    <definition>coverageViewName@0</definition>
+                    <index>0</index>
+                    <compositionType>BAND_SELECT</compositionType>
+                </coverageBand>
+                <coverageBand>
+                    <inputCoverageBands class="singleton-list">
+                        <inputCoverageBand>
+                            <coverageName>coverageViewName</coverageName>
+                            <band>1</band>
+                        </inputCoverageBand>
+                    </inputCoverageBands>
+                    <definition>coverageViewName@1</definition>
+                    <index>1</index>
+                    <compositionType>BAND_SELECT</compositionType>
+                </coverageBand>
+                <coverageBand>
+                    <inputCoverageBands class="singleton-list">
+                        <inputCoverageBand>
+                            <coverageName>coverageViewName</coverageName>
+                            <band>2</band>
+                        </inputCoverageBand>
+                    </inputCoverageBands>
+                    <definition>coverageViewName@2</definition>
+                    <index>2</index>
+                    <compositionType>BAND_SELECT</compositionType>
+                </coverageBand>
+                <coverageBand>
+                    <inputCoverageBands class="singleton-list">
+                        <inputCoverageBand>
+                            <coverageName>coverageViewName</coverageName>
+                            <band>3</band>
+                        </inputCoverageBand>
+                    </inputCoverageBands>
+                    <definition>coverageViewName@3</definition>
+                    <index>3</index>
+                    <compositionType>BAND_SELECT</compositionType>
+                </coverageBand>
+            </coverageBands>
+            <name>coverageViewName</name>
+            <envelopeCompositionType>INTERSECTION</envelopeCompositionType>
+            <selectedResolution>BEST</selectedResolution>
+            <selectedResolutionIndex>-1</selectedResolutionIndex>
+        </coverageView>
+    </entry>
+</metadata>
