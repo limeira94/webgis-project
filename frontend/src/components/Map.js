@@ -10,7 +10,8 @@ import {
   ZoomControl,
   LayersControl,
   GeoJSON,
-  WMSTileLayer
+  WMSTileLayer,
+  ImageOverlay
 } from 'react-leaflet';
 import L from 'leaflet';
 delete L.Icon.Default.prototype._getIconUrl;
@@ -91,7 +92,7 @@ const Homepage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
 
-  console.log(rasters)
+  // console.log(rasters)
 
   useEffect(() => {
     const getAllGeojsons = async () => {
@@ -125,8 +126,9 @@ const Homepage = () => {
 
   const handleRaster = async (event) => {
     const formData = new FormData();
-    formData.append('raster', event.target.files[0]);
-    formData.append('name', 'Nothing');
+    const file = event.target.files[0];
+    formData.append('raster', file);
+    formData.append('name', file.name);
   
     try {
       const response = await axios.post(
@@ -138,6 +140,9 @@ const Homepage = () => {
         }
       );
       console.log(response.data);
+
+      // mapInstance.flyTo(newCenter, 12);
+      // mapInstance.flyTo([40.730610, -73.935242], 15)
     } catch (error) {
       console.error(error);
     }
@@ -223,15 +228,6 @@ const Homepage = () => {
         console.error('Error deleting GeoJSON:', error);
       });
   };
-  
-  var lyr = L.tileLayer('./{z}/{x}/{y}.png', {
-    tms: 1, 
-    opacity: 0.7, 
-    attribution: "", 
-    minZoom: 1, 
-    maxZoom: 18
-  });
-
 
   const tileLayers = tileLayersData.map((layer) => ({
     key: layer.key,
@@ -299,9 +295,26 @@ const Homepage = () => {
             </LayersControl.BaseLayer>
           ))}
 
+            {rasters.map((raster, index) => {
+              const tileCoordinates = raster.tiles.split(',').map(Number); 
+              const [xmin, ymin, xmax, ymax] = tileCoordinates;
+              const bounds = [[ymin, xmin], [ymax, xmax]];
 
+              return (
+                <LayersControl.Overlay checked name={raster.name} key={index}>
+                  <ImageOverlay
+                    url={raster.raster}
+                    bounds={bounds}
+                    opacity={1}
+                    zIndex={10}
+                  />
+                </LayersControl.Overlay>
+              );
+            })}
 
-          <LayersControl.Overlay name={"AAAAA"} key={141}>
+          {/* TODO */}
+          {/* Código para usar com o geoserver */}
+          {/* <LayersControl.Overlay name={"AAAAA"} key={141}>
             <WMSTileLayer
                 url="http://localhost:8080/geoserver/webgis/wms"
                 params={
@@ -314,27 +327,13 @@ const Homepage = () => {
                   }
                 }
               />
-          </LayersControl.Overlay>
+          </LayersControl.Overlay> */}
 
 
-
-
-
-
-          
-          {/* Ideia não testada ainda, mas é para usar um unico arquivo jpg, por exemplo */}
-            {/* const bounds = new LatLngBounds([40.712216, -74.22655], [40.773941, -74.12544])
-              <ImageOverlay
-                url="http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg"
-                bounds={bounds}
-                opacity={0.5}
-                zIndex={10}
-              /> */}
-          
-
-
-
-          {rasters.map((raster, index) => (
+          {/* TODO */}
+          {/* Aqui o código funciona com TILES gerados por gdal2tiles */}
+          {/* <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} tms={1} opacity={1} attribution="" minZoom={1} maxZoom={18} key={index}/>  */}
+          {/* {rasters.map((raster, index) => (
           <LayersControl.Overlay checked name={raster.name} key={index}>
             
             <WMSTileLayer
@@ -348,12 +347,8 @@ const Homepage = () => {
                   }
                 }
               />
-             
-            {/* Aqui o código funciona com TILES gerados por gdal2tiles */}
-            {/* <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} tms={1} opacity={1} attribution="" minZoom={1} maxZoom={18} key={index}/>  */}
-            
           </LayersControl.Overlay>
-        ))}
+        ))} */}
         </LayersControl>
 
         {geojsons.map((geojson, index) => (

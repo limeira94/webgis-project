@@ -2,6 +2,9 @@ from django.conf import settings
 from osgeo import gdal
 import requests
 import os
+import json
+from datetime import datetime
+import urllib.request
 
 def get_bounds(ds):
     xmin, xpixel, _, ymax, _, ypixel = ds.GetGeoTransform()
@@ -64,16 +67,8 @@ def upload_file(file):
     run( 'layer', file[1:], name)
 
 
-
-import requests
-import json
-from datetime import datetime
-import urllib.request
-import os
-
 SERVER = os.environ.get("GEOSERVER_LINK")
 if SERVER is None:
-    print("SERVER IS NONE")
     SERVER = 'http://localhost:8080/geoserver'
 
 def openjson(link):

@@ -5,6 +5,16 @@ from django.core.exceptions import ValidationError
 import time
 import datetime
 import os
+import requests
+from PIL import Image
+import tifffile as tiff
+from osgeo import gdal,osr
+from shapely.geometry import Polygon
+from shapely.ops import transform
+import pyproj
+from django.core.files import File
+import numpy as np
+import io
 
 from .geoserver import upload_file
 
@@ -29,6 +39,40 @@ class GeoserverData(models.Model):
     name = models.CharField(max_length=50)
     epsg=models.IntegerField()
 
+def normalize_ar(ar):
+    array = (ar-ar.min())/(ar.max()-ar.min())
+    array = array*255
+    array = array.astype(np.uint8)
+    return array
+
+def get_bounds(file):
+    ds = gdal.Open(file)
+    xmin, xpixel, _, ymax, _, ypixel = ds.GetGeoTransform()
+    width, height = ds.RasterXSize, ds.RasterYSize
+    xmax = xmin + width * xpixel
+    ymin = ymax + height * ypixel
+    poly = Polygon(
+            [
+                [xmin,ymax],
+                [xmax,ymax],
+                [xmax,ymin],
+                [xmin,ymin]
+            ]
+        )
+
+    proj = osr.SpatialReference(wkt=ds.GetProjection())
+    epsg = proj.GetAttrValue('AUTHORITY',1)
+    if int(epsg)!=4326:
+
+        wgs84 = pyproj.CRS('EPSG:4326')
+        utm = ds.GetProjection()
+
+        project = pyproj.Transformer.from_crs(utm, wgs84,  always_xy=True).transform
+        poly = transform(project, poly)
+    
+    return poly.bounds
+
+
 class RasterFile(models.Model):
     name = models.CharField(max_length=100)
     raster = models.FileField(upload_to='rasters/', validators=[validate_file_extension])
@@ -43,6 +87,7 @@ class RasterFile(models.Model):
     # Options:
     # Create tiles using gdal2tiles
     # Use Geoserver 
+    # Convert to PNG
     # Other....
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -51,15 +96,50 @@ class RasterFile(models.Model):
         # N = 18
         
         if self.tiles=="":
-            file = self.raster.url
-            upload_file(file)
-            url = settings.GEOSERVER['URL']
-            workspace = settings.GEOSERVER['WORKSPACE']
-            name = os.path.basename(file).split('.')[0]
-            epsg=4236
-            # self.tiles=f'url={url}{workspace}/wms&format=image/png&layers={name}&styles=&crs=EPSG:{epsg}'
-            self.tiles=f'{url}{workspace}/wms&format=image/png&layers={name}&styles=&crs=EPSG:{epsg}'
-            self.save()
+            ###############
+            ###     PNG
+            # name=self.raster.url
+            # file = self.raster.storage.path(name=name.replace('/media/',''))#
+            file = 'http://127.0.0.1:8000'+self.raster.url
+
+            bounds = get_bounds(file)
+
+            resp = requests.get(file)
+            img = tiff.imread(io.BytesIO(resp.content))
+
+            # TODO:
+            ### Create the way to select the bands to use and way to stretch for better visual
+            r = Image.fromarray(normalize_ar(img[:,:,0]))
+            g = Image.fromarray(normalize_ar(img[:,:,1]))
+            b = Image.fromarray(normalize_ar(img[:,:,2]))
+            im1 = Image.merge( 'RGB', (r, g, b)) 
+
+            with io.BytesIO() as buffer:
+                im1.save(buffer, format="PNG")
+                image_data = buffer.getvalue()
+
+            filename = self.raster.url.replace('.tif','.png')[1:]
+
+            self.tiles = ','.join([str(i) for i in bounds])
+            self.raster.save(filename, File(io.BytesIO(image_data)))
+
+
+            # ##############
+            # ###   GEOSERVER
+            # upload_file(file)
+            # url = settings.GEOSERVER['URL']
+            # workspace = settings.GEOSERVER['WORKSPACE']
+            # name = os.path.basename(file).split('.')[0]
+            # epsg=4236
+            # # self.tiles=f'url={url}{workspace}/wms&format=image/png&layers={name}&styles=&crs=EPSG:{epsg}'
+            # self.tiles=f'{url}{workspace}/wms&format=image/png&layers={name}&styles=&crs=EPSG:{epsg}'
+            # self.save()
+
+
+            #############
+            ##  TILES
+
+            #
             # bn = os.path.basename(file).replace(".tif","")
             
             # output = f'media/tiles/{bn}'
@@ -99,5 +179,6 @@ class RasterFile(models.Model):
 
 
         
+
 
 
