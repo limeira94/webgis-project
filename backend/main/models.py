@@ -40,7 +40,17 @@ class GeoserverData(models.Model):
     epsg=models.IntegerField()
 
 def normalize_ar(ar):
+    # pct = 0.99
+    # sorted_ar = np.sort(ar.flatten())
+    # n = int(len(sorted_ar)*pct)
+    # ar_max = sorted_ar[n]
+    # print(ar.min(),ar.max(),ar_max)
+    # img_max = np.percentile(ar, 99)     #ar.max()
+    # print(img_max)
+    print(ar.shape)
     array = (ar-ar.min())/(ar.max()-ar.min())
+    ar[ar>1]=1
+    ar[ar<0]=0
     array = array*255
     array = array.astype(np.uint8)
     return array
@@ -59,7 +69,6 @@ def get_bounds(file):
                 [xmin,ymin]
             ]
         )
-
     proj = osr.SpatialReference(wkt=ds.GetProjection())
     epsg = proj.GetAttrValue('AUTHORITY',1)
     if int(epsg)!=4326:
@@ -109,10 +118,17 @@ class RasterFile(models.Model):
 
             # TODO:
             ### Create the way to select the bands to use and way to stretch for better visual
-            r = Image.fromarray(normalize_ar(img[:,:,0]))
-            g = Image.fromarray(normalize_ar(img[:,:,1]))
-            b = Image.fromarray(normalize_ar(img[:,:,2]))
-            im1 = Image.merge( 'RGB', (r, g, b)) 
+            try:
+                r = Image.fromarray(normalize_ar(img[:,:,0]))
+                g = Image.fromarray(normalize_ar(img[:,:,1]))
+                b = Image.fromarray(normalize_ar(img[:,:,2]))
+                im1 = Image.merge( 'RGB', (r, g, b))
+            except IndexError as e:
+                # print(e)
+                # print(img.shape)
+                ar = normalize_ar(img)
+                im1 = Image.fromarray(ar)
+
 
             with io.BytesIO() as buffer:
                 im1.save(buffer, format="PNG")
