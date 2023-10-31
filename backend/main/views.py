@@ -1,24 +1,33 @@
-from rest_framework.views import APIView
-from rest_framework import status, generics
-from rest_framework.response import Response
 from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.http import Http404
 
+from rest_framework import viewsets
+from rest_framework import status, generics
+from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
-import json
-from .models import GeoJSONFile
 
-from .utils import get_geojson_bounds
-from django.contrib.auth.models import User
-from .serializers import UserRegister, GeoJsonFileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
+
+import json
+
+from .models import GeoJSONFile,RasterFile
+from .utils import get_geojson_bounds
+from .serializers import UserRegister, GeoJsonFileSerializer,RasterFileSerializer
 
 
 class HomePageView(APIView):
     def get(self, request):
         return Response({"message": "Hello, world!"}, status=status.HTTP_200_OK)
     
+
+class RasterViewSet(viewsets.ModelViewSet):
+    serializer_class = RasterFileSerializer
+    queryset = RasterFile.objects.all()
+    # permission_classes = [permissions.IsAuthenticated]    
 
 class GeoJSONDetailView(APIView):
     def get(self, request, pk):
@@ -58,6 +67,9 @@ class GeoJSONFileUploadAPIView(APIView):
             if not isinstance(geojson_data.get('features'), list):
                 raise ValueError('Invalid GeoJSON format')
 
+            #TODO:
+            # Aqui ele está apenas pegando a primeira geometria, precisamos 
+            # por ler todas elas
             firts_geometry = geojson_data['features'][0]['geometry']
             bounds = get_geojson_bounds(firts_geometry)
             

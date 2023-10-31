@@ -22,7 +22,19 @@
   background-color: olive;
 } */
 
-/* Add this CSS to your stylesheet */
+.raster-upload-container {
+  text-align: center;
+  padding: 0px;
+}
+
+.custom-raster-input {
+  position: absolute;
+  top: 20px;
+  right: 90px;
+  z-index: 1000;
+}
+
+
 .file-upload-container {
   text-align: center;
   padding: 0px;

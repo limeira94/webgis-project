@@ -85,7 +85,7 @@ const getCenterOfGeoJSON = (geojson) => {
 };
 
 const Homepage = () => {
-
+  const [rasters, setRasters] = useState([]);
   const [geojsons, setGeoJSONs] = useState([]);
   const [mapInstance, setMapInstance] = useState(null);
   const [fillColor, setFillColor] = useState("#ff7800");
@@ -95,23 +95,31 @@ const Homepage = () => {
   const [selectedPolygon, setSelectedPolygon] = useState(null);
   const [polygonStyles, setPolygonStyles] = useState({});
   
+
+  console.log(rasters)
+
   useEffect(() => {
-    console.log("API_URL", API_URL);
     const getAllGeojsons = async () => {
       try {
-        const response = await axios.get(
-          // 'http://127.0.0.1:8000/api/main/geojson/'
-          `${API_URL}api/main/geojson/`
-        );
-
+        const response = await axios.get(`${API_URL}api/main/geojson/`);
         const parsedGeoJSON = parseGeoJSON(response.data);
         setGeoJSONs(parsedGeoJSON)
       } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
       }
     }
+    
+    const getAllRasters = async () => {
+      try {
+        const response = await axios.get(`${API_URL}api/main/rasters/`);
+        setRasters(response.data)
+      } catch (error) {
+        console.error('Error fetching Raster data:', error);
+      }
+    }
 
     getAllGeojsons();
+    getAllRasters();
   }, []);
   
   useEffect(() => {
@@ -129,7 +137,32 @@ const Homepage = () => {
     }
   }, [borderColor, borderWidth, opacity, fillColor, selectedPolygon]);  
 
+  var style = {
+    "color": "#ff7800",
+    "weight": 5,
+    "opacity": 0.65
+  };
+
+  const handleRaster = async (event) => {
+    const formData = new FormData();
+    formData.append('raster', event.target.files[0]);
+    formData.append('name', 'Nothing');
   
+    try {
+      const response = await axios.post(
+        `${API_URL}api/main/rasters/`,
+        formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     event.target.value = null;
@@ -186,9 +219,13 @@ const Homepage = () => {
   };
 
   const fileInputRef = useRef(null);
-
   const handleFileClick = () => {
     fileInputRef.current.click();
+  };
+
+  const rasterInputRef = useRef(null);
+  const handleFileClickRaster = () => {
+    rasterInputRef.current.click();
   };
 
   const handleDeleteClick = (id) => {
@@ -206,6 +243,15 @@ const Homepage = () => {
         console.error('Error deleting GeoJSON:', error);
       });
   };
+  
+  var lyr = L.tileLayer('./{z}/{x}/{y}.png', {
+    tms: 1, 
+    opacity: 0.7, 
+    attribution: "", 
+    minZoom: 1, 
+    maxZoom: 18
+  });
+
 
   const tileLayers = tileLayersData.map((layer) => ({
     key: layer.key,
@@ -270,7 +316,26 @@ const Homepage = () => {
             style={{ display: 'none' }}
             accept=".geojson, application/geo+json"
           />
-          <a className="btn-floating btn-large waves-effect waves-light blue" onClick={handleFileClick}>
+          <a 
+            className="btn-floating btn-large waves-effect waves-light blue" 
+            onClick={handleFileClick}>
+            <i className="material-icons">file_upload</i>
+          </a>
+        </div>
+      </div>
+
+      <div className="raster-upload-container">
+        <div className="custom-raster-input">
+          <input
+            type="file"
+            onChange={handleRaster}
+            ref={rasterInputRef}
+            style={{ display: 'none' }}
+            // accept=".tif, application/geo+json"
+          />
+          <a 
+            className="btn-floating btn-large waves-effect waves-light green" 
+            onClick={handleFileClickRaster}>
             <i className="material-icons">file_upload</i>
           </a>
         </div>
@@ -284,7 +349,7 @@ const Homepage = () => {
       <MapContainer className='map-container'
         ref={(map) => {
           if (map) {
-            console.log("Setting map instance");
+            // console.log("Setting map instance");
             setMapInstance(map);
           }
         }}
@@ -299,6 +364,12 @@ const Homepage = () => {
               <TileLayer url={layer.url} key={index} />
             </LayersControl.BaseLayer>
           ))}
+          {rasters.map((raster, index) => (
+          <LayersControl.Overlay checked name={raster.name} key={index}>
+            <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} tms={1} opacity={1} attribution="" minZoom={1} maxZoom={18} key={index}/>
+            {/* <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} key={index} /> */}
+          </LayersControl.Overlay>
+        ))}
         </LayersControl>
 
         {geojsons.map((geojson, index) => (
