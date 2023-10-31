@@ -22,6 +22,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 ALLOWED_HOSTS = [
     # '*'
     # '172.31.46.41',
+    'localhost',
+    'localhost:8000',
+    'ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
     'ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
     'webgis.site'
     # 'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com/'
@@ -32,7 +35,10 @@ if DEBUG:
     ALLOWED_HOSTS.append('127.0.0.1')
 
 CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',  
     'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
+    'http://localhost:8080',
+    'http://ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
     'https://webgis.site'
 ]
 
@@ -42,6 +48,8 @@ if DEBUG:
 
 CSRF_TRUSTED_ORIGINS = [
     # 'https://webgis.felipemp.com'
+    #'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
+    'http://ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
     'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
     'https://webgis.site'
     ]
@@ -101,7 +109,8 @@ DATABASES = {
          'NAME': config("DB_NAME_WG"),#'webgis-project',
          'USER': config("DB_USER_WG"),
          'PASSWORD': config("DB_PASSWORD_WG"),
-         'HOST': config("DB_HOST_WG"),
+         'HOST': config("DB_HOST_WG"), # --> conexão local
+         #'HOST': 'host.docker.internal', --> conexão docker local
          'PORT': '5432',
     },
 }

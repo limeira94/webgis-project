@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import tileLayersData from './tileLayers.json';
 import './Map.css'
 import axios from 'axios'
-
+import { TextField, Slider } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
 import {
   MapContainer,
@@ -11,7 +11,7 @@ import {
   LayersControl,
   GeoJSON
 } from 'react-leaflet';
-import L from 'leaflet';
+import L, { polygon } from 'leaflet';
 delete L.Icon.Default.prototype._getIconUrl;
 var parse = require('wellknown');
 
@@ -32,7 +32,7 @@ function parseGeoJSON(data) {
   }));
 };
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/'
 
 const extractCoordsFromPoint = (coords, lats, longs) => {
   let [long, lat] = coords;
@@ -87,8 +87,14 @@ const getCenterOfGeoJSON = (geojson) => {
 const Homepage = () => {
   const [rasters, setRasters] = useState([]);
   const [geojsons, setGeoJSONs] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
+  const [fillColor, setFillColor] = useState("#ff7800");
+  const [borderColor, setBorderColor] = useState("#ff7800");
+  const [opacity, setOpacity] = useState(0.65);
+  const [borderWidth, setBorderWidth] = useState(3);
+  const [selectedPolygon, setSelectedPolygon] = useState(null);
+  const [polygonStyles, setPolygonStyles] = useState({});
+  
 
   console.log(rasters)
 
@@ -115,6 +121,21 @@ const Homepage = () => {
     getAllGeojsons();
     getAllRasters();
   }, []);
+  
+  useEffect(() => {
+    if (selectedPolygon) {
+      const currentId = selectedPolygon.feature.properties.id;
+      setPolygonStyles(prevStyles => ({
+        ...prevStyles,
+        [currentId]: {
+          color: borderColor,
+          weight: borderWidth,
+          fillOpacity: opacity,
+          fillColor: fillColor,
+        }
+      }));
+    }
+  }, [borderColor, borderWidth, opacity, fillColor, selectedPolygon]);  
 
   var style = {
     "color": "#ff7800",
@@ -240,6 +261,52 @@ const Homepage = () => {
 
   return (
     <>
+      <div className="style-form-container">
+        <div style={{ marginTop: 10, marginBottom: 10 }}>
+          <label>Fill Color</label>
+          <TextField
+            type="color"
+            value={fillColor}
+            onChange={e => setFillColor(e.target.value)}
+            InputProps={{
+              style: { height: '30px', width: '100px' }
+            }}
+          />
+        </div>
+        <div style={{ marginTop: 10, marginBottom: 10 }}>
+          <label>Border Color</label>
+          <TextField
+            type="color"
+            value={borderColor}
+            onChange={e => setBorderColor(e.target.value)}
+            InputProps={{
+              style: { height: '30px', width: '100px' }
+            }}
+          />
+        </div>
+        <div style={{ marginTop: 20, marginBottom: 20 }}>
+          <label>Opacity</label>
+          <Slider
+            value={opacity}
+            min={0}
+            max={1}
+            step={0.1}
+            onChange={(e, newValue) => setOpacity(newValue)}
+            valueLabelDisplay="auto"
+          />
+        </div>
+        <div style={{ marginTop: 20, marginBottom: 20 }}>
+          <label>Border Width</label>
+          <Slider
+            value={borderWidth}
+            min={0}
+            max={10}
+            step={1}
+            onChange={(e, newValue) => setBorderWidth(newValue)}
+            valueLabelDisplay="auto"
+          />
+        </div>
+      </div>
       <div className="file-upload-container">
         <div className="custom-file-input">
           <input
@@ -312,9 +379,21 @@ const Homepage = () => {
               type: 'FeatureCollection',
               features: [geojson],
             }}
-            style={style}
+            style={(feature) => {
+              return polygonStyles[feature.properties.id] || {
+                // Estilo padrão para polígonos que ainda não foram selecionados e editados
+                color: "#ff7800",
+                weight: 3,
+                fillOpacity: 0.65,
+                fillColor: "#ff7800"
+              };
+            }}
+            
             onEachFeature={(feature, layer) => {
-
+              layer.on('click', () => {
+                setSelectedPolygon(layer);
+              });
+              
               layer.bindPopup(String(feature.properties.id));
             }}
           />
