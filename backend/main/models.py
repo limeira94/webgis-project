@@ -109,7 +109,12 @@ class RasterFile(models.Model):
             ###     PNG
             # name=self.raster.url
             # file = self.raster.storage.path(name=name.replace('/media/',''))#
-            file = 'http://127.0.0.1:8000'+self.raster.url
+            #TODO: 
+            # solve this problem with the file.
+            site = 'https://webgis.site'
+            if os.environ.get("LOCAL")=="True":
+                site = 'http://127.0.0.1:8000'
+            file = site+self.raster.url
 
             bounds = get_bounds(file)
 
