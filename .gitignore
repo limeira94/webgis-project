@@ -1,3 +1,4 @@
 *.pem
+.env
 commands.txt
 tempfiles

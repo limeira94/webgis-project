@@ -15,9 +15,10 @@ GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH', default='')
 
 SETTINGS_MODULE = 'backend.settings'
 
-MEDIA_URL = '/media/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR,'build')
 
 ALLOWED_HOSTS = [
     # '*'

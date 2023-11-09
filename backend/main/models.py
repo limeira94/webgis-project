@@ -30,7 +30,11 @@ class Shapefile(models.Model):
     
 class GeoJSONFile(models.Model):
     name = models.CharField(max_length=255)
+    #user = models.ForeignKey(User)
     geojson = models.GeometryField()
+
+    #TODO:
+    # Banco de dados unico para cada usuário.
 
 
 class GeoserverData(models.Model):
@@ -80,6 +84,12 @@ def get_bounds(file):
         poly = transform(project, poly)
     
     return poly.bounds
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=100)
+    vector = models.ManyToManyField(GeoJSONFile)
+
 
 
 class RasterFile(models.Model):
