@@ -2,6 +2,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.http import Http404
+from django.contrib.auth.forms import AuthenticationForm
 
 from rest_framework import viewsets
 from rest_framework import status, generics
@@ -17,6 +18,21 @@ import json
 from .models import GeoJSONFile,RasterFile
 from .utils import get_geojson_bounds
 from .serializers import UserRegister, GeoJsonFileSerializer,RasterFileSerializer
+
+
+from django.contrib.auth.views import LoginView
+from django.shortcuts import render
+
+class DjangoLoginView(LoginView):
+    template_name = 'login.html'  # Replace with the path to your login template
+    form_class = AuthenticationForm
+    def get(self, request, *args, **kwargs):
+        # Customize any additional logic you need before rendering the login page
+        return render(request, self.template_name, {})
+
+    def post(self, request, *args, **kwargs):
+        # Customize any additional logic you need after the login form is submitted
+        return super().post(request, *args, **kwargs)
 
 
 class HomePageView(APIView):

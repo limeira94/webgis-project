@@ -18,6 +18,12 @@ urlpatterns = [
     # path("api/main/rasters/",raster_detail,name='rasters'),
     path('', TemplateView.as_view(template_name='index.html')), 
     path('map', TemplateView.as_view(template_name='index.html')),
+
+    # path('api/main/register/', views.UserRegistrarionView.as_view(), name='user-register'),
+    # path('api/main/login/', views.LoginAPIView.as_view(), name='user-login'),
+    path('login/', views.DjangoLoginView.as_view(), name='django-login'),
+    # path('register/', views.DjangoRegisterView.as_view(), name='django-register'),
+    # path('logout/', views.DjangoLogoutView.as_view(), name='django-logout'),
 ]
 
         
