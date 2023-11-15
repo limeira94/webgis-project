@@ -54,6 +54,20 @@
   z-index: 1000;
 }
 
+.delete-button-2 {
+  position: absolute;
+  top: 90px;
+  right: 90px;
+  z-index: 1000;
+}
+
+.test-bt {
+  position: absolute;
+  top: 5px;
+  right: 150px;
+  z-index: 1000;
+}
+
 .custom-file-input button {
   background-color: #007bff;
   color: #fff;

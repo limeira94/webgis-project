@@ -5,8 +5,14 @@ from django.views.generic import TemplateView
 from rest_framework import routers
 from . import views
 
+#TODO:
+# IF NEEDED:
+# change all routes to be used inside the router
 router = routers.DefaultRouter()
 router.register('rasters',views.RasterViewSet,basename='rasters')
+# router.register('delete_all_rasters', views.DeleteAllRasterViewSet, basename='delete_all_rasters')
+# router.register('rasters/delete_all', views.DeleteAllRasterViewSet, basename='delete_all_rasters')
+# router.register('upload',views.GeoJSONFileUploadAPIView.as_view(),basename='upload_geojson_api')
 
 urlpatterns = [
     path('api/main/',include(router.urls)),
@@ -18,10 +24,9 @@ urlpatterns = [
     # path("api/main/rasters/",raster_detail,name='rasters'),
     path('', TemplateView.as_view(template_name='index.html')), 
     path('map', TemplateView.as_view(template_name='index.html')),
-
     # path('api/main/register/', views.UserRegistrarionView.as_view(), name='user-register'),
     # path('api/main/login/', views.LoginAPIView.as_view(), name='user-login'),
-    path('login/', views.DjangoLoginView.as_view(), name='django-login'),
+    # path('login/', views.DjangoLoginView.as_view(), name='django-login'),
     # path('register/', views.DjangoRegisterView.as_view(), name='django-register'),
     # path('logout/', views.DjangoLogoutView.as_view(), name='django-logout'),
 ]

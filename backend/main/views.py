@@ -10,6 +10,8 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import action
+from rest_framework.request import Request
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -24,14 +26,12 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render
 
 class DjangoLoginView(LoginView):
-    template_name = 'login.html'  # Replace with the path to your login template
+    template_name = 'login.html' 
     form_class = AuthenticationForm
     def get(self, request, *args, **kwargs):
-        # Customize any additional logic you need before rendering the login page
         return render(request, self.template_name, {})
 
     def post(self, request, *args, **kwargs):
-        # Customize any additional logic you need after the login form is submitted
         return super().post(request, *args, **kwargs)
 
 
@@ -41,9 +41,14 @@ class HomePageView(APIView):
     
 
 class RasterViewSet(viewsets.ModelViewSet):
-    serializer_class = RasterFileSerializer
     queryset = RasterFile.objects.all()
-    # permission_classes = [permissions.IsAuthenticated]    
+    serializer_class = RasterFileSerializer
+
+    @action(methods=["DELETE"], detail =False, )
+    def delete(self,request:Request):
+        delete_rasters = self.queryset.all()
+        delete_rasters.delete()
+        return Response( self.serializer_class(delete_rasters,many=True).data)
 
 class GeoJSONDetailView(APIView):
     def get(self, request, pk):

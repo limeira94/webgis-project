@@ -203,8 +203,8 @@ class RasterFile(models.Model):
 class Project(models.Model):
     name = models.CharField(max_length=100,unique=True)
     thumbnail = models.ImageField(null=True,blank=True)
-    vector = models.ManyToManyField(GeoJSONFile,null=True,blank=True)
-    raster = models.ManyToManyField(RasterFile,null=True,blank=True)
+    vector = models.ManyToManyField(GeoJSONFile,blank=True)
+    raster = models.ManyToManyField(RasterFile ,blank=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)

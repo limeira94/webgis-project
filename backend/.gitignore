@@ -1,4 +1,5 @@
 media
+tests/data/rasters
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

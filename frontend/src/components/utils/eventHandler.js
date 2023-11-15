@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
+
 export const handleRaster = async (event) => {
     const formData = new FormData();
     const file = event.target.files[0];
@@ -24,7 +26,7 @@ export const handleRaster = async (event) => {
     }
 };
 
-export const handleFileChange = async (event) => {
+export const handleFileChange = async (event,getCenterOfGeoJSON,geojsons,setGeoJSONs,mapInstance) => {
     const file = event.target.files[0];
     event.target.value = null;
     if (file) {
@@ -80,7 +82,7 @@ export const handleFileChange = async (event) => {
   };
 
 
- export const handleDeleteClick = (id) => {
+ export const handleDeleteClick = (setGeoJSONs) => {
     axios
       .delete(
         // `http://127.0.0.1:8000/api/main/geojson/`
@@ -96,4 +98,20 @@ export const handleFileChange = async (event) => {
       });
   };
 
+
+  export const handleDeleteRasterClick = (setRasters) => {
+    axios
+        .delete(
+            // `${API_URL}api/main/rasters/delete_all/`
+            // `${API_URL}api/main/delete_all_rasters/`
+            `${API_URL}api/main/rasters/`
+        )
+        .then((response) => {
+            console.log('All rasters deleted successfully');
+            setRasters([])
+        })
+        .catch((error) => {
+            console.error('Error deleting rasters:', error);
+        });
+};
 

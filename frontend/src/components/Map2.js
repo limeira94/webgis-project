@@ -13,6 +13,30 @@ import {
   WMSTileLayer,
   ImageOverlay
 } from 'react-leaflet';
+
+import {
+  parseGeoJSON,
+  // API_URL,
+  extractCoordsFromPoint,
+  extractCoordsFromLineOrMultiPoint,
+  extractCoordsFromPolygonOrMultiLine,
+  getCenterOfGeoJSON
+} from './utils/MapUtils';
+
+import {
+  handleRaster,
+  handleFileChange,
+  handleFileClick,
+  handleFileClickRaster,
+  handleDeleteClick,
+  handleDeleteRasterClick
+} from './utils/eventHandler';
+
+// import { FloatingActionButton } from 'materialize-css';
+import M from 'materialize-css';
+
+// import handleFileChange from ".utils/eventHandler.js"
+
 import L from 'leaflet';
 delete L.Icon.Default.prototype._getIconUrl;
 var parse = require('wellknown');
@@ -56,6 +80,30 @@ const Map = () => {
     getAllRasters();
   }, []);
 
+  useEffect(()=>{
+    var options = {
+      direction: 'left'
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('.fixed-action-btn');
+      M.FloatingActionButton.init(elems, options);
+    });
+  },[]);
+
+
+  useEffect(() => {
+    var options = {
+      direction: 'left'
+    }
+    // let parallaxElems = document.querySelectorAll('.parallax');
+    let elems = document.querySelectorAll('.fixed-action-btn');
+    // M.Parallax.init(parallaxElems);
+    M.FloatingActionButton.init(elems, options);
+
+  }, [
+    // products
+  ]);
+
   var style = {
     "color": "#ff7800",
     "weight": 5,
@@ -86,7 +134,8 @@ const Map = () => {
         <div className="custom-file-input">
           <input
             type="file"
-            onChange={handleFileChange}
+            // onChange={handleFileChange}
+            onChange={(event) => handleFileChange(event, getCenterOfGeoJSON,geojsons,setGeoJSONs,mapInstance)}
             ref={fileInputRef}
             style={{ display: 'none' }}
             accept=".geojson, application/geo+json"
@@ -117,10 +166,28 @@ const Map = () => {
       </div>
 
       <div className='delete-button'>
-        <a className="btn-floating btn-large waves-effect waves-light red " onClick={handleDeleteClick}>
+        <a className="btn-floating btn-large waves-effect waves-light red " onClick={()=>handleDeleteClick(setGeoJSONs)}>
           <i className="material-icons">delete</i>
         </a>
       </div>
+
+      <div className='delete-button-2'>
+        <a className="btn-floating btn-large waves-effect waves-light black " onClick={()=>handleDeleteRasterClick(setRasters)}>
+          <i className="material-icons">delete</i>
+        </a>
+      </div>
+     {/* 
+      <div className="fixed-action-btn test-bt">
+        <a className="btn-floating btn-large red">
+          <i className="large material-icons">mode_edit</i>
+        </a>
+        <ul>
+          <li><a className="btn-floating red"><i className="material-icons">insert_chart</i></a></li>
+          <li><a className="btn-floating yellow darken-1"><i className="material-icons">format_quote</i></a></li>
+          <li><a className="btn-floating green"><i className="material-icons">publish</i></a></li>
+          <li><a className="btn-floating blue"><i className="material-icons">attach_file</i></a></li>
+        </ul> 
+      </div> */}
       <MapContainer className='map-container'
         ref={(map) => {
           if (map) {
