@@ -1,6 +1,15 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import GeoJSONFile,RasterFile
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+       data = super().validate(attrs)
+       refresh = self.get_token(self.user)
+       data['refresh'] = str(refresh)
+       data['access'] = str(refresh.access_token)
+       return data
 
 
 class GeoJsonFileSerializer(serializers.ModelSerializer):
@@ -11,7 +20,7 @@ class GeoJsonFileSerializer(serializers.ModelSerializer):
 class RasterFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = RasterFile
-        fields = ('id', 'name', 'raster')
+        fields = ('id', 'name',"user", 'raster')
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

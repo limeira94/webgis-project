@@ -19,7 +19,9 @@ import {
   TileLayer,
   ZoomControl,
   LayersControl,
-  GeoJSON
+  GeoJSON,
+  // WMSTileLayer,
+  ImageOverlay
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
@@ -186,9 +188,11 @@ const ListItemWithStyleControls = ({ geojson, updateStyle, polygonStyles, visibl
   );
 };
 
-const Homepage = () => {
+
+const Map = () => {
   const [rasters, setRasters] = useState([]);
   const [geojsons, setGeoJSONs] = useState([]);
+  // const [selectedFile, setSelectedFile] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
   const [selectedPolygon, setSelectedPolygon] = useState(null);
   const [polygonStyles, setPolygonStyles] = useState({});
@@ -207,6 +211,7 @@ const Homepage = () => {
 
     }
   }, [mapInstance]);
+  // console.log(rasters)
 
   useEffect(() => {
     const getAllGeojsons = async () => {
@@ -240,9 +245,10 @@ const Homepage = () => {
 
   const handleRaster = async (event) => {
     const formData = new FormData();
-    formData.append('raster', event.target.files[0]);
-    formData.append('name', 'Nothing');
-
+    const file = event.target.files[0];
+    formData.append('raster', file);
+    formData.append('name', file.name);
+  
     try {
       const response = await axios.post(
         `${API_URL}api/main/rasters/`,
@@ -253,6 +259,9 @@ const Homepage = () => {
       }
       );
       console.log(response.data);
+
+      // mapInstance.flyTo(newCenter, 12);
+      // mapInstance.flyTo([40.730610, -73.935242], 15)
     } catch (error) {
       console.error(error);
     }
@@ -339,15 +348,6 @@ const Homepage = () => {
       });
   };
 
-  var lyr = L.tileLayer('./{z}/{x}/{y}.png', {
-    tms: 1,
-    opacity: 0.7,
-    attribution: "",
-    minZoom: 1,
-    maxZoom: 18
-  });
-
-
   const tileLayers = tileLayersData.map((layer) => ({
     key: layer.key,
     name: layer.name,
@@ -429,8 +429,8 @@ const Homepage = () => {
             style={{ display: 'none' }}
             accept=".geojson, application/geo+json"
           />
-          <a
-            className="btn-floating btn-large waves-effect waves-light blue"
+          <a href="/#" 
+            className="btn-floating btn-large waves-effect waves-light blue" 
             onClick={handleFileClick}>
             <i className="material-icons">file_upload</i>
           </a>
@@ -446,8 +446,8 @@ const Homepage = () => {
             style={{ display: 'none' }}
           // accept=".tif, application/geo+json"
           />
-          <a
-            className="btn-floating btn-large waves-effect waves-light green"
+          <a href="/#"
+            className="btn-floating btn-large waves-effect waves-light green" 
             onClick={handleFileClickRaster}>
             <i className="material-icons">file_upload</i>
           </a>
@@ -455,7 +455,7 @@ const Homepage = () => {
       </div>
 
       <div className='delete-button'>
-        <a className="btn-floating btn-large waves-effect waves-light red " onClick={handleDeleteClick}>
+        <a href="/#" className="btn-floating btn-large waves-effect waves-light red " onClick={handleDeleteClick}>
           <i className="material-icons">delete</i>
         </a>
       </div>
@@ -478,12 +478,61 @@ const Homepage = () => {
               <TileLayer url={layer.url} key={index} />
             </LayersControl.BaseLayer>
           ))}
-          {rasters.map((raster, index) => (
-            <LayersControl.Overlay checked name={raster.name} key={index}>
-              <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} tms={1} opacity={1} attribution="" minZoom={1} maxZoom={18} key={index} />
-              {/* <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} key={index} /> */}
-            </LayersControl.Overlay>
-          ))}
+
+            {rasters.map((raster, index) => {
+              const tileCoordinates = raster.tiles.split(',').map(Number); 
+              const [xmin, ymin, xmax, ymax] = tileCoordinates;
+              const bounds = [[ymin, xmin], [ymax, xmax]];
+
+              return (
+                <LayersControl.Overlay checked name={raster.name} key={index}>
+                  <ImageOverlay
+                    url={raster.raster}
+                    bounds={bounds}
+                    opacity={1}
+                    zIndex={10}
+                  />
+                </LayersControl.Overlay>
+              );
+            })}
+
+          {/* TODO */}
+          {/* Código para usar com o geoserver */}
+          {/* <LayersControl.Overlay name={"AAAAA"} key={141}>
+            <WMSTileLayer
+                url="http://localhost:8080/geoserver/webgis/wms"
+                params={
+                  {
+                  srs:"EPSG:4326",
+                  format:"image/png",
+                  layers:"webgis:coverage_test",
+                  transparent: true,
+                  opacity:1
+                  }
+                }
+              />
+          </LayersControl.Overlay> */}
+
+
+          {/* TODO */}
+          {/* Aqui o código funciona com TILES gerados por gdal2tiles */}
+          {/* <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} tms={1} opacity={1} attribution="" minZoom={1} maxZoom={18} key={index}/>  */}
+          {/* {rasters.map((raster, index) => (
+          <LayersControl.Overlay checked name={raster.name} key={index}>
+            
+            <WMSTileLayer
+                url="http://localhost:8080/geoserver/webgis/wms"
+                params={
+                  {
+                  srs:"EPSG:4326",
+                  format:"image/png",
+                  layers:"webgis:coverage_test",
+                  transparent: true,
+                  }
+                }
+              />
+          </LayersControl.Overlay>
+        ))} */}
         </LayersControl>
 
         {geojsons.map((geojson, index) => {
@@ -520,4 +569,4 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+export default Map;

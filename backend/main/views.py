@@ -2,6 +2,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.http import Http404
+from django.contrib.auth.forms import AuthenticationForm
 
 from rest_framework import viewsets
 from rest_framework import status, generics
@@ -9,14 +10,34 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import action
+from rest_framework.request import Request
 
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenVerifyView,TokenRefreshView,TokenObtainPairView
+
 
 import json
 
 from .models import GeoJSONFile,RasterFile
 from .utils import get_geojson_bounds
-from .serializers import UserRegister, GeoJsonFileSerializer,RasterFileSerializer
+from .serializers import UserRegister, GeoJsonFileSerializer,RasterFileSerializer,CustomTokenObtainPairSerializer
+
+
+from django.contrib.auth.views import LoginView
+from django.shortcuts import render
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+class DjangoLoginView(LoginView):
+    template_name = 'login.html' 
+    form_class = AuthenticationForm
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {})
+
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 class HomePageView(APIView):
@@ -25,9 +46,14 @@ class HomePageView(APIView):
     
 
 class RasterViewSet(viewsets.ModelViewSet):
-    serializer_class = RasterFileSerializer
     queryset = RasterFile.objects.all()
-    # permission_classes = [permissions.IsAuthenticated]    
+    serializer_class = RasterFileSerializer
+
+    @action(methods=["DELETE"], detail =False, )
+    def delete(self,request:Request):
+        delete_rasters = self.queryset.all()
+        delete_rasters.delete()
+        return Response( self.serializer_class(delete_rasters,many=True).data)
 
 class GeoJSONDetailView(APIView):
     def get(self, request, pk):
@@ -78,8 +104,11 @@ class GeoJSONFileUploadAPIView(APIView):
             for feature in geojson_data['features']:
                 geometry = GEOSGeometry(json.dumps(feature['geometry']))
                 name = request.data.get('name', 'Unnamed')
-                
-                geo_instance = GeoJSONFile(name=name, geojson=geometry)
+                # TODO:
+                # Here Im providing a default user but later we will need to check authentication
+                user = request.data.get('user', '4')
+                user = User.objects.get(pk=user)
+                geo_instance = GeoJSONFile(name=name,user=user,geojson=geometry)
                 geo_instance.save()
                 
                 save_instance.append({

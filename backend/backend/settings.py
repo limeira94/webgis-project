@@ -15,9 +15,10 @@ GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH', default='')
 
 SETTINGS_MODULE = 'backend.settings'
 
-MEDIA_URL = '/media/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR,'build')
 
 ALLOWED_HOSTS = [
     # '*'
@@ -84,7 +85,11 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "build")],
+        'DIRS': [
+                    os.path.join(BASE_DIR, "build"),
+                    os.path.join(BASE_DIR,"main",'templates',"main")
+                 
+                ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -177,3 +182,16 @@ SIMPLE_JWT = {
     'AUTH_TOKEN_CLASSES': ('simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
+
+
+GEOSERVER = {
+    "URL":config('GEOSERVER_URL_WG', default='http://localhost:8080/'),
+    "WORKSPACE":config('GEOSERVER_WORKSPACE_WG', default='webgis'),
+    "USERNAME":config('GEOSERVER_USERNAME_WG', default='admin'),
+    "PASSWORD":config('GEOSERVER_PASSWORD_WG', default='geoserver'),
+}
+
+# GEOSERVER_URL = config('GEOSERVER_URL_WG', default='http://localhost:8080/')
+# GEOSERVER_WORKSPACE = config('GEOSERVER_WORKSPACE_WG', default='')
+# GEOSERVER_USERNAME = config('GEOSERVER_USERNAME_WG', default='admin')
+# GEOSERVER_PASSWORD = config('GEOSERVER_PASSWORD_WG', default='geoserver')
