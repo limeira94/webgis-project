@@ -7,6 +7,7 @@ export const handleRaster = async (event) => {
     const file = event.target.files[0];
     formData.append('raster', file);
     formData.append('name', file.name);
+    formData.append('user', "1");
   
     try {
       const response = await axios.post(
@@ -33,6 +34,7 @@ export const handleFileChange = async (event,getCenterOfGeoJSON,geojsons,setGeoJ
       try {
         const formData = new FormData();
         formData.append('geojson', file);
+        formData.append('user', "1");
 
         const response = await axios.post(
           `${API_URL}api/main/upload/`

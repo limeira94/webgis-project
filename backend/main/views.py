@@ -14,16 +14,21 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenVerifyView,TokenRefreshView,TokenObtainPairView
+
 
 import json
 
 from .models import GeoJSONFile,RasterFile
 from .utils import get_geojson_bounds
-from .serializers import UserRegister, GeoJsonFileSerializer,RasterFileSerializer
+from .serializers import UserRegister, GeoJsonFileSerializer,RasterFileSerializer,CustomTokenObtainPairSerializer
 
 
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 class DjangoLoginView(LoginView):
     template_name = 'login.html' 
@@ -99,8 +104,11 @@ class GeoJSONFileUploadAPIView(APIView):
             for feature in geojson_data['features']:
                 geometry = GEOSGeometry(json.dumps(feature['geometry']))
                 name = request.data.get('name', 'Unnamed')
-                
-                geo_instance = GeoJSONFile(name=name, geojson=geometry)
+                # TODO:
+                # Here Im providing a default user but later we will need to check authentication
+                user = request.data.get('user', '4')
+                user = User.objects.get(pk=user)
+                geo_instance = GeoJSONFile(name=name,user=user,geojson=geometry)
                 geo_instance.save()
                 
                 save_instance.append({

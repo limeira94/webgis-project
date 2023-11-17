@@ -10,24 +10,24 @@ import {
   ZoomControl,
   LayersControl,
   GeoJSON,
-  WMSTileLayer,
+  // WMSTileLayer,
   ImageOverlay
 } from 'react-leaflet';
 
 import {
   parseGeoJSON,
   // API_URL,
-  extractCoordsFromPoint,
-  extractCoordsFromLineOrMultiPoint,
-  extractCoordsFromPolygonOrMultiLine,
+  // extractCoordsFromPoint,
+  // extractCoordsFromLineOrMultiPoint,
+  // extractCoordsFromPolygonOrMultiLine,
   getCenterOfGeoJSON
 } from './utils/MapUtils';
 
 import {
   handleRaster,
   handleFileChange,
-  handleFileClick,
-  handleFileClickRaster,
+  // handleFileClick,
+  // handleFileClickRaster,
   handleDeleteClick,
   handleDeleteRasterClick
 } from './utils/eventHandler';
@@ -39,7 +39,7 @@ import M from 'materialize-css';
 
 import L from 'leaflet';
 delete L.Icon.Default.prototype._getIconUrl;
-var parse = require('wellknown');
+// var parse = require('wellknown');
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -53,7 +53,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 const Map = () => {
   const [rasters, setRasters] = useState([]);
   const [geojsons, setGeoJSONs] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
+  // const [selectedFile, setSelectedFile] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
 
   useEffect(() => {
@@ -100,6 +100,9 @@ const Map = () => {
     // M.Parallax.init(parallaxElems);
     M.FloatingActionButton.init(elems, options);
 
+    var elems2 = document.querySelectorAll('.tooltipped');
+    M.Tooltip.init(elems2, {});
+
   }, [
     // products
   ]);
@@ -130,8 +133,33 @@ const Map = () => {
 
   return (
     <>
-      <div className="file-upload-container">
-        <div className="custom-file-input">
+     
+      <div className="fixed-action-btn file-upload-container custom-file-input">
+        <a className="btn-floating btn-large red">
+          <i className="large material-icons">attach_file</i>
+        </a>
+        <ul>
+          <li><a className="btn-floating waves-effect waves-light green tooltipped" data-position="bottom" data-tooltip="Delete all rasters" onClick={()=>handleDeleteClick(setGeoJSONs)}><i className="material-icons">delete</i></a></li>
+          <li><a className="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-tooltip="Delete all vectors" onClick={()=>handleDeleteRasterClick(setRasters)}><i className="material-icons">delete</i></a></li>
+          <li>
+            <div className="raster-upload-container">
+        <div>
+          <input
+            type="file"
+            onChange={handleRaster}
+            ref={rasterInputRef}
+            style={{ display: 'none' }}
+            // accept=".tif, application/geo+json"
+          />
+          <a
+            className="btn-floating waves-effect waves-light green tooltipped" data-position="bottom" data-tooltip="Upload raster"
+            onClick={handleFileClickRaster}>
+            <i className="material-icons">file_upload</i>
+          </a>
+        </div>
+      </div></li>
+          <li><div>
+        <div>
           <input
             type="file"
             // onChange={handleFileChange}
@@ -140,54 +168,20 @@ const Map = () => {
             style={{ display: 'none' }}
             accept=".geojson, application/geo+json"
           />
-          <a 
-            className="btn-floating btn-large waves-effect waves-light blue" 
+          <a
+            className="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-tooltip="Upload geojson"
             onClick={handleFileClick}>
             <i className="material-icons">file_upload</i>
           </a>
         </div>
-      </div>
-
-      <div className="raster-upload-container">
-        <div className="custom-raster-input">
-          <input
-            type="file"
-            onChange={handleRaster}
-            ref={rasterInputRef}
-            style={{ display: 'none' }}
-            // accept=".tif, application/geo+json"
-          />
-          <a 
-            className="btn-floating btn-large waves-effect waves-light green" 
-            onClick={handleFileClickRaster}>
-            <i className="material-icons">file_upload</i>
-          </a>
-        </div>
-      </div>
-
-      <div className='delete-button'>
-        <a className="btn-floating btn-large waves-effect waves-light red " onClick={()=>handleDeleteClick(setGeoJSONs)}>
-          <i className="material-icons">delete</i>
-        </a>
-      </div>
-
-      <div className='delete-button-2'>
-        <a className="btn-floating btn-large waves-effect waves-light black " onClick={()=>handleDeleteRasterClick(setRasters)}>
-          <i className="material-icons">delete</i>
-        </a>
-      </div>
-     {/* 
-      <div className="fixed-action-btn test-bt">
-        <a className="btn-floating btn-large red">
-          <i className="large material-icons">mode_edit</i>
-        </a>
-        <ul>
-          <li><a className="btn-floating red"><i className="material-icons">insert_chart</i></a></li>
-          <li><a className="btn-floating yellow darken-1"><i className="material-icons">format_quote</i></a></li>
-          <li><a className="btn-floating green"><i className="material-icons">publish</i></a></li>
-          <li><a className="btn-floating blue"><i className="material-icons">attach_file</i></a></li>
+      </div></li>
         </ul> 
-      </div> */}
+      </div>
+      <div className='delete-button'>
+        <a href="/" className="btn-floating btn-large waves-effect waves-light black " onClick={handleDeleteClick}>
+          <i className="material-icons">home</i>
+        </a>
+      </div>
       <MapContainer className='map-container'
         ref={(map) => {
           if (map) {

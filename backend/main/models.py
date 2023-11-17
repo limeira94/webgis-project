@@ -35,7 +35,7 @@ class Shapefile(models.Model):
     
 class GeoJSONFile(models.Model):
     name = models.CharField(max_length=255)
-    #user = models.ForeignKey(User)
+    user = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)
     geojson = models.GeometryField()
 
     #TODO:
@@ -86,6 +86,7 @@ def get_bounds(file):
 class RasterFile(models.Model):
     name = models.CharField(max_length=100)
     raster = models.FileField(upload_to='rasters/', validators=[validate_file_extension])
+    user = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)
     tiles = models.CharField(max_length=300,default='',null=True,blank=True)
     # wms = models.CharField(max_length=300,default='',null=True,blank=True)
 

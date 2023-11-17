@@ -10,7 +10,7 @@ import {
   ZoomControl,
   LayersControl,
   GeoJSON,
-  WMSTileLayer,
+  // WMSTileLayer,
   ImageOverlay
 } from 'react-leaflet';
 import L from 'leaflet';
@@ -89,7 +89,7 @@ const getCenterOfGeoJSON = (geojson) => {
 const Map = () => {
   const [rasters, setRasters] = useState([]);
   const [geojsons, setGeoJSONs] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
+  // const [selectedFile, setSelectedFile] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
 
   // console.log(rasters)
@@ -246,7 +246,7 @@ const Map = () => {
             style={{ display: 'none' }}
             accept=".geojson, application/geo+json"
           />
-          <a 
+          <a href="/#" 
             className="btn-floating btn-large waves-effect waves-light blue" 
             onClick={handleFileClick}>
             <i className="material-icons">file_upload</i>
@@ -263,7 +263,7 @@ const Map = () => {
             style={{ display: 'none' }}
             // accept=".tif, application/geo+json"
           />
-          <a 
+          <a href="/#"
             className="btn-floating btn-large waves-effect waves-light green" 
             onClick={handleFileClickRaster}>
             <i className="material-icons">file_upload</i>
@@ -272,7 +272,7 @@ const Map = () => {
       </div>
 
       <div className='delete-button'>
-        <a className="btn-floating btn-large waves-effect waves-light red " onClick={handleDeleteClick}>
+        <a href="/#" className="btn-floating btn-large waves-effect waves-light red " onClick={handleDeleteClick}>
           <i className="material-icons">delete</i>
         </a>
       </div>
