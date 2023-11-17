@@ -1,9 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMap } from 'react';
 import tileLayersData from './tileLayers.json';
 import './Map.css'
 import axios from 'axios'
-import { TextField, Slider } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
+
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Checkbox from '@mui/material/Checkbox';
+import PalleteIcon from '@mui/icons-material/Palette';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+
 import {
   MapContainer,
   TileLayer,
@@ -11,7 +21,14 @@ import {
   LayersControl,
   GeoJSON
 } from 'react-leaflet';
-import L, { polygon } from 'leaflet';
+import L from 'leaflet';
+import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
+
+import "react-leaflet-fullscreen/styles.css";
+import { FullscreenControl } from 'react-leaflet-fullscreen';
+
+import 'leaflet.browser.print/dist/leaflet.browser.print.min.js';
+
 delete L.Icon.Default.prototype._getIconUrl;
 var parse = require('wellknown');
 
@@ -84,31 +101,130 @@ const getCenterOfGeoJSON = (geojson) => {
   return [(minLat + maxLat) / 2, (minLong + maxLong) / 2];
 };
 
+const StyleControls = ({ geojson, updateStyle, polygonStyles }) => {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', paddingLeft: '40px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <span style={{ textAlign: 'left', flexGrow: 1 }}>Fill Color</span>
+        <input
+          type="color"
+          value={polygonStyles[geojson.properties.id]?.fillColor || "#ff0000"}
+          onChange={e => updateStyle(geojson.properties.id, "fillColor", e.target.value)}
+          style={{ width: '30px', height: '30px', border: '1px solid #ddd', borderRadius: '4px' }}
+        />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+        <span style={{ textAlign: 'left', flexGrow: 1 }}>Line Color</span>
+        <input
+          type="color"
+          value={polygonStyles[geojson.properties.id]?.color || "#ff0000"}
+          onChange={e => updateStyle(geojson.properties.id, "color", e.target.value)}
+          style={{ width: '30px', height: '30px', border: '1px solid #ddd', borderRadius: '4px' }}
+        />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ textAlign: 'left', flexGrow: 1, marginRight: '15px' }}>Fill Opacity</span>
+        <input
+          type="range"
+          min="0" max="1" step="0.1"
+          value={polygonStyles[geojson.properties.id]?.fillOpacity || 0.65}
+          onChange={e => updateStyle(geojson.properties.id, "fillOpacity", e.target.value)}
+          style={{ width: '80px', height: '30px'}}
+        />
+      </div>
+      
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ textAlign: 'left', flexGrow: 1 }}>Line Size</span>
+        <input
+          type="range"
+          min="0" max="10" step="1"
+          value={polygonStyles[geojson.properties.id]?.weight || 3}
+          onChange={e => updateStyle(geojson.properties.id, "weight", e.target.value)}
+          style={{ width: '80px', height: '30px'}}
+        />
+      </div>
+    </div>
+  );
+};
+
+const ListItemWithStyleControls = ({ geojson, updateStyle, polygonStyles, visibleGeoJSONs, setVisibleGeoJSONs, zoomToLayer }) => {
+  const [showStyleControls, setShowStyleControls] = useState(false);
+
+  const handleVisibilityChange = (id, isVisible) => {
+    setVisibleGeoJSONs(prev => ({ ...prev, [id]: isVisible }));
+  };
+
+  const handleToggleClick = () => {
+    setShowStyleControls(!showStyleControls);
+  };
+
+  return (
+    <ListItem key={geojson.properties.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <button className="dropdown-button" onClick={handleToggleClick}>
+          <span className="material-icons">arrow_drop_down</span>
+        </button>
+        <button className='zoom-button' onClick={() => zoomToLayer(geojson.properties.id)}>
+          <span className="material-icons">zoom_in_map</span>
+        </button>
+        <Checkbox
+          checked={visibleGeoJSONs[geojson.properties.id] ?? false}
+          onClick={() => handleVisibilityChange(geojson.properties.id, !(visibleGeoJSONs[geojson.properties.id] ?? false))}
+        />
+        <ListItemText primary={` Dado ${geojson.properties.id} `} />
+      </div>
+      {showStyleControls && (
+        <div style={{ marginTop: '10px' }}>
+          <StyleControls
+            geojson={geojson}
+            updateStyle={updateStyle}
+            polygonStyles={polygonStyles}
+          />
+        </div>
+      )}
+    </ListItem>
+  );
+};
+
 const Homepage = () => {
   const [rasters, setRasters] = useState([]);
   const [geojsons, setGeoJSONs] = useState([]);
   const [mapInstance, setMapInstance] = useState(null);
-  const [fillColor, setFillColor] = useState("#ff7800");
-  const [borderColor, setBorderColor] = useState("#ff7800");
-  const [opacity, setOpacity] = useState(0.65);
-  const [borderWidth, setBorderWidth] = useState(3);
   const [selectedPolygon, setSelectedPolygon] = useState(null);
   const [polygonStyles, setPolygonStyles] = useState({});
-  
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
+  const geojsonLayerRefs = useRef({});
 
-  console.log(rasters)
+
+
+  // console.log(rasters)
+  useEffect(() => {
+    if (mapInstance) {
+      L.Control.geocoder().addTo(mapInstance);
+
+      L.control.browserPrint({ position: 'topright' }).addTo(mapInstance);
+
+    }
+  }, [mapInstance]);
 
   useEffect(() => {
     const getAllGeojsons = async () => {
       try {
         const response = await axios.get(`${API_URL}api/main/geojson/`);
         const parsedGeoJSON = parseGeoJSON(response.data);
-        setGeoJSONs(parsedGeoJSON)
+        setGeoJSONs(parsedGeoJSON);
+
+        const initialVisibility = {};
+        parsedGeoJSON.forEach(geojson => {
+          initialVisibility[geojson.properties.id] = true; // ou true, se quiser que estejam visíveis por padrão
+        });
+        setVisibleGeoJSONs(initialVisibility);
       } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
       }
-    }
-    
+    };
+
     const getAllRasters = async () => {
       try {
         const response = await axios.get(`${API_URL}api/main/rasters/`);
@@ -121,41 +237,20 @@ const Homepage = () => {
     getAllGeojsons();
     getAllRasters();
   }, []);
-  
-  useEffect(() => {
-    if (selectedPolygon) {
-      const currentId = selectedPolygon.feature.properties.id;
-      setPolygonStyles(prevStyles => ({
-        ...prevStyles,
-        [currentId]: {
-          color: borderColor,
-          weight: borderWidth,
-          fillOpacity: opacity,
-          fillColor: fillColor,
-        }
-      }));
-    }
-  }, [borderColor, borderWidth, opacity, fillColor, selectedPolygon]);  
-
-  var style = {
-    "color": "#ff7800",
-    "weight": 5,
-    "opacity": 0.65
-  };
 
   const handleRaster = async (event) => {
     const formData = new FormData();
     formData.append('raster', event.target.files[0]);
     formData.append('name', 'Nothing');
-  
+
     try {
       const response = await axios.post(
         `${API_URL}api/main/rasters/`,
         formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
       );
       console.log(response.data);
     } catch (error) {
@@ -243,12 +338,12 @@ const Homepage = () => {
         console.error('Error deleting GeoJSON:', error);
       });
   };
-  
+
   var lyr = L.tileLayer('./{z}/{x}/{y}.png', {
-    tms: 1, 
-    opacity: 0.7, 
-    attribution: "", 
-    minZoom: 1, 
+    tms: 1,
+    opacity: 0.7,
+    attribution: "",
+    minZoom: 1,
     maxZoom: 18
   });
 
@@ -259,53 +354,71 @@ const Homepage = () => {
     url: layer.url,
   }));
 
+  const toggleDrawer = (open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setIsDrawerOpen(open);
+  };
+
+  const zoomToLayer = (geojsonId) => {
+    const layer = geojsonLayerRefs.current[geojsonId];
+    // console.log("Layer ref:", layer);
+    if (layer && mapInstance) {
+      const bounds = layer.getBounds();
+      mapInstance.flyToBounds(bounds);
+    }
+  };
+
+  const updateStyle = (polygonId, styleKey, value) => {
+    setPolygonStyles(prevStyles => ({
+      ...prevStyles,
+      [polygonId]: {
+        ...prevStyles[polygonId],
+        [styleKey]: value
+      }
+    }));
+  };
+
+  const defaultStyle = {
+    color: "#ff7800",
+    weight: 3,
+    fillOpacity: 0.65,
+    fillColor: "#ff7800"
+  };
+
   return (
     <>
-      <div className="style-form-container">
-        <div style={{ marginTop: 10, marginBottom: 10 }}>
-          <label>Fill Color</label>
-          <TextField
-            type="color"
-            value={fillColor}
-            onChange={e => setFillColor(e.target.value)}
-            InputProps={{
-              style: { height: '30px', width: '100px' }
-            }}
-          />
-        </div>
-        <div style={{ marginTop: 10, marginBottom: 10 }}>
-          <label>Border Color</label>
-          <TextField
-            type="color"
-            value={borderColor}
-            onChange={e => setBorderColor(e.target.value)}
-            InputProps={{
-              style: { height: '30px', width: '100px' }
-            }}
-          />
-        </div>
-        <div style={{ marginTop: 20, marginBottom: 20 }}>
-          <label>Opacity</label>
-          <Slider
-            value={opacity}
-            min={0}
-            max={1}
-            step={0.1}
-            onChange={(e, newValue) => setOpacity(newValue)}
-            valueLabelDisplay="auto"
-          />
-        </div>
-        <div style={{ marginTop: 20, marginBottom: 20 }}>
-          <label>Border Width</label>
-          <Slider
-            value={borderWidth}
-            min={0}
-            max={10}
-            step={1}
-            onChange={(e, newValue) => setBorderWidth(newValue)}
-            valueLabelDisplay="auto"
-          />
-        </div>
+      <Drawer
+        anchor={'left'}
+        open={isDrawerOpen}
+        onClose={toggleDrawer(false)}
+        PaperProps={{ classname: "drawer-side-bar" }}
+      > 
+        <div className="sidebar-title">Select your vector dataset:</div>
+        <List>
+          {geojsons.map((geojson) => (
+            <ListItemWithStyleControls
+              key={geojson.properties.id}
+              geojson={geojson}
+              updateStyle={updateStyle}
+              polygonStyles={polygonStyles}
+              visibleGeoJSONs={visibleGeoJSONs}
+              setVisibleGeoJSONs={setVisibleGeoJSONs}
+              zoomToLayer={zoomToLayer}
+            />
+          ))}
+        </List>
+      </Drawer>
+      <div className='top-bar'>
+        <IconButton
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          onClick={toggleDrawer(true)}
+        >
+          <MenuIcon />
+        </IconButton>
       </div>
       <div className="file-upload-container">
         <div className="custom-file-input">
@@ -316,8 +429,8 @@ const Homepage = () => {
             style={{ display: 'none' }}
             accept=".geojson, application/geo+json"
           />
-          <a 
-            className="btn-floating btn-large waves-effect waves-light blue" 
+          <a
+            className="btn-floating btn-large waves-effect waves-light blue"
             onClick={handleFileClick}>
             <i className="material-icons">file_upload</i>
           </a>
@@ -331,10 +444,10 @@ const Homepage = () => {
             onChange={handleRaster}
             ref={rasterInputRef}
             style={{ display: 'none' }}
-            // accept=".tif, application/geo+json"
+          // accept=".tif, application/geo+json"
           />
-          <a 
-            className="btn-floating btn-large waves-effect waves-light green" 
+          <a
+            className="btn-floating btn-large waves-effect waves-light green"
             onClick={handleFileClickRaster}>
             <i className="material-icons">file_upload</i>
           </a>
@@ -346,6 +459,7 @@ const Homepage = () => {
           <i className="material-icons">delete</i>
         </a>
       </div>
+
       <MapContainer className='map-container'
         ref={(map) => {
           if (map) {
@@ -365,40 +479,42 @@ const Homepage = () => {
             </LayersControl.BaseLayer>
           ))}
           {rasters.map((raster, index) => (
-          <LayersControl.Overlay checked name={raster.name} key={index}>
-            <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} tms={1} opacity={1} attribution="" minZoom={1} maxZoom={18} key={index}/>
-            {/* <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} key={index} /> */}
-          </LayersControl.Overlay>
-        ))}
+            <LayersControl.Overlay checked name={raster.name} key={index}>
+              <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} tms={1} opacity={1} attribution="" minZoom={1} maxZoom={18} key={index} />
+              {/* <TileLayer url={`${API_URL}${raster.tiles}/{z}/{x}/{y}.png`} key={index} /> */}
+            </LayersControl.Overlay>
+          ))}
         </LayersControl>
 
-        {geojsons.map((geojson, index) => (
-          <GeoJSON
-            key={index}
-            data={{
-              type: 'FeatureCollection',
-              features: [geojson],
-            }}
-            style={(feature) => {
-              return polygonStyles[feature.properties.id] || {
-                // Estilo padrão para polígonos que ainda não foram selecionados e editados
-                color: "#ff7800",
-                weight: 3,
-                fillOpacity: 0.65,
-                fillColor: "#ff7800"
-              };
-            }}
-            
-            onEachFeature={(feature, layer) => {
-              layer.on('click', () => {
-                setSelectedPolygon(layer);
-              });
-              
-              layer.bindPopup(String(feature.properties.id));
-            }}
-          />
-        ))}
+        {geojsons.map((geojson, index) => {
+          const isVisible = visibleGeoJSONs[geojson.properties.id];
+          return isVisible && (
+            <GeoJSON
+              key={index}
+              ref={(el) => {
+                if (el) {
+                  geojsonLayerRefs.current[geojson.properties.id] = el;
+                }
+              }}
+              data={{
+                type: 'FeatureCollection',
+                features: [geojson],
+              }}
+              style={(feature) => polygonStyles[feature.properties.id] || defaultStyle}
+
+              onEachFeature={(feature, layer) => {
+                layer.on('click', () => {
+                  setSelectedPolygon(layer);
+                });
+
+                layer.bindPopup(String(feature.properties.id));
+              }}
+            />
+          )
+        })}
+        <FullscreenControl position="bottomright" />
         <ZoomControl position="bottomright" />
+
       </MapContainer>
     </>
   );
