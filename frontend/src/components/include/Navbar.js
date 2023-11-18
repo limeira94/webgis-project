@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import 'materialize-css';
 import M from 'materialize-css';
 import './Navbar.css'
-
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const Navbar = () => {
@@ -13,6 +13,8 @@ const Navbar = () => {
         var elems = document.querySelectorAll('.sidenav');
         M.Sidenav.init(elems, options);
     },[])
+    const user = useSelector((state) => state.user);
+	const { isAuthenticated } = useSelector(state => state.user);
 
     var url = process.env.PUBLIC_URL
     // var url = 'http://127.0.0.1:3000/'
@@ -22,9 +24,16 @@ const Navbar = () => {
         <li><a href="/map">Go to Map</a></li>
     </>
 
+    var guest_links = 
+    <>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Register</a></li>
+    </>
+
     var auth_links = 
     <>
-        <li><a href="/login">Login</a></li>  
+        <li><a href="/dashboard">Dashboard</a></li>
+        {/* <li><a href="/register">Register</a></li> */}
     </>
     
 
@@ -38,14 +47,16 @@ const Navbar = () => {
             <a href="#" data-target="mobile-demo" className="sidenav-trigger"><i className="material-icons">menu</i></a>
             <ul className="right hide-on-med-and-down">
                 {link_itens}
-                {auth_links}
+                {/* {auth_links} */}
+                {isAuthenticated ? auth_links : guest_links}
             </ul>
             </div>
         </nav>
 
         <ul className="sidenav" id="mobile-demo">
             {link_itens}
-            {auth_links}
+            {/* {auth_links} */}
+            {isAuthenticated ? auth_links : guest_links}
         </ul>
     </>
 );

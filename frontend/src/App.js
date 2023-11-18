@@ -4,6 +4,8 @@ import Home from './components/Homepage';
 // import Map from './components/Map';
 import Map from './components/Map2';
 import Login from "./components/Login"
+import Register from './components/Register';
+import Dashboard from './components/Dashboard';
 // import Upload from './components/Upload'
 
 function App() {
@@ -16,6 +18,9 @@ function App() {
         {/* <Route path="/map2" exact element={<Map2 />} /> */}
         
         {/* <Route path="/upload-file" exact element={<UploadMap />} /> */}
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+
       </Routes>
     </Router>
   );
