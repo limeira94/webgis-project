@@ -1,8 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Homepage';
-// import Map from './components/Map';
-import Map from './components/Map2';
+import Map from './components/Map';
 import Login from "./components/Login"
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';

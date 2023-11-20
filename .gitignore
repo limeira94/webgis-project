@@ -2,3 +2,5 @@
 .env
 commands.txt
 tempfiles
+
+.env.deepforest
