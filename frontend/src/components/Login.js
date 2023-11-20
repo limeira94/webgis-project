@@ -26,18 +26,15 @@ const Login = () => {
     
     const onSubmit = e => {
       e.preventDefault();
-      // dispatch(login({ username, password }))
       dispatch(login(formData))
         .then(data => {
           if (data.meta.requestStatus==='rejected') {
-            // setLoginError(data.payload.detail);
           } else {
             M.toast(
               {html: "Login sucessful", 
                classes: 'orange rounded',
                displayLength:5000});
-            // return <Navigate to='/request'/>;
-            navigate("/request");
+            navigate("/");
           }        
         })
         .catch(error => {

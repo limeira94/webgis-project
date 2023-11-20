@@ -3,6 +3,16 @@ from django.contrib.auth.models import User
 from .models import GeoJSONFile,RasterFile
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+class UserSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = User
+    fields = '__all__'
+    # model = get_user_model()
+    # fields = ('username', 'email',)
+    # fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile_picture']
+    # read_only_fields = ()
+
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
        data = super().validate(attrs)

@@ -28,6 +28,12 @@ urlpatterns = [
     path('api/main/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
 
+    path('api/users/register/', views.RegisterView.as_view()),
+    path('api/users/me/', views.RetrieveUserView.as_view()),
+    path('api/users/update/', views.UserUpdateView.as_view()),
+    path('api/users/delete/<int:pk>/', views.UserDeleteView.as_view(), name='user-delete'),
+
+
     # path("api/main/rasters/",raster_detail,name='rasters'),
     path('', TemplateView.as_view(template_name='index.html')), 
     path('map', TemplateView.as_view(template_name='index.html')),
