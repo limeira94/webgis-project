@@ -29,10 +29,14 @@ const Login = () => {
       dispatch(login(formData))
         .then(data => {
           if (data.meta.requestStatus==='rejected') {
+            M.toast(
+              {html: "Login failed", 
+               classes: 'red rounded',
+               displayLength:5000});
           } else {
             M.toast(
               {html: "Login sucessful", 
-               classes: 'orange rounded',
+               classes: 'green rounded',
                displayLength:5000});
             navigate("/");
           }        
@@ -48,14 +52,17 @@ const Login = () => {
 
     return (
     <>
-      <Navbar />
-      <div className="center">
-        <h4>
-            Login
-        </h4>
-      </div>
-      <div className="section container center">
-        <div className="z-depth-3 green lighten-5 row login-position" >
+      
+      <div className="section container center overlay room-login">
+        <div className="row login-position centered-element back-color"  >
+          
+        
+        <div className="center white-text">
+          <h4>
+              <b>Login</b>
+          </h4>
+        </div>
+        
 
           <form className="col s12" onSubmit={onSubmit}>
             <div className='row'>
@@ -63,26 +70,32 @@ const Login = () => {
             </div>
 
             <div className='row'>
+            <label htmlFor='email'>Username</label>
               <div className='input-field col s12'>
                 <input className='validate' type='text' name='username' id='username' onChange={onChange}/>
-                <label htmlFor='email'>Enter your username</label>
+                {/* <label htmlFor='email'>Enter your username</label> */}
               </div>
             </div>
 
             <div className='row'>
+            <label htmlFor='password'>Password</label>
               <div className='input-field col s12'>
                 <input className='validate' type='password' name='password' id='password' onChange={onChange}/>
-                <label htmlFor='password'>Enter your password</label>
+                {/* <label htmlFor='password'>Enter your password</label> */}
               </div>
-              <label className="label-forgot">
-				<a className='pink-text' href='#!'><b>Forgot Password?</b></a>
-			  </label>
+        <label className="label-forgot">
+          <a className='pink-text' href='/change-pass'><b>Forgot Password?</b></a>
+        </label>
+        <p><a className='white-text left' href='/register'>Don't have an account? <b>Register</b> now!</a></p>
             </div>
             <br/>
               <div className='row'>
-                <button type='submit' className='col s12 btn btn-large waves-effect green'>Login</button>
+                <button type='submit' className='col s12 btn btn-large waves-effect login-button'>Login</button>
               </div>
           </form>
+          <div className="row">
+            <a href="/" class="col s12 btn btn-large waves-effect home-button">Homepage</a>
+          </div>
         </div>
       </div>
     </>

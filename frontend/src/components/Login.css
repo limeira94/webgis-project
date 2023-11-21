@@ -1,9 +1,107 @@
 .login-position{
     display: inline-block; 
     padding: 32px 48px 0px 48px; 
-    border: 1px solid #EEE;
 }
 
 .label-forgot{
     float: right;
 }
+
+.room-login{
+    background-color: blueviolet;
+    background-size: cover;
+}
+
+.overlay{
+    opacity:0.8;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:1000;
+}
+
+.centered-element {
+    margin: 0;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateY(-50%);
+    transform: translateX(-50%);
+  }
+
+
+  .back-color {
+    /* background: linear-gradient(-45deg, rgb(108, 0, 112), #e73c7e, #23a6d5, #110072); */
+    background: linear-gradient(-45deg,#e73c7e, rgb(108, 0, 112),   #110072);
+    background-size: 400% 400%;
+    box-shadow: 5px 5px 5px 5px ;
+    animation: gradient 15s ease infinite;
+    
+}
+
+.login-button{
+    background: linear-gradient(90deg, rgb(136, 5, 125), rgb(255, 0, 106));
+}
+.home-button{
+    background: linear-gradient(90deg, rgb(5, 7, 136), rgb(255, 0, 234));
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+
+
+.input-field {
+    position: relative;
+    margin: 15px 0;
+  }
+  
+  .input-field input[type="text"],
+  .input-field input[type="password"] {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 25px; 
+    background-color: #a751c2; 
+    color: #fff;
+    box-sizing: border-box;
+  }
+  
+  .input-field label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 15px;
+    color: #fff; 
+    pointer-events: none;
+    transition: 0.2s ease-out;
+  }
+  
+  .input-field input:focus,
+  .input-field input:valid,
+  .input-field textarea:focus,
+  .input-field textarea:valid {
+    border-color: #a751c2; 
+    box-shadow: 0 0 5px rgba(167, 81, 194, 0.7);
+  }
+  
+  /* Move the label up when the input is focused or has content */
+  .input-field input:focus + label,
+  .input-field input:valid + label,
+  .input-field textarea:focus + label,
+  .input-field textarea:valid + label {
+    transform: translateY(-25px);
+    font-size: 14px; /* Adjust the font size when the label is moved up */
+  }

@@ -41,7 +41,7 @@ function Register() {
 
   return (
     <>
-      <NavbarComponent />
+      {/* <NavbarComponent /> */}
       <div className='container'>
       <h1>Register</h1>
       <form onSubmit={onSubmit}>

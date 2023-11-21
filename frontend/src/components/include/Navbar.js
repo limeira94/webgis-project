@@ -4,9 +4,12 @@ import 'materialize-css';
 import M from 'materialize-css';
 import './Navbar.css'
 import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../features/user';
 
 
 const Navbar = () => {
+
+    const dispatch = useDispatch();
 
     useEffect(()=>{
         var options = {}
@@ -33,7 +36,7 @@ const Navbar = () => {
     var auth_links = 
     <>
         <li><a href="/dashboard">Dashboard</a></li>
-        {/* <li><a href="/register">Register</a></li> */}
+        <li><a href='#!' onClick={() => dispatch(logout())}>Logout</a></li>
     </>
     
 
