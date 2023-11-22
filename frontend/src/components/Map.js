@@ -63,20 +63,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-
-
-
-
-
-
-
-
-
-
-
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
-
-
 
 const Map = () => {
   const [rasters, setRasters] = useState([]);
@@ -92,9 +79,7 @@ const Map = () => {
   useEffect(() => {
     if (mapInstance) {
       L.Control.geocoder().addTo(mapInstance);
-
       L.control.browserPrint({ position: 'topright' }).addTo(mapInstance);
-
     }
   }, [mapInstance]);
   // console.log(rasters)
@@ -118,7 +103,6 @@ const Map = () => {
         console.error('Error fetching Raster data:', error);
       }
     }
-
     getAllGeojsons();
     getAllRasters();
   }, []);
@@ -176,10 +160,11 @@ const Map = () => {
   };
 
 
-  var style = {
-    "color": "#ff7800",
-    "weight": 5,
-    "opacity": 0.65
+  const defaultStyle = {
+    color: "#ff7800",
+    weight: 3,
+    fillOpacity: 0.65,
+    fillColor: "#ff7800"
   };
 
   const fileInputRef = useRef(null);
@@ -355,20 +340,32 @@ const Map = () => {
         ))} */}
         </LayersControl>
 
-        {geojsons.map((geojson, index) => (
-          <GeoJSON
-            key={index}
-            data={{
-              type: 'FeatureCollection',
-              features: [geojson],
-            }}
-            style={style}
-            onEachFeature={(feature, layer) => {
+        {geojsons.map((geojson, index) => {
+          const isVisible = visibleGeoJSONs[geojson.properties.id];
+          return isVisible && (
+            <GeoJSON
+              key={index}
+              ref={(el) => {
+                if (el) {
+                  geojsonLayerRefs.current[geojson.properties.id] = el;
+                }
+              }}
+              data={{
+                type: 'FeatureCollection',
+                features: [geojson],
+              }}
+              style={(feature) => polygonStyles[feature.properties.id] || defaultStyle}
 
-              layer.bindPopup(String(feature.properties.id));
-            }}
-          />
-        ))}
+              onEachFeature={(feature, layer) => {
+                layer.on('click', () => {
+                  setSelectedPolygon(layer);
+                });
+
+                layer.bindPopup(String(feature.properties.id));
+              }}
+            />
+          )
+        })}
         <FullscreenControl position="bottomright" />
         <ZoomControl position="bottomright" />
       </MapContainer>

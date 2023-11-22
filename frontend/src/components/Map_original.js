@@ -24,24 +24,6 @@ import {
   ImageOverlay
 } from 'react-leaflet';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import L from 'leaflet';
 import M from 'materialize-css';
 
@@ -219,8 +201,6 @@ const Map = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
   const geojsonLayerRefs = useRef({});
-
-
 
   // console.log(rasters)
   useEffect(() => {
