@@ -20,26 +20,18 @@ import {
   ZoomControl,
   LayersControl,
   GeoJSON,
-  // WMSTileLayer,
   ImageOverlay
 } from 'react-leaflet';
 
 import {
   parseGeoJSON,
-  // StyleControls,
   ListItemWithStyleControls,
-  // API_URL,
-  // extractCoordsFromPoint,
-  // extractCoordsFromLineOrMultiPoint,
-  // extractCoordsFromPolygonOrMultiLine,
   getCenterOfGeoJSON
 } from './utils/MapUtils';
 
 import {
   handleRaster,
   handleFileChange,
-  // handleFileClick,
-  // handleFileClickRaster,
   handleDeleteClick,
   handleDeleteRasterClick
 } from './utils/eventHandler';
@@ -72,7 +64,6 @@ const Map = () => {
   const [selectedPolygon, setSelectedPolygon] = useState(null);
   const [polygonStyles, setPolygonStyles] = useState({});
   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
-  // const [selectedFile, setSelectedFile] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
   const geojsonLayerRefs = useRef({});
 
@@ -82,7 +73,6 @@ const Map = () => {
       L.control.browserPrint({ position: 'topright' }).addTo(mapInstance);
     }
   }, [mapInstance]);
-  // console.log(rasters)
 
   useEffect(() => {
     const getAllGeojsons = async () => {
@@ -367,7 +357,9 @@ const Map = () => {
           )
         })}
         <FullscreenControl position="bottomright" />
+        
         <ZoomControl position="bottomright" />
+        
       </MapContainer>
     </>
   );
