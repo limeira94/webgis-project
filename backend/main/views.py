@@ -135,10 +135,10 @@ class GeoJSONListView(APIView):
         serializer = GeoJsonFileSerializer(geojson_files, many=True)
         return Response(serializer.data)
     
-
     def delete(self, request):
         GeoJSONFile.objects.all().delete()
         return Response({'message': 'All GeoJSON files deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    
     
 class GeoJSONFileUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
@@ -149,24 +149,23 @@ class GeoJSONFileUploadAPIView(APIView):
 
             if not isinstance(geojson_data.get('features'), list):
                 raise ValueError('Invalid GeoJSON format')
-
-            #TODO:
-            # Aqui ele está apenas pegando a primeira geometria, precisamos 
-            # por ler todas elas
-            firts_geometry = geojson_data['features'][0]['geometry']
-            bounds = get_geojson_bounds(firts_geometry)
             
             save_instance = []
-            
+            bounds = []
             for feature in geojson_data['features']:
                 geometry = GEOSGeometry(json.dumps(feature['geometry']))
                 name = request.data.get('name', 'Unnamed')
                 # TODO:
                 # Here Im providing a default user but later we will need to check authentication
                 user = request.data.get('user', '4')
-                user = User.objects.get(pk=user)
-                geo_instance = GeoJSONFile(name=name,user=user,geojson=geometry)
+                try:
+                    user = User.objects.get(pk=user)
+                except User.DoesNotExist:
+                    user = None
+                geo_instance = GeoJSONFile(name=name, user=user, geojson=geometry)
                 geo_instance.save()
+                
+                bounds.append(geometry.extent)
                 
                 save_instance.append({
                     'id': geo_instance.id,
@@ -174,11 +173,11 @@ class GeoJSONFileUploadAPIView(APIView):
                     'geojson': json.loads(geo_instance.geojson.geojson)
                 })
                     
-                return Response({
-                    "message": "Data saved successfully",
-                    "bounds": bounds,
-                    "savedGeoJsons": save_instance
-                }, status=status.HTTP_201_CREATED)
+            return Response({
+                "message": "Data saved successfully",
+                "bounds": bounds,
+                "savedGeoJsons": save_instance
+            }, status=status.HTTP_201_CREATED)
         
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
