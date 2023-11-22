@@ -62,18 +62,24 @@ class UserUpdateView(APIView):
     
 
 class RegisterView(APIView):
-  def post(self, request):
-    data = request.data
-    serializer = UserSerializer(data=data)
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
 
-    if not serializer.is_valid():
-      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    user = serializer.create(serializer.validated_data)
-    user = UserSerializer(user)
+        if serializer.validated_data['password'] != request.data['password2']:
+            return Response({'error': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response(user.data, status=status.HTTP_201_CREATED)
+        if User.objects.filter(username=request.data['username']).exists():
+            return Response({'error': 'Username is already taken'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(email=request.data['email']).exists():
+            return Response({'error': 'Email is already in use'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = serializer.save()
+
+        return Response(RegisterSerializer(user).data, status=status.HTTP_201_CREATED)
   
 class RetrieveUserView(APIView):
 #   permission_classes = [permissions.IsAuthenticated]

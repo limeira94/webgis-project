@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import GeoJSONFile,RasterFile
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.validators import UniqueValidator
+from django.contrib.auth.password_validation import validate_password
 
 class UserSerializer(serializers.ModelSerializer):
   class Meta:
@@ -11,6 +13,61 @@ class UserSerializer(serializers.ModelSerializer):
     # fields = ('username', 'email',)
     # fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile_picture']
     # read_only_fields = ()
+
+    
+class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+            required=True,
+            validators=[UniqueValidator(queryset=User.objects.all())]
+            )
+
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password', 'password2')
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+
+        return attrs
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data['username'],
+            email=validated_data['email'],
+        )
+
+        user.set_password(validated_data['password'])
+        user.save()
+
+        return user
+    
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ['username', 'email', 'password']
+
+#     def __init__(self, *args, **kwargs):
+#         include_password2 = kwargs.pop('include_password2', False)
+
+#         if include_password2:
+#             self.Meta.fields += ['password2']
+#         print("B"*50)
+#         super().__init__(*args, **kwargs)
+
+#     def validate(self, data):
+#         if "password2" in data.keys():
+#             if data['password'] != data['password2']:
+#                 raise serializers.ValidationError("Passwords do not match")
+#         print("A"*50)
+#         return data
+
+#     def create(self, validated_data):
+#         validated_data.pop('password2', None)
+#         return super().create(validated_data)
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
