@@ -31,6 +31,10 @@
     transform: translateX(-50%);
   }
 
+  .rounded-card{
+    border-radius : 5px;
+  }
+
 
   .back-color {
     /* background: linear-gradient(-45deg, rgb(108, 0, 112), #e73c7e, #23a6d5, #110072); */
@@ -66,10 +70,12 @@
 .input-field {
     position: relative;
     margin: 15px 0;
+    /* color: #110072; */
   }
   
   .input-field input[type="text"],
-  .input-field input[type="password"] {
+  .input-field input[type="password"],
+  .input-field input[type="email"] {
     width: 100%;
     padding: 15px;
     border: none;
@@ -81,9 +87,10 @@
   
   .input-field label {
     position: absolute;
-    top: 0;
-    left: 0;
-    padding: 15px;
+    top: 0px;
+    left: 0px; 
+    padding-top: 15px;
+    padding-left: 15px;
     color: #fff; 
     pointer-events: none;
     transition: 0.2s ease-out;
@@ -97,11 +104,10 @@
     box-shadow: 0 0 5px rgba(167, 81, 194, 0.7);
   }
   
-  /* Move the label up when the input is focused or has content */
   .input-field input:focus + label,
   .input-field input:valid + label,
   .input-field textarea:focus + label,
   .input-field textarea:valid + label {
-    transform: translateY(-25px);
-    font-size: 14px; /* Adjust the font size when the label is moved up */
+    transform: translateY(-3px);
+    font-size: 14px; 
   }

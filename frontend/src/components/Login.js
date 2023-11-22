@@ -49,12 +49,18 @@ const Login = () => {
     const onChange = e => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+    var url = process.env.PUBLIC_URL
 
     return (
     <>
       
-      <div className="section container center overlay room-login">
+      <div className="section container center overlay room-login ">
         <div className="row login-position centered-element back-color"  >
+        <div className='center'>
+              <a href="/" className="brand-logo">
+                <img className="img-logo" src={url + "/logo.png"} alt="Web GIS Logo" height={100} />
+              </a>
+            </div>
           
         
         <div className="center white-text">
@@ -70,18 +76,18 @@ const Login = () => {
             </div>
 
             <div className='row'>
-            <label htmlFor='email'>Username</label>
+            {/* <label htmlFor='email'>Username</label> */}
               <div className='input-field col s12'>
                 <input className='validate' type='text' name='username' id='username' onChange={onChange}/>
-                {/* <label htmlFor='email'>Enter your username</label> */}
+                <label htmlFor='email'>Type your username</label>
               </div>
             </div>
 
             <div className='row'>
-            <label htmlFor='password'>Password</label>
+            {/* <label htmlFor='password'>Password</label> */}
               <div className='input-field col s12'>
                 <input className='validate' type='password' name='password' id='password' onChange={onChange}/>
-                {/* <label htmlFor='password'>Enter your password</label> */}
+                <label htmlFor='password'>Type your password</label>
               </div>
         <label className="label-forgot">
           <a className='pink-text' href='/change-pass'><b>Forgot Password?</b></a>
@@ -94,7 +100,7 @@ const Login = () => {
               </div>
           </form>
           <div className="row">
-            <a href="/" class="col s12 btn btn-large waves-effect home-button">Homepage</a>
+            <a href="/" class="col s12 btn btn-large waves-effect home-button ">Homepage</a>
           </div>
         </div>
       </div>

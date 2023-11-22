@@ -13,7 +13,7 @@ export const register = createAsyncThunk(
 
         try {
             const res = await fetch(
-				`${process.env.REACT_APP_API_URL}/api/users/register/`
+				`${process.env.REACT_APP_API_URL}api/users/register/`
 			,{
                 method: 'POST',
                 headers: {
@@ -45,7 +45,7 @@ export const update = createAsyncThunk(
 	  formData.append('profile_picture', profile_picture);
   
 	  try {
-		const res = await fetch(`${process.env.API_URL}/api/users/update/`, {
+		const res = await fetch(`${process.env.API_URL}api/users/update/`, {
 			method: 'POST',
 			headers: {
 			  Accept: 'application/json',
@@ -77,7 +77,7 @@ const getUser = createAsyncThunk('users/me',
 		// 		Accept: 'application/json',
 		// 	},
 		// });
-		const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/me`,{
+		const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/me`,{
             method:'GET',
             headers: {
                 Accept: 'application/json',
@@ -147,7 +147,7 @@ export const checkAuth = createAsyncThunk(
 				token:Cookies.get('refresh_token'),//access
 			});
 
-			const res = await fetch(`${process.env.REACT_APP_API_URL}/api/main/token/verify/`,{
+			const res = await fetch(`${process.env.REACT_APP_API_URL}api/main/token/verify/`,{
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
@@ -188,7 +188,7 @@ export const deleteUser = createAsyncThunk(
 	'users/deleteUser',
 	async (userId, thunkAPI) => {
 	  try {
-		const res = await fetch(`/api/users/delete/${userId}`, {
+		const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/delete/${userId}`, {
 		  method: 'DELETE',
 		  headers: {
 			Accept: 'application/json',
