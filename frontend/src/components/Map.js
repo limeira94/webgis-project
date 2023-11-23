@@ -67,10 +67,14 @@ const Map = () => {
   const [mapInstance, setMapInstance] = useState(null);
   const geojsonLayerRefs = useRef({});
 
+  // TODO
+  // Add again
+
   useEffect(() => {
     if (mapInstance) {
       L.Control.geocoder().addTo(mapInstance);
-      L.control.browserPrint({ position: 'topright' }).addTo(mapInstance);
+      L.control.browserPrint({position:"topright"}).addTo(mapInstance);
+      // {left: 10, top: 40}
     }
   }, [mapInstance]);
 
@@ -196,15 +200,24 @@ const Map = () => {
           ))}
         </List>
       </Drawer>
-      <div className='top-bar'>
+      {/* <div className='top-bar'> */}
+      {/* <div className='btn-floating btn-large blue btn-menu right'>
         <IconButton
-          edge="start"
+          // edge="start"
           color="inherit"
           aria-label="menu"
           onClick={toggleDrawer(true)}
         >
           <MenuIcon />
         </IconButton>
+      </div> */}
+
+      <div className='btn-menu'>
+        <a 
+          className="btn-floating btn-large waves-effect waves-light blue" 
+          onClick={toggleDrawer(true)}>
+          <i className="material-icons">menu</i>
+        </a>
       </div>
      
       <div className="fixed-action-btn file-upload-container custom-file-input">
@@ -251,7 +264,7 @@ const Map = () => {
         </ul> 
       </div>
       <div className='delete-button'>
-        <a href="/" className="btn-floating btn-large waves-effect waves-light black " onClick={handleDeleteClick}>
+        <a href="/" className="btn-floating btn-large waves-effect waves-light black ">
           <i className="material-icons">home</i>
         </a>
       </div>
@@ -357,7 +370,6 @@ const Map = () => {
           )
         })}
         <FullscreenControl position="bottomright" />
-        
         <ZoomControl position="bottomright" />
         
       </MapContainer>

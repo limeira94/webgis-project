@@ -152,6 +152,7 @@ class GeoJSONListView(APIView):
         return Response(serializer.data)
     
     def delete(self, request):
+        print("DELETING")
         GeoJSONFile.objects.all().delete()
         return Response({'message': 'All GeoJSON files deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
     

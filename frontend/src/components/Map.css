@@ -7,11 +7,26 @@
 .btn-upload {
   position: absolute;
   top: 20px;
-  right: 20px;
+  right: 90px;
   z-index: 1000;
   border: none;
   background-color: olive;
 }
+
+.btn-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+
+/* .top-bar {
+  height: 40px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+} */
+
 
 /* input[type=text] {
   position: absolute;
@@ -43,7 +58,7 @@
 .custom-file-input {
   position: absolute;
   top: 20px;
-  right: 20px;
+  right: 90px;
   z-index: 1000;
 }
 
@@ -79,7 +94,7 @@
 
 .leaflet-control-geocoder {
   position: absolute;
-  top: 140px;
+  top: 160px;
   right: 20px;
   z-index: 1000;
   cursor: pointer;
@@ -123,28 +138,22 @@
   width: 250px;
 }
 
-.top-bar {
-  height: 40px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-
 .leaflet-control-browser-print {
-  position: absolute;
-  top: 60px;
+  /* position: absolute; */
+  position: relative;
+  top: 160px;
   right: 20px;
-  display: none;
+  /* display: none; */
 }
 
-.leaflet.browser.print {
+/* .leaflet.browser.print {
   position: absolute;
   height: calc(100vh - 40px);
   top: 100px;
   right: 20px;
   z-index: 1000;
   cursor: pointer;
-}
+} */
 
 .dropdown-button {
   background-color: transparent;
