@@ -14,7 +14,26 @@ class UserSerializer(serializers.ModelSerializer):
     # fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile_picture']
     # read_only_fields = ()
 
+class resetpasswordSerializer(serializers.ModelSerializer):
     
+    username=serializers.CharField(max_length=100)
+    password=serializers.CharField(max_length=100)
+
+    class Meta:
+        model=User
+        fields='__all__'
+
+    def save(self):
+        username=self.validated_data['username']
+        password=self.validated_data['password']
+        if User.objects.filter(username=username).exists():
+            user=User.objects.get(username=username)
+            user.set_password(password)
+            user.save()
+            return user
+        else:
+            raise serializers.ValidationError({'error':'please enter valid crendentials'})
+
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
             required=True,

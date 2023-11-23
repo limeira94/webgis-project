@@ -26,6 +26,16 @@ from .serializers import *#UserRegister, GeoJsonFileSerializer,RasterFileSeriali
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render
 
+class resetpassword(APIView):
+    def post(self,request):
+        serializer=resetpasswordSerializer(data=request.data)
+        alldatas={}
+        if serializer.is_valid(raise_exception=True):
+            mname=serializer.save()
+            alldatas["data"]="successfully registered"
+            print(alldatas)
+            return Response(alldatas)
+        return Response("failed retry after some time")
 
 class UserDeleteView(generics.DestroyAPIView):
     queryset = User.objects.all()
