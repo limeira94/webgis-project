@@ -92,7 +92,13 @@ const Map = () => {
           );
         },
       });
-      L.control.measure({position:"topright"}).addTo(mapInstance);
+      L.control.measure({
+        position:"topright", 
+        primaryLengthUnit: 'meters', 
+        secondaryLengthUnit: undefined,
+        primaryAreaUnit: 'sqmeters', 
+        secondaryAreaUnit: undefined
+       }).addTo(mapInstance);
       // {left: 10, top: 40}
     }
   }, [mapInstance]);
