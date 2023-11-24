@@ -225,17 +225,6 @@ const Map = () => {
           ))}
         </List>
       </Drawer>
-      {/* <div className='top-bar'> */}
-      {/* <div className='btn-floating btn-large blue btn-menu right'>
-        <IconButton
-          // edge="start"
-          color="inherit"
-          aria-label="menu"
-          onClick={toggleDrawer(true)}
-        >
-          <MenuIcon />
-        </IconButton>
-      </div> */}
 
       <div className='btn-menu'>
         <a 
@@ -385,18 +374,20 @@ const Map = () => {
               style={(feature) => polygonStyles[feature.properties.id] || defaultStyle}
 
               onEachFeature={(feature, layer) => {
-                layer.on('click', () => {
-                  setSelectedPolygon(layer);
-                });
+                if (feature.geometry.type !== 'Point') {  
+                  layer.on('click', () => {
+                    setSelectedPolygon(layer);
+                  });
 
                 layer.bindPopup(String(feature.properties.id));
+                  
+                }
               }}
             />
           )
         })}
         <FullscreenControl position="bottomright" />
         <ZoomControl position="bottomright" />
-        
       </MapContainer>
     </>
   );

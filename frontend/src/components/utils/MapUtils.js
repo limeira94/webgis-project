@@ -69,47 +69,65 @@ export const getCenterOfGeoJSON = (geojson) => {
 };
 
 export const StyleControls = ({ geojson, updateStyle, polygonStyles }) => {
+  const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
+  const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%', paddingLeft: '40px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <span style={{ textAlign: 'left', flexGrow: 1 }}>Fill Color</span>
-        <input
-          type="color"
-          value={polygonStyles[geojson.properties.id]?.fillColor || "#ff0000"}
-          onChange={e => updateStyle(geojson.properties.id, "fillColor", e.target.value)}
-          style={{ width: '30px', height: '30px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-        <span style={{ textAlign: 'left', flexGrow: 1 }}>Line Color</span>
-        <input
-          type="color"
-          value={polygonStyles[geojson.properties.id]?.color || "#ff0000"}
-          onChange={e => updateStyle(geojson.properties.id, "color", e.target.value)}
-          style={{ width: '30px', height: '30px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ textAlign: 'left', flexGrow: 1, marginRight: '15px' }}>Fill Opacity</span>
-        <input
-          type="range"
-          min="0" max="1" step="0.1"
-          value={polygonStyles[geojson.properties.id]?.fillOpacity || 0.65}
-          onChange={e => updateStyle(geojson.properties.id, "fillOpacity", e.target.value)}
-          style={{ width: '80px', height: '30px'}}
-        />
-      </div>
-      
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ textAlign: 'left', flexGrow: 1 }}>Line Size</span>
-        <input
-          type="range"
-          min="0" max="10" step="1"
-          value={polygonStyles[geojson.properties.id]?.weight || 3}
-          onChange={e => updateStyle(geojson.properties.id, "weight", e.target.value)}
-          style={{ width: '80px', height: '30px'}}
-        />
-      </div>
+      {!isPoint && !isLine && (
+        <>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <span style={{ textAlign: 'left', flexGrow: 1 }}>Fill Color</span>
+            <input
+              type="color"
+              value={polygonStyles[geojson.properties.id]?.fillColor || "#ff0000"}
+              onChange={e => updateStyle(geojson.properties.id, "fillColor", e.target.value)}
+              style={{ width: '30px', height: '30px', border: '1px solid #ddd', borderRadius: '4px' }}
+            />
+          </div>
+        </>
+      )}
+      {!isPoint && (
+        <>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <span style={{ textAlign: 'left', flexGrow: 1 }}>Line Color</span>
+            <input
+              type="color"
+              value={polygonStyles[geojson.properties.id]?.color || "#ff0000"}
+              onChange={e => updateStyle(geojson.properties.id, "color", e.target.value)}
+              style={{ width: '30px', height: '30px', border: '1px solid #ddd', borderRadius: '4px' }}
+            />
+          </div>
+        </>
+      )}
+      {!isPoint && !isLine &&(
+        <>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ textAlign: 'left', flexGrow: 1, marginRight: '15px' }}>Fill Opacity</span>
+            <input
+              type="range"
+              min="0" max="1" step="0.1"
+              value={polygonStyles[geojson.properties.id]?.fillOpacity || 0.65}
+              onChange={e => updateStyle(geojson.properties.id, "fillOpacity", e.target.value)}
+              style={{ width: '80px', height: '30px'}}
+            />
+          </div>
+        </>
+      )}
+      {!isPoint && (
+        <>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ textAlign: 'left', flexGrow: 1 }}>Line Size</span>
+            <input
+              type="range"
+              min="0" max="10" step="1"
+              value={polygonStyles[geojson.properties.id]?.weight || 3}
+              onChange={e => updateStyle(geojson.properties.id, "weight", e.target.value)}
+              style={{ width: '80px', height: '30px'}}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -135,7 +153,7 @@ export const ListItemWithStyleControls = (
   const handleToggleClick = () => {
     setShowStyleControls(!showStyleControls);
   };
-
+  
   return (
     <ListItem key={geojson.properties.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
