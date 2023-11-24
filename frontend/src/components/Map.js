@@ -46,6 +46,10 @@ import { FullscreenControl } from 'react-leaflet-fullscreen';
 
 import 'leaflet.browser.print/dist/leaflet.browser.print.min.js';
 
+
+import 'leaflet-measure/dist/leaflet-measure.css';
+import 'leaflet-measure/dist/leaflet-measure.js';
+
 delete L.Icon.Default.prototype._getIconUrl;
 
 
@@ -74,6 +78,21 @@ const Map = () => {
     if (mapInstance) {
       L.Control.geocoder().addTo(mapInstance);
       L.control.browserPrint({position:"topright"}).addTo(mapInstance);
+      L.Control.Measure.include({
+        // set icon on the capture marker
+        _setCaptureMarkerIcon: function () {
+          // disable autopan
+          this._captureMarker.options.autoPanOnFocus = false;
+      
+          // default function
+          this._captureMarker.setIcon(
+            L.divIcon({
+              iconSize: this._map.getSize().multiplyBy(2)
+            })
+          );
+        },
+      });
+      L.control.measure({position:"topright"}).addTo(mapInstance);
       // {left: 10, top: 40}
     }
   }, [mapInstance]);
