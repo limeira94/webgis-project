@@ -175,6 +175,8 @@ class GeoJSONFileUploadAPIView(APIView):
                 # TODO:
                 # Here Im providing a default user but later we will need to check authentication
                 user = request.data.get('user', '4')
+                # TODO:
+                # Verificar se o usuário existe, coloquei esse except só para não dar erro
                 try:
                     user = User.objects.get(pk=user)
                 except User.DoesNotExist:
