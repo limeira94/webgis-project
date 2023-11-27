@@ -23,19 +23,29 @@ function Dashboard() {
     
     const handleDeleteUser = () => {
       if (confirmDelete) {
-        M.toast({ html: 'User deleted successfully' });
+        
         dispatch(deleteUser(user.id))
           .unwrap()
           .then(() => {
             console.log('User deleted successfully');
+            M.toast({ 
+              html: 'User deleted successfully' ,
+              classes: 'green rounded',
+              displayLength:5000});
+            dispatch(logout());
             
             // Redirect to the homepage
             // return <Navigate to='/' />;
           })
           .catch((error) => {
-            console.log('Error deleting user:', error);
+            console.log('Error deleting user:', error.detail);
+            M.toast({ 
+              html:  error.detail ,
+              classes: 'red rounded',
+              displayLength:5000
+            });
           });
-          dispatch(logout());
+          
       } else {
         setConfirmDelete(true);
       }
