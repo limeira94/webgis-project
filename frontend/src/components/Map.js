@@ -6,13 +6,6 @@ import 'leaflet/dist/leaflet.css';
 
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-// import ListItem from '@mui/material/ListItem';
-// import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-// import Checkbox from '@mui/material/Checkbox';
-// import PalleteIcon from '@mui/icons-material/Palette';
-// import BorderColorIcon from '@mui/icons-material/BorderColor';
 
 import {
   MapContainer,
@@ -40,12 +33,12 @@ import L from 'leaflet';
 import M from 'materialize-css';
 
 import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
+import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
 
 import "react-leaflet-fullscreen/styles.css";
 import { FullscreenControl } from 'react-leaflet-fullscreen';
 
 import 'leaflet.browser.print/dist/leaflet.browser.print.min.js';
-
 
 import 'leaflet-measure/dist/leaflet-measure.css';
 import 'leaflet-measure/dist/leaflet-measure.js';

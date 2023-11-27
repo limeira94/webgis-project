@@ -93,11 +93,48 @@
 
 .leaflet-control-geocoder {
   position: absolute;
+  background-color: #01579b !important;
+  color: yellow !important;
   top: 160px;
   right: 20px;
   z-index: 1000;
+  border-radius: 50%;
   cursor: pointer;
 }
+
+.leaflet-control-geocoder-icon {
+  background-image: none !important; /* Remove o ícone padrão */
+  background-color: #01579b !important; /* Cor de fundo */
+  color: white !important; /* Cor da fonte */
+  border-radius: 50% !important; /* Torna o botão circular */
+  text-indent: -9999px !important; /* Esconde qualquer texto padrão */
+  position: relative !important; /* Necessário para o pseudo-elemento */
+
+  /* Ajusta o tamanho do botão para ser um círculo */
+  width: 30px !important; /* Largura do botão */
+  height: 30px !important; /* Altura do botão */
+  line-height: 30px !important; /* Centraliza verticalmente o ícone */
+}
+
+.leaflet-control-geocoder-icon::before {
+  content: 'search' !important; /* Texto do ícone do Materialize */
+  font-family: 'Material Icons' !important; /* Fonte do Materialize */
+  text-indent: 0 !important; /* Mostra o texto do ícone */
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important; /* Centraliza o ícone */
+  font-size: 20px !important; /* Tamanho do ícone */
+}
+
+.leaflet-control-geocoder-form input {
+  color: white !important; /* Muda a cor do texto para branco */
+}
+
+.leaflet-control-geocoder-address-context {
+  color: white !important; /* Muda a cor do texto para branco */
+}
+
 
 .custom-file-input span {
   margin-left: 10px;
@@ -145,6 +182,22 @@
   /* display: none; */
 }
 
+.leaflet-control-browser-print a {
+  background: none !important;
+  background-color: #01579b !important;
+  color: white !important;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.leaflet-control-browser-print a::before {
+  content: 'print'; /* Nome do ícone de impressão do Material Icons */
+  font-family: 'Material Icons'; /* Define a fonte para Material Icons */
+  display: block; /* Faz com que o ícone ocupe toda a largura do botão */
+  font-size: 16px; /* Ajusta o tamanho do ícone */
+  line-height: inherit; /* Alinha verticalmente o ícone */
+}
+
 .leaflet-control-measure {
   position: absolute;
   top: 160px;
@@ -152,6 +205,36 @@
   z-index: 1000;
   cursor: pointer;
 }
+
+.leaflet-control-measure a {
+  /* Estilos gerais do botão */
+  background: none !important;
+  background-color: #01579b !important;
+  position: relative; /* Necessário para posicionar corretamente o pseudo-elemento */
+  /* outros estilos necessários para o botão */
+}
+
+.leaflet-control-measure a::before {
+  content: 'straighten'; /* Nome do ícone do Material Icons */
+  font-family: 'Material Icons';
+  font-size: 16px; /* Ajuste o tamanho conforme necessário */
+  position: absolute; /* Posiciona o ícone corretamente dentro do botão */
+  color: white;
+  top: 50%;
+  left: 0%;
+  transform: translate(-50%, -50%); /* Centraliza o ícone */
+  /* outros estilos necessários para o ícone */
+}
+
+.leaflet-control-measure .leaflet-control-measure-interaction {
+  padding: 10px 12px;
+  border-radius: 3px;
+  background-color: #01579b;
+  color: white;
+  font-size: 12px;
+
+}
+
 
 /* .leaflet.browser.print {
   position: absolute;
