@@ -90,7 +90,7 @@ const Login = () => {
                 <label htmlFor='password'>Type your password</label>
               </div>
         <label className="label-forgot">
-          <a className='pink-text' href='/change-pass'><b>Forgot Password?</b></a>
+          <a className='pink-text' href='/reset'><b>Forgot Password?</b></a>
         </label>
         <p><a className='white-text left' href='/register'>Don't have an account? <b>Register</b> now!</a></p>
             </div>

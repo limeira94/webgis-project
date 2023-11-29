@@ -2,6 +2,7 @@ from django.urls import path
 from django.shortcuts import render
 from django.urls import path,include
 from django.views.generic import TemplateView
+from django.contrib.auth import views as auth_views
 from rest_framework_simplejwt.views import TokenRefreshView,TokenVerifyView
 from rest_framework import routers
 from . import views
@@ -32,6 +33,12 @@ urlpatterns = [
     path('api/users/me/', views.RetrieveUserView.as_view()),
     path('api/users/update/', views.UserUpdateView.as_view()),
     path('api/users/delete/<int:pk>/', views.UserDeleteView.as_view(), name='user-delete'),
+    path('api/users/reset-password/',views.ResetPasswordView.as_view(),name='reset-password'),
+
+    path('api/users/password-reset-confirm/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView.as_view(
+             template_name='password_reset_confirm.html'),
+            name='password_reset_confirm'),
 
 
     # path("api/main/rasters/",raster_detail,name='rasters'),

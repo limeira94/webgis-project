@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'main',
     'corsheaders',
+    'crispy_forms',
+    "crispy_bootstrap4",
 ]
 
 MIDDLEWARE = [
@@ -200,3 +202,14 @@ GEOSERVER = {
 # GEOSERVER_WORKSPACE = config('GEOSERVER_WORKSPACE_WG', default='')
 # GEOSERVER_USERNAME = config('GEOSERVER_USERNAME_WG', default='admin')
 # GEOSERVER_PASSWORD = config('GEOSERVER_PASSWORD_WG', default='geoserver')
+
+
+
+# EMAIL
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'#'smtp-mail.outlook.com'
+EMAIL_HOST_USER = os.environ.get("EMAIL_USER")#secrets['email_gmail']
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS_WEBGIS")#secrets['pass_gmail']
+EMAIL_PORT = 587
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

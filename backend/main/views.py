@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.http import Http404
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.mail import EmailMessage
 
 from rest_framework import viewsets
 from rest_framework import permissions, status,generics
@@ -36,6 +37,46 @@ class resetpassword(APIView):
             print(alldatas)
             return Response(alldatas)
         return Response("failed retry after some time")
+    
+
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.shortcuts import render,redirect,get_object_or_404
+from django.contrib import messages 
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
+class ResetPasswordView(APIView):
+    queryset = User.objects.all()
+
+    def post(self,request):
+        to_email = request.data.get('email')
+        if not to_email:
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.get(email=to_email)
+        except User.DoesNotExist:
+            return Response({'error': 'User with this email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        current_site = get_current_site(request)
+
+        mail_subject = 'Change your password'
+        message = render_to_string('changepassword.html', {
+                'user': user,
+                'domain': current_site.domain,#'127.0.0.1:8000',#
+                'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                'token':PasswordResetTokenGenerator().make_token(user),
+            })
+        print("F"*50)
+        
+        email = EmailMessage(
+                        mail_subject, message, to=[to_email]
+            )
+        email.send()
+        print("G"*50)
+        messages.info(request, 'Please confirm your email address to complete the registration')
+        print("H"*50)
+        return redirect("/")
 
 class UserDeleteView(generics.DestroyAPIView):
     queryset = User.objects.all()
