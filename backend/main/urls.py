@@ -39,6 +39,7 @@ urlpatterns = [
          auth_views.PasswordResetConfirmView.as_view(
              template_name='password_reset_confirm.html'),
             name='password_reset_confirm'),
+            
     path('api/users/password-reset-complete/',
          auth_views.PasswordResetCompleteView.as_view(
              template_name='password_reset_complete.html'),
@@ -48,6 +49,7 @@ urlpatterns = [
     # path("api/main/rasters/",raster_detail,name='rasters'),
     path('', TemplateView.as_view(template_name='index.html')), 
     path('map', TemplateView.as_view(template_name='index.html')),
+    path('login/', TemplateView.as_view(template_name='index.html'), name='login'),
     # path('api/main/register/', views.UserRegistrarionView.as_view(), name='user-register'),
     # path('api/main/login/', views.LoginAPIView.as_view(), name='user-login'),
     # path('login/', views.DjangoLoginView.as_view(), name='django-login'),

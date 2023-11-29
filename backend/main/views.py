@@ -67,15 +67,12 @@ class ResetPasswordView(APIView):
                 'uid':urlsafe_base64_encode(force_bytes(user.pk)),
                 'token':PasswordResetTokenGenerator().make_token(user),
             })
-        print("F"*50)
         
         email = EmailMessage(
                         mail_subject, message, to=[to_email]
             )
         email.send()
-        print("G"*50)
         messages.info(request, 'Please confirm your email address to complete the registration')
-        print("H"*50)
         return redirect("/")
 
 class UserDeleteView(generics.DestroyAPIView):
