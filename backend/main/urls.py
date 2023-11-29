@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import TokenRefreshView,TokenVerifyView
 from rest_framework import routers
 from . import views
 
+app_name = "main"
 #TODO:
 # IF NEEDED:
 # change all routes to be used inside the router
@@ -28,7 +29,6 @@ urlpatterns = [
     path('api/main/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/main/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
-
     path('api/users/register/', views.RegisterView.as_view()),
     path('api/users/me/', views.RetrieveUserView.as_view()),
     path('api/users/update/', views.UserUpdateView.as_view()),
@@ -39,6 +39,10 @@ urlpatterns = [
          auth_views.PasswordResetConfirmView.as_view(
              template_name='password_reset_confirm.html'),
             name='password_reset_confirm'),
+    path('api/users/password-reset-complete/',
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name='password_reset_complete.html'),
+             name='password_reset_complete'),
 
 
     # path("api/main/rasters/",raster_detail,name='rasters'),
