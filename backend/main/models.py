@@ -220,55 +220,55 @@ class Project(models.Model):
 # ### I believe that to do this, we will need to create another model just to handle the files
 # ### Something similar to the link bellow
 
-# class Vector(models.Model):
-#     filename = models.CharField(max_length=100,null=True,blank=True)
-#     format_name = models.CharField(max_length=10,null=True,blank=True)
-#     file = models.FileField(upload_to="vectors/")
-#     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
-#     dbname = models.CharField(max_length=100,unique=True,null=True,blank=True)
+class Vector(models.Model):
+    filename = models.CharField(max_length=100,null=True,blank=True)
+    format_name = models.CharField(max_length=10,null=True,blank=True)
+    file = models.FileField(upload_to="vectors/")
+    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    dbname = models.CharField(max_length=100,unique=True,null=True,blank=True)
 
-#     def save(self, *args, **kwargs):
-#         if not self.filename:
-#             self.filename = self.generate_unique_filename()
+    def save(self, *args, **kwargs):
+        if not self.filename:
+            self.filename = self.generate_unique_filename()
 
-#         super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
-#         self.import_to_postgis()
+        self.import_to_postgis()
 
-#     def generate_unique_filename(self):
-#         base_filename = os.path.splitext(self.file.name)[0]
-#         counter = 1
-#         unique_filename = base_filename
+    def generate_unique_filename(self):
+        base_filename = os.path.splitext(self.file.name)[0]
+        counter = 1
+        unique_filename = base_filename
 
-#         while Vector.objects.filter(filename=unique_filename, user=self.user).exists():
-#             unique_filename = f"{base_filename}({counter})"
-#             counter += 1
+        while Vector.objects.filter(filename=unique_filename, user=self.user).exists():
+            unique_filename = f"{base_filename}({counter})"
+            counter += 1
 
-#         return unique_filename
+        return unique_filename
     
-#     def run_command(self, command):
-#         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-#         return result
+    def run_command(self, command):
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return result
 
-#     def import_to_postgis(self):
-#         ogr2ogr_command = self.generate_ogr2ogr_command()
-#         result = self.run_command(ogr2ogr_command)
+    def import_to_postgis(self):
+        ogr2ogr_command = self.generate_ogr2ogr_command()
+        result = self.run_command(ogr2ogr_command)
 
-#         if result.returncode != 0:
-#             print(f"Error executing ogr2ogr command: {result.stderr}")
+        if result.returncode != 0:
+            print(f"Error executing ogr2ogr command: {result.stderr}")
 
-#     def generate_ogr2ogr_command(self):
-#         db_settings = settings.DATABASES['default']
-#         db_name = db_settings['NAME']
-#         db_user = db_settings['USER']
-#         db_password = db_settings['PASSWORD']
-#         db_host = db_settings['HOST']
-#         db_port = db_settings['PORT']
+    def generate_ogr2ogr_command(self):
+        db_settings = settings.DATABASES['default']
+        db_name = db_settings['NAME']
+        db_user = db_settings['USER']
+        db_password = db_settings['PASSWORD']
+        db_host = db_settings['HOST']
+        db_port = db_settings['PORT']
 
-#         #TODO:
-#         #### NEED TO DOUBLE CHECK THIS!!!!! 
-#         ogr2ogr_command = f"ogr2ogr.py -f PostgreSQL PG:'dbname={db_name} user={db_user} password={db_password} host={db_host} port={db_port}' {self.file.path}"
-#         return ogr2ogr_command
+        #TODO:
+        #### NEED TO DOUBLE CHECK THIS!!!!! 
+        ogr2ogr_command = f"ogr2ogr.py -f PostgreSQL PG:'dbname={db_name} user={db_user} password={db_password} host={db_host} port={db_port}' {self.file.path}"
+        return ogr2ogr_command
         
 
 
