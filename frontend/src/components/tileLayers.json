@@ -1,12 +1,14 @@
 [
-    {
-      "key": 1,
-      "name": "OpenStreetMap",
-      "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    },
-    {
-      "key": 2,
-      "name": "World Imagery ArcGIS",
-      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-    }
-  ]
+  {
+    "key": 1,
+    "name": "OpenStreetMap",
+    "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "thumbnail": "https://a.tile.openstreetmap.org/0/0/0.png"
+  },
+  {
+    "key": 2,
+    "name": "World Imagery",
+    "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    "thumbnail": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+  }
+]
