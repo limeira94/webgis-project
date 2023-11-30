@@ -219,21 +219,33 @@ class Project(models.Model):
 # ### Handle multiple files from "shapefile" format
 # ### I believe that to do this, we will need to create another model just to handle the files
 # ### Something similar to the link bellow
+def upload_to(instance, filename):
+    return 'vector/%s/%s' % (instance.user.username, filename)
 
 class Vector(models.Model):
     filename = models.CharField(max_length=100,null=True,blank=True)
     format_name = models.CharField(max_length=10,null=True,blank=True)
-    file = models.FileField(upload_to="vectors/")
-    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    file = models.FileField(upload_to=upload_to)#"vectors/")
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     dbname = models.CharField(max_length=100,unique=True,null=True,blank=True)
+
+    def __str__(self):
+        return f"{self.filename} -> USER: {self.user.username}"
 
     def save(self, *args, **kwargs):
         if not self.filename:
             self.filename = self.generate_unique_filename()
 
+        name = os.path.splitext(os.path.basename(self.filename))[0]
+        self.dbname = f'{self.user.username}-{name}'.lower().replace("-","_").replace(")","").replace("(","_")
+        self.format_name = os.path.splitext(self.file.name)[-1]
+        
         super().save(*args, **kwargs)
-
         self.import_to_postgis()
+
+    def get_file_name(self):
+        return os.path.splitext(self.file.name)[0]
+
 
     def generate_unique_filename(self):
         base_filename = os.path.splitext(self.file.name)[0]
@@ -267,8 +279,10 @@ class Vector(models.Model):
 
         #TODO:
         #### NEED TO DOUBLE CHECK THIS!!!!! 
-        ogr2ogr_command = f"ogr2ogr.py -f PostgreSQL PG:'dbname={db_name} user={db_user} password={db_password} host={db_host} port={db_port}' {self.file.path}"
+        ogr2ogr_command = f"ogr2ogr -f PostgreSQL PG:'dbname={db_name} user={db_user} password={db_password} host={db_host} port={db_port}' {self.file.path} -nln {self.dbname}"
+        print(ogr2ogr_command)
         return ogr2ogr_command
+
         
 
 

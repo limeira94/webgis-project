@@ -1,9 +1,17 @@
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from django.http import Http404
+from django.http import Http404,HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.mail import EmailMessage
+
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.shortcuts import render,redirect,get_object_or_404
+from django.contrib import messages 
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 from rest_framework import viewsets
 from rest_framework import permissions, status,generics
@@ -19,7 +27,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 
 import json
 
-from .models import GeoJSONFile,RasterFile
+from .models import GeoJSONFile,RasterFile,Vector,Project
 from .utils import get_geojson_bounds
 from .serializers import *#UserRegister, GeoJsonFileSerializer,RasterFileSerializer,CustomTokenObtainPairSerializer
 
@@ -27,25 +35,64 @@ from .serializers import *#UserRegister, GeoJsonFileSerializer,RasterFileSeriali
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render
 
-class resetpassword(APIView):
-    def post(self,request):
-        serializer=resetpasswordSerializer(data=request.data)
-        alldatas={}
-        if serializer.is_valid(raise_exception=True):
-            mname=serializer.save()
-            alldatas["data"]="successfully registered"
-            print(alldatas)
-            return Response(alldatas)
-        return Response("failed retry after some time")
-    
+from django.db import connection
 
-from django.template.loader import render_to_string
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes
-from django.shortcuts import render,redirect,get_object_or_404
-from django.contrib import messages 
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
+class VectorList(APIView):
+    queryset = Vector.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request):
+        vectors = Vector.objects.filter(user=request.user)
+        vectors = VectorSerializer(vectors, many=True)
+        return Response(vectors.data,status=status.HTTP_200_OK)
+
+class VectorDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Vector.objects.all()
+    serializer_class = VectorSerializer
+
+class ExportGeoJSON(APIView):
+    def get(self, request, *args, **kwargs):
+        vectors = Vector.objects.filter(user=request.user)
+
+        geojson_data = self.serialize_as_geojson(vectors)
+        vectors = VectorSerializer(geojson_data, many=True)
+        return Response(geojson_data,status=status.HTTP_200_OK)
+        # response = HttpResponse(geojson_data, content_type='application/json')
+        # response['Content-Disposition'] = f'attachment; filename="{self.filename.replace(self.format,".geojson")}"'
+        # return response
+    
+    def get_command(self,table):
+        print(table)
+        return f'''
+        SELECT json_build_object(
+            'type', 'FeatureCollection',
+            'features', json_agg(ST_AsGeoJSON(t.*)::json)
+            )
+        FROM "{table.lower().replace("-","_")}" as t;
+        '''
+    
+    def run_command(self, command):
+        with connection.cursor() as cursor:
+            cursor.execute(command)
+            result = cursor.fetchone()[0]
+        return result
+
+    def serialize_as_geojson(self, vectors,many=True):
+        if many:
+            features = []
+            for vector in vectors:
+                table = vector.dbname
+
+                try:
+                    data = self.run_command(self.get_command(table))
+                except ProgrammingError:
+                    pass
+                else:
+                    features.append(data)
+            return features
+        else:
+            return self.run_command(self.get_command(vectors))
+
 
 class ResetPasswordView(APIView):
     queryset = User.objects.all()
@@ -149,11 +196,6 @@ class DjangoLoginView(LoginView):
 
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
-
-
-class HomePageView(APIView):
-    def get(self, request):
-        return Response({"message": "Hello, world!"}, status=status.HTTP_200_OK)
     
 
 class RasterViewSet(viewsets.ModelViewSet):

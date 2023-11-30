@@ -1,9 +1,14 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import GeoJSONFile,RasterFile
+from .models import GeoJSONFile,RasterFile,Vector,Project
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
+
+class VectorSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Vector
+    fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
   class Meta:
