@@ -25,6 +25,11 @@ urlpatterns = [
     path('api/main/register/', views.UserRegistrarionView.as_view(), name='user-register'),
     path('api/main/login/', views.LoginAPIView.as_view(), name='user-login'),
 
+    path('api/main/vector/', views.VectorList.as_view(), name='get_vector'),
+    path('api/main/vector/geojson', views.ExportGeoJSON.as_view(), name='get_vector_geojson'),
+    
+    # path("api/main/rasters/",raster_detail,name='rasters'),
+
     path('api/main/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/main/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/main/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
@@ -45,16 +50,12 @@ urlpatterns = [
              template_name='password_reset_complete.html'),
              name='password_reset_complete'),
 
-
-    # path("api/main/rasters/",raster_detail,name='rasters'),
     path('', TemplateView.as_view(template_name='index.html')), 
     path('map', TemplateView.as_view(template_name='index.html')),
     path('login/', TemplateView.as_view(template_name='index.html'), name='login'),
-    # path('api/main/register/', views.UserRegistrarionView.as_view(), name='user-register'),
-    # path('api/main/login/', views.LoginAPIView.as_view(), name='user-login'),
-    # path('login/', views.DjangoLoginView.as_view(), name='django-login'),
-    # path('register/', views.DjangoRegisterView.as_view(), name='django-register'),
-    # path('logout/', views.DjangoLogoutView.as_view(), name='django-logout'),
+    path('register/', TemplateView.as_view(template_name='index.html'), name='register'),
+    path('dashboard/', TemplateView.as_view(template_name='index.html'), name='dashboard'),
+    path('reset/', TemplateView.as_view(template_name='index.html'), name='reset'),
 ]
 
         
