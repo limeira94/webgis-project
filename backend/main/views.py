@@ -12,6 +12,7 @@ from django.utils.encoding import force_bytes
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import messages 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.db.utils import ProgrammingError
 
 from rest_framework import viewsets
 from rest_framework import permissions, status,generics
@@ -82,17 +83,16 @@ class ExportGeoJSON(APIView):
             features = []
             for vector in vectors:
                 table = vector.dbname
-
-                try:
-                    data = self.run_command(self.get_command(table))
-                except ProgrammingError:
-                    pass
-                else:
-                    features.append(data)
+                data = self.run_command(self.get_command(table))
+                # try:
+                #     data = self.run_command(self.get_command(table))
+                # except ProgrammingError:
+                #     pass
+                # else:
+                features.append(data)
             return features
         else:
             return self.run_command(self.get_command(vectors))
-
 
 class ResetPasswordView(APIView):
     queryset = User.objects.all()

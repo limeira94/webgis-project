@@ -200,19 +200,6 @@ class RasterFile(models.Model):
 #     raster = models.ForeignKey(RasterFile,on_delete=models.CASCADE)
 
 
-
-class Project(models.Model):
-    name = models.CharField(max_length=100,unique=True)
-    thumbnail = models.ImageField(null=True,blank=True)
-    vector = models.ManyToManyField(GeoJSONFile,blank=True)
-    raster = models.ManyToManyField(RasterFile ,blank=True)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
-    updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
-
-
-
-
 # ############## THIS IS JUST AN IDEA
 
 # #################TODO:
@@ -237,7 +224,10 @@ class Vector(models.Model):
             self.filename = self.generate_unique_filename()
 
         name = os.path.splitext(os.path.basename(self.filename))[0]
-        self.dbname = f'{self.user.username}-{name}'.lower().replace("-","_").replace(")","").replace("(","_")
+        dbname = f'{self.user.username}-{name}'
+        dbname = dbname.lower().replace("-","_").replace(")","").replace("(","_").replace(" ","")
+
+        self.dbname = dbname
         self.format_name = os.path.splitext(self.file.name)[-1]
         
         super().save(*args, **kwargs)
@@ -263,11 +253,18 @@ class Vector(models.Model):
         return result
 
     def import_to_postgis(self):
+        #TODO:
+        # There is a problem when there is an error with the Postgres command
+        # If the error is with the ogr2ogr command I could raise the exception
+        # but when the error is inside postgres, I got no error and the code runs ok
+        # to be able to test, you can use the file:
+        # backend/tests/data/areateste_4yjAKqv.geojson
         ogr2ogr_command = self.generate_ogr2ogr_command()
         result = self.run_command(ogr2ogr_command)
 
         if result.returncode != 0:
-            print(f"Error executing ogr2ogr command: {result.stderr}")
+            raise Exception(result.stderr)
+            # print(f"Error executing ogr2ogr command: {result.stderr}")
 
     def generate_ogr2ogr_command(self):
         db_settings = settings.DATABASES['default']
@@ -300,3 +297,14 @@ class Vector(models.Model):
 #     username = models.CharField()
 
 
+
+class Project(models.Model):
+    name = models.CharField(max_length=100,unique=True)
+    thumbnail = models.ImageField(null=True,blank=True)
+    geojson = models.ManyToManyField(GeoJSONFile,blank=True)
+    vector = models.ManyToManyField(Vector,blank=True)
+    # vector = models.ManyToManyField(GeoJSONFile,blank=True)
+    raster = models.ManyToManyField(RasterFile ,blank=True)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
