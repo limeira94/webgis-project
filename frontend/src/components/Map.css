@@ -277,3 +277,78 @@
   margin-top: 10;
   font-weight: bold;
 }
+
+.map-style-selector {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  z-index: 1000;
+}
+
+.map-style-selector a {
+  display: flex; /* Isso vai centralizar o ícone dentro do botão */
+  justify-content: center; /* Alinha horizontalmente */
+  align-items: center; /* Alinha verticalmente */
+  width: 56px; /* Largura do Materialize FAB */
+  height: 56px; /* Altura do Materialize FAB */
+  padding: 5px;
+}
+
+.drawer-map-style {
+  width: 250px; /* ou a largura que você desejar */
+  /* Adicione outros estilos conforme necessário */
+}
+
+.map-styles-container {
+  padding: 16px;
+}
+
+.map-styles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Espaçamento entre as imagens */
+  justify-content: center; /* Centraliza os itens se não preencherem toda a largura */
+  align-items: center; /* Alinha verticalmente */
+}
+
+.map-style-item {
+  flex: 0 1 auto; /* Permite que os itens se ajustem e cresçam conforme necessário */
+  margin: 5px;
+  text-align: center; /* Alinha o texto abaixo da imagem */
+}
+
+.map-style-item p {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.map-style-item img {
+  width: 100px;
+  height: auto;
+  border: 2px solid #000000;
+  border-radius: 5px;
+}
+
+.dialog-titlebar {
+  background-color: #366436; /* Cor verde para a barra de título */
+  height: 40px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5em;
+
+}
+
+.dialog-titlebar h3 {
+  font-size: 1.2rem;
+  margin: 0; 
+}
+
+.close-button {
+  cursor: pointer;
+  font-size: 1.5em;
+  color: white;
+}
