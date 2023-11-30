@@ -25,6 +25,8 @@ const Navbar = () => {
     var link_itens = 
     <>
         <li><a href="/map">Go to Map</a></li>
+        <li><a href="/project">Projects</a></li>
+        <li><a href="/new-project">New Project</a></li>
     </>
 
     var guest_links = 

@@ -38,6 +38,20 @@ from django.shortcuts import render
 
 from django.db import connection
 
+class ProjectList(APIView):
+    queryset = Project.objects.all()
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request):
+        projects = Project.objects.all()
+        projects = ProjectSerializer(projects,many=True)
+        return Response(projects.data,status=status.HTTP_200_OK)
+
+    # def get(self,request):
+    #     vectors = Project.objects.filter(user=request.user)
+    #     vectors = ProjectSerializer(vectors, many=True)
+    #     return Response(vectors.data,status=status.HTTP_200_OK)
+
 class VectorList(APIView):
     queryset = Vector.objects.all()
     permission_classes = [permissions.IsAuthenticated]

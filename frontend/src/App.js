@@ -9,6 +9,8 @@ import Login from "./components/Login"
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import ResetPassword from './components/ResetPassword';
+import Project from './components/Project';
+import NewProject from './components/NewProject';
 // import Upload from './components/Upload'
 
 import { checkAuth } from './features/user';
@@ -43,6 +45,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/reset" element={<ResetPassword />}/>
+        <Route path="/project" element={<Project />}/>
+        <Route path="/new-project" element={<NewProject />}/>
 
       </Routes>
     </Router>

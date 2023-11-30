@@ -1,0 +1,23 @@
+.custom-shape-divider-top-1701366195 {
+    /* position: absolute;
+    top: 0;
+    left: 0; */
+    width: 100%;
+    overflow: hidden;
+    
+}
+
+.custom-shape-divider-top-1701366195 svg {
+    position: relative;
+    display: block;
+    width: calc(149% + 1.3px);
+    height: 161px;
+}
+
+.custom-shape-divider-top-1701366195 .shape-fill {
+    fill: #FFFFFF;
+}
+
+.card-section{
+    background-color: cadetblue;
+}

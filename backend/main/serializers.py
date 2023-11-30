@@ -10,6 +10,11 @@ class VectorSerializer(serializers.ModelSerializer):
     model = Vector
     fields = '__all__'
 
+class ProjectSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Project
+    fields = '__all__'
+
 class UserSerializer(serializers.ModelSerializer):
   class Meta:
     model = User

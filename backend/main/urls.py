@@ -27,6 +27,8 @@ urlpatterns = [
 
     path('api/main/vector/', views.VectorList.as_view(), name='get_vector'),
     path('api/main/vector/geojson', views.ExportGeoJSON.as_view(), name='get_vector_geojson'),
+
+    path('api/main/projects/', views.ProjectList.as_view(), name='get_projects'),
     
     # path("api/main/rasters/",raster_detail,name='rasters'),
 

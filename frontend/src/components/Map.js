@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 import tileLayersData from './tileLayers.json';
 import './Map.css'
 import axios from 'axios'
@@ -63,6 +65,8 @@ const Map = () => {
   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
   const [mapInstance, setMapInstance] = useState(null);
   const geojsonLayerRefs = useRef({});
+
+  const { isAuthenticated, user, loading } = useSelector(state => state.user);
 
   // TODO
   // Add again
@@ -194,6 +198,10 @@ const Map = () => {
     name: layer.name,
     url: layer.url,
   }));
+
+  console.log(isAuthenticated)
+  if (!isAuthenticated && !loading && user === null)
+      return <Navigate to='/login'/>;
 
   return (
     <>

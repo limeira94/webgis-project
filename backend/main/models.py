@@ -299,12 +299,16 @@ class Vector(models.Model):
 
 
 class Project(models.Model):
-    name = models.CharField(max_length=100,unique=True)
+    name = models.CharField(max_length=100)
     thumbnail = models.ImageField(null=True,blank=True)
     geojson = models.ManyToManyField(GeoJSONFile,blank=True)
     vector = models.ManyToManyField(Vector,blank=True)
     # vector = models.ManyToManyField(GeoJSONFile,blank=True)
     raster = models.ManyToManyField(RasterFile ,blank=True)
+    public = models.BooleanField(default=False)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
+
+    def __str__(self):
+        return self.name
