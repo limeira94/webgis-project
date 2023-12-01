@@ -10,11 +10,6 @@ class VectorSerializer(serializers.ModelSerializer):
     model = Vector
     fields = '__all__'
 
-class ProjectSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = Project
-    fields = '__all__'
-
 class UserSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
@@ -130,6 +125,24 @@ class RasterFileSerializer(serializers.ModelSerializer):
         
         return data
 
+class ProjectSerializer(serializers.ModelSerializer):
+
+    vector = VectorSerializer(many=True, read_only=True)
+    raster = RasterFileSerializer(many=True, read_only=True)
+    geojson = GeoJsonFileSerializer(many=True, read_only=True)
+    created_at = serializers.SerializerMethodField()
+    updated_at = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+    def get_created_at(self, obj):
+        return obj.get_create_at()
+    
+    def get_updated_at(self, obj):
+        return obj.get_updated_at()
+        
 class UserRegister(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     

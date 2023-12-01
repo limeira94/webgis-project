@@ -19,6 +19,8 @@ const Navbar = () => {
     const user = useSelector((state) => state.user);
 	const { isAuthenticated } = useSelector(state => state.user);
 
+    console.log(isAuthenticated)
+
     var url = process.env.PUBLIC_URL
     // var url = 'http://127.0.0.1:3000/'
 

@@ -4,6 +4,7 @@ from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.contrib.auth.models import User
+from django.contrib.humanize.templatetags.humanize import naturaltime
 
 import time
 import datetime
@@ -209,6 +210,11 @@ class RasterFile(models.Model):
 def upload_to(instance, filename):
     return 'vector/%s/%s' % (instance.user.username, filename)
 
+
+'''
+ogr2ogr -f "PostgreSQL" PG:"dbname=mydatabase user=myuser password=mypassword host=localhost port=5432" -nln mytable -nlt PROMOTE_TO_MULTI -update -overwrite -skipfailures /path/to/your/shapefile
+'''
+
 class Vector(models.Model):
     filename = models.CharField(max_length=100,null=True,blank=True)
     format_name = models.CharField(max_length=10,null=True,blank=True)
@@ -312,3 +318,10 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+    def get_create_at(self):
+        return naturaltime(self.created_at)
+    
+    def get_updated_at(self):
+        return naturaltime(self.updated_at)

@@ -22,8 +22,8 @@ urlpatterns = [
     path('api/main/upload/', views.GeoJSONFileUploadAPIView.as_view(), name='upload_geojson_api'),
     path('api/main/geojson/<int:pk>/', views.GeoJSONDetailView.as_view(), name='get_geojson'),
     path('api/main/geojson/', views.GeoJSONListView.as_view(), name='get_all_geojson'),
-    path('api/main/register/', views.UserRegistrarionView.as_view(), name='user-register'),
-    path('api/main/login/', views.LoginAPIView.as_view(), name='user-login'),
+    # path('api/main/register/', views.UserRegistrarionView.as_view(), name='user-register'),
+    # path('api/main/login/', views.LoginAPIView.as_view(), name='user-login'),
 
     path('api/main/vector/', views.VectorList.as_view(), name='get_vector'),
     path('api/main/vector/geojson', views.ExportGeoJSON.as_view(), name='get_vector_geojson'),

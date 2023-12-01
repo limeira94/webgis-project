@@ -222,7 +222,6 @@ const Map = () => {
   console.log(isAuthenticated)
   if (!isAuthenticated && !loading && user === null)
       return <Navigate to='/login'/>;
-
   return (
     <>
       <Drawer

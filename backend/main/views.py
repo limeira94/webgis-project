@@ -1,18 +1,22 @@
+from django.contrib import messages 
 from django.contrib.gis.geos import GEOSGeometry
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from django.http import Http404,HttpResponse
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.forms import AuthenticationForm
-from django.core.mail import EmailMessage
-
-from django.template.loader import render_to_string
+from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
+
+from django.core.mail import EmailMessage
+from django.db import connection
+from django.db.utils import ProgrammingError
+from django.db.models import Q
+from django.http import Http404,HttpResponse
+from django.shortcuts import render,redirect,get_object_or_404
+from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
-from django.shortcuts import render,redirect,get_object_or_404
-from django.contrib import messages 
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.db.utils import ProgrammingError
 
 from rest_framework import viewsets
 from rest_framework import permissions, status,generics
@@ -30,27 +34,18 @@ import json
 
 from .models import GeoJSONFile,RasterFile,Vector,Project
 from .utils import get_geojson_bounds
-from .serializers import *#UserRegister, GeoJsonFileSerializer,RasterFileSerializer,CustomTokenObtainPairSerializer
-
-
-from django.contrib.auth.views import LoginView
-from django.shortcuts import render
-
-from django.db import connection
+from .serializers import *
 
 class ProjectList(APIView):
-    queryset = Project.objects.all()
-    # permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        if request.user.is_authenticated:
+            # projects = Project.objects.filter(Q(user=request.user) | Q(public=True))
+            projects = Project.objects.filter(Q(user=request.user) | Q(public=True))
+        else:
+            projects = Project.objects.filter(public=True)
 
-    def get(self,request):
-        projects = Project.objects.all()
-        projects = ProjectSerializer(projects,many=True)
-        return Response(projects.data,status=status.HTTP_200_OK)
-
-    # def get(self,request):
-    #     vectors = Project.objects.filter(user=request.user)
-    #     vectors = ProjectSerializer(vectors, many=True)
-    #     return Response(vectors.data,status=status.HTTP_200_OK)
+        project_serializer = ProjectSerializer(projects, many=True)
+        return Response(project_serializer.data, status=status.HTTP_200_OK)
 
 class VectorList(APIView):
     queryset = Vector.objects.all()
@@ -173,6 +168,8 @@ class UserUpdateView(APIView):
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
+        # TODO:
+        ### Colocar um jeito de verificar erro
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
