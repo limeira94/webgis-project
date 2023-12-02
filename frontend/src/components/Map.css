@@ -95,8 +95,8 @@
   position: absolute;
   background-color: #01579b !important;
   color: yellow !important;
-  top: 160px;
-  right: 20px;
+  top: 510px;
+  /* right: 20px; */
   z-index: 1000;
   border-radius: 50%;
   cursor: pointer;
@@ -177,8 +177,7 @@
 .leaflet-control-browser-print {
   /* position: absolute; */
   position: relative;
-  top: 160px;
-  right: 20px;
+  top: 510px;
   /* display: none; */
 }
 
@@ -200,8 +199,8 @@
 
 .leaflet-control-measure {
   position: absolute;
-  top: 160px;
-  right: 20px;
+  top: 380px;
+  /* right: 20px; */
   z-index: 1000;
   cursor: pointer;
 }
@@ -351,4 +350,37 @@
   cursor: pointer;
   font-size: 1.5em;
   color: white;
+}
+/* Estilizar o botão de zoom out */
+.leaflet-control-zoom-out {
+  background-color: #28a745; /* Cor de fundo verde */
+  color: white; /* Cor do texto */
+  border: none; /* Remover borda */
+}
+
+/* CSS para customizar o botão Fullscreen */
+.leaflet-control-fullscreen {
+  background-color: #01579b !important; /* Altere para a cor que desejar */
+  color: white !important; /* Altere para a cor que desejar */
+}
+
+/* CSS para customizar os botões de Zoom */
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  background-color: #01579b !important; /* Altere para a cor que desejar */
+  color: white !important; /* Altere para a cor que desejar */
+}
+
+.fullscreen-icon {
+  background-color: #01579b !important; /* Altere para a cor que desejar */
+  background-image: none !important; /* Isso removerá o ícone existente, se você quiser manter o ícone, remova esta linha */
+}
+.fullscreen-icon::before {
+  content: 'fullscreen'; /* Nome do ícone do Material Icons */
+  font-family: 'Material Icons';
+  font-size: 30px; /* Ajuste o tamanho conforme necessário */
+  display: block; /* Faz com que o pseudo-elemento se comporte como um bloco */
+  color: white; /* Cor do ícone */
+  position: absolute; /* Posiciona o ícone corretamente dentro do botão */
+  text-align: center;
 }
