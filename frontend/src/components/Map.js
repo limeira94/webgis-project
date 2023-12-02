@@ -219,9 +219,11 @@ const Map = () => {
     url: layer.url,
   }));
 
-  console.log(isAuthenticated)
-  if (!isAuthenticated && !loading && user === null)
-      return <Navigate to='/login'/>;
+  // console.log(isAuthenticated)
+  // if (!isAuthenticated && !loading && user === null)
+  //     return <Navigate to='/login'/>;
+
+
   return (
     <>
       <Drawer
@@ -316,7 +318,7 @@ const Map = () => {
             <div>
               <input
                 type="file"
-                onChange={(event) => handleFileChange(event, getCenterOfGeoJSON, geojsons, setGeoJSONs, mapInstance)}
+                onChange={(event) => handleFileChange(event, getCenterOfGeoJSON, setGeoJSONs, mapInstance, isAuthenticated)}
                 ref={fileInputRef}
                 style={{ display: 'none' }}
                 accept=".geojson, application/geo+json"

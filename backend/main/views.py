@@ -170,6 +170,7 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         # TODO:
         ### Colocar um jeito de verificar erro
+        ### Verificar questão de senha e email atualmente não aceitar email com . e senha curtas
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -262,7 +263,10 @@ class GeoJSONFileUploadAPIView(APIView):
             bounds = []
             for feature in geojson_data['features']:
                 geometry = GEOSGeometry(json.dumps(feature['geometry']))
-                name = request.data.get('name', 'Unnamed')
+                name = feature.get('properties', {}).get('name', 'Unnamed')
+                print('#'*50)
+                print(name)
+                # name = request.data.get('name', 'Unnamed')
                 # TODO:
                 # Here Im providing a default user but later we will need to check authentication
                 user = request.data.get('user', '4')

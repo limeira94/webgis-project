@@ -167,7 +167,7 @@ export const ListItemWithStyleControls = (
           checked={visibleGeoJSONs[geojson.properties.id] ?? false}
           onClick={() => handleVisibilityChange(geojson.properties.id, !(visibleGeoJSONs[geojson.properties.id] ?? false))}
         />
-        <ListItemText primary={` Dado ${geojson.properties.id} `} />
+        <ListItemText primary={`${geojson.properties.name}`} />
       </div>
       {showStyleControls && (
         <div style={{ marginTop: '10px' }}>
