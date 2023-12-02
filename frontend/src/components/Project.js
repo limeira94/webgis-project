@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
+import Navbar from './include/Navbar';
+import { getProjects } from './utils/get_infos';
 import tileLayersData from './tileLayers.json';
 import { 
   useNavigate 
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import M from 'materialize-css';
+import axios from 'axios'
 import {
     MapContainer,
     TileLayer,
@@ -19,7 +22,9 @@ import {
 import "react-leaflet-fullscreen/styles.css";
 import { FullscreenControl } from 'react-leaflet-fullscreen';
 
-const Map = ({project_id}) => {
+import "./Project.css"
+
+const Map = ({project}) => {
     const [rasters, setRasters] = useState([]);
     const [geojsons, setGeoJSONs] = useState([]);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -27,6 +32,7 @@ const Map = ({project_id}) => {
     const [polygonStyles, setPolygonStyles] = useState({});
     const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
     const [mapInstance, setMapInstance] = useState(null);
+
     const geojsonLayerRefs = useRef({});
 
     const tileLayers = tileLayersData.map((layer) => ({
@@ -123,18 +129,90 @@ function Project() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [confirmDelete, setConfirmDelete] = useState(false);
-    const { isAuthenticated, user, loading } = useSelector(state => state.user);
 
+    const { isAuthenticated, user, loading } = useSelector(state => state.user);
+    const [project,setProject] = useState(null)
+    const [projects, setProjects] = useState([]);
     
-  
-    
+
+    const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
     useEffect(() => {
-      M.AutoInit();
+        M.AutoInit();
+        const getProjects = async () => {
+            try {
+              const response = await axios.get(`${API_URL}api/main/projects/`);
+
+              setProjects(response.data)
+            } catch (error) {
+              console.error('Error fetching GeoJSON data:', error);
+            }
+          }
+        getProjects();
     }, []);
 
+    var url = process.env.PUBLIC_URL
+
+
+    if (!isAuthenticated && !loading && user === null)
+      return <Navigate to='/login'/>;
 
     return (
         <>
+
+            
+        {/* TODO: create a function to handle 'choose' and 'change' */}
+        
+        { !project ? 
+            <a className="waves-effect waves-light btn modal-trigger choose-button" href="#modal1">Choose your project</a> : 
+            <a className="waves-effect waves-light btn modal-trigger change-button">Change your project</a>
+        }
+        
+        
+        
+        <div id="modal1" className="modal modal-fixed-footer">
+            <div className="modal-content">
+                <h4 className='center'>Choose your project</h4>
+                <div>
+                    <div className="row">
+                        {projects.map((project, index) => (
+                            <div key={index} className="col s12 m3">
+                                <div className="card">
+                                    <div className="card-image">
+                                    {project.thumbnail ? (
+                                        <img src={`${project.thumbnail}`} alt={`Project ${index + 1}`} />
+                                        ) : (
+                                        <img src={url + "/thumbnail_map.png"}  alt={`Project ${index + 1}`} />
+                                        )}
+                                        <span className="card-title">{project.name}</span>
+                                        <a className="btn-floating halfway-fab waves-effect waves-light red"><i className="material-icons">open_in_browser</i></a>
+                                    </div>
+                                    <div className="card-content">
+                                        <p><b>Last time updated:</b></p>
+                                        <p>{project.updated_at}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))} 
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+            </div>
+            <div className="modal-footer">
+                <a href="#!" className="modal-close waves-effect waves-green btn-flat">Close</a>
+            </div>
+        </div>
+
+        <Map project_id={project} />
+
+        {project ? <Map project_id={project.id} /> : null}
+
           
         </>
       );

@@ -1,0 +1,21 @@
+.choose-button{
+    position: absolute;
+    top: 20px;
+    /* right: 90px; */
+    right: 40%;
+    z-index: 1000;
+    border: none;
+    /* background-color: olive; */
+  }
+  
+
+  .change-button{
+    position: absolute;
+    top: 20px;
+    /* right: 90px; */
+    right: 40%;
+    z-index: 1000;
+    border: none;
+    /* background-color: olive; */
+  }
+  

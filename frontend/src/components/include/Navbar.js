@@ -27,8 +27,8 @@ const Navbar = () => {
     var link_itens = 
     <>
         <li><a href="/map">Go to Map</a></li>
-        <li><a href="/project">Projects</a></li>
-        <li><a href="/new-project">New Project</a></li>
+        
+        {/* <li><a href="/new-project">New Project</a></li> */}
     </>
 
     var guest_links = 
@@ -38,7 +38,8 @@ const Navbar = () => {
     </>
 
     var auth_links = 
-    <>
+    <>  
+        <li><a href="/project">Projects</a></li>
         <li><a href="/dashboard">Dashboard</a></li>
         <li><a href='#!' onClick={() => dispatch(logout())}>Logout</a></li>
     </>

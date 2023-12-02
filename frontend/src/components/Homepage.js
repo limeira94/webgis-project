@@ -11,6 +11,11 @@ const Homepage = () => {
     const [projects, setProjects] = useState([]);
 
     useEffect(()=>{
+        
+        // TODO
+        // remove this function and use this one instead:
+        // import { getProjects } from './utils/get_infos';
+
         const getProjects = async () => {
             try {
               const response = await axios.get(`${API_URL}api/main/projects/`);
