@@ -13,6 +13,9 @@ function NewProject() {
     const dispatch = useDispatch();
     const [confirmDelete, setConfirmDelete] = useState(false);
     const { isAuthenticated, user, loading } = useSelector(state => state.user);
+
+    const [rasters, setRasters] = useState([]);
+    const [geojsons, setGeoJSONs] = useState([]); 
     
     useEffect(() => {
       M.AutoInit();
@@ -21,8 +24,8 @@ function NewProject() {
 
     return (
         <>
-          <NavbarComponent />
-          <MapComponent/>
+          {/* <NavbarComponent /> */}
+          <MapComponent rasters={rasters} geojsons={geojsons}/>
         </>
       );
     }
