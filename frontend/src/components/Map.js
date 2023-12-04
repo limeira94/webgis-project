@@ -213,12 +213,6 @@ const Map = () => {
     rasterInputRef.current.click();
   };
 
-  const tileLayers = tileLayersData.map((layer) => ({
-    key: layer.key,
-    name: layer.name,
-    url: layer.url,
-  }));
-
   // console.log(isAuthenticated)
   // if (!isAuthenticated && !loading && user === null)
   //     return <Navigate to='/login'/>;

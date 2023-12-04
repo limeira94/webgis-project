@@ -5,6 +5,7 @@ import {
   useNavigate 
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { MapComponent } from './utils/MapComponent';
 import M from 'materialize-css';
 
 function NewProject() {
@@ -21,7 +22,7 @@ function NewProject() {
     return (
         <>
           <NavbarComponent />
-          
+          <MapComponent/>
         </>
       );
     }
