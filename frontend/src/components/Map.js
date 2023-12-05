@@ -346,7 +346,7 @@ const Map = () => {
 
         <TileLayer url={selectedTileLayer} />
 
-          {rasters.map((raster, index) => {
+          {/* {rasters.map((raster, index) => {
             const tileCoordinates = raster.tiles.split(',').map(Number);
             const [xmin, ymin, xmax, ymax] = tileCoordinates;
             const bounds = [[ymin, xmin], [ymax, xmax]];
@@ -361,7 +361,7 @@ const Map = () => {
                 />
               </LayersControl.Overlay>
             );
-          })} */}
+          })}  */}
 
           {/* TODO */}
           {/* Código para usar com o geoserver */}
