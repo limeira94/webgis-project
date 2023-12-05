@@ -361,7 +361,7 @@ const Map = () => {
                 />
               </LayersControl.Overlay>
             );
-          })} */}
+          })}
 
           {/* TODO */}
           {/* Código para usar com o geoserver */}
