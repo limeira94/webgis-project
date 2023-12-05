@@ -19,7 +19,8 @@ import {
   ZoomControl,
   LayersControl,
   GeoJSON,
-  ImageOverlay
+  ImageOverlay,
+  ScaleControl 
 } from 'react-leaflet';
 
 import {
@@ -360,7 +361,7 @@ const Map = () => {
                 />
               </LayersControl.Overlay>
             );
-          })}
+          })} */}
 
           {/* TODO */}
           {/* Código para usar com o geoserver */}
@@ -429,6 +430,7 @@ const Map = () => {
             />
           )
         })}
+        <ScaleControl position="bottomleft" />
         <FullscreenControl position="bottomright" />
         <ZoomControl position="bottomright" />
       </MapContainer>
