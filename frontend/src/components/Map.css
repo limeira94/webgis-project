@@ -9,7 +9,12 @@
     top: 20px;
     right: 20px;
     z-index: 1000;
+    /* border-radius: 50%; */
   }
+
+.btn-color{
+  background-color: #01579b ;
+}
 
 .raster-upload-container {
   text-align: center;
@@ -25,13 +30,13 @@
 .custom-file-input {
   position: absolute;
   top: 20px;
-  right: 90px;
+  right: 70px;
   z-index: 1000;
 }
 
-.delete-button {
+.home-button-map {
   position: absolute;
-  top: 90px;
+  top: 70px;
   right: 20px;
   z-index: 1000;
 }
@@ -45,13 +50,14 @@
 }
 
 .leaflet-control-geocoder {
+  border-radius: 50% !important;
   position: absolute;
   background-color: #01579b !important;
   color: yellow !important;
   top: 510px;
   /* right: 20px; */
   z-index: 1000;
-  border-radius: 50%;
+  /* border-radius: 50%; */
   cursor: pointer;
 }
 
@@ -64,8 +70,8 @@
   position: relative !important; /* Necessário para o pseudo-elemento */
 
   /* Ajusta o tamanho do botão para ser um círculo */
-  width: 30px !important; /* Largura do botão */
-  height: 30px !important; /* Altura do botão */
+  /* width: 40px !important;  */
+  /* height: 40px !important;  */
   line-height: 30px !important; /* Centraliza verticalmente o ícone */
 }
 
@@ -81,10 +87,12 @@
 }
 
 .leaflet-control-geocoder-form input {
+  border-radius: 0% !important;
   color: white !important; /* Muda a cor do texto para branco */
 }
 
 .leaflet-control-geocoder-address-context {
+  border-radius: 0% !important;
   color: white !important; /* Muda a cor do texto para branco */
 }
 
@@ -99,6 +107,7 @@
 
 .leaflet-control-browser-print {
   /* position: absolute; */
+  border-radius: 50% !important;
   position: relative;
   top: 510px;
   /* display: none; */
@@ -108,8 +117,9 @@
   background: none !important;
   background-color: #01579b !important;
   color: white !important;
-  border-radius: 50%;
+  border-radius: 50% !important;
   cursor: pointer;
+  
 }
 
 .leaflet-control-browser-print a::before {
@@ -121,6 +131,7 @@
 }
 
 .leaflet-control-measure {
+  border-radius: 50% !important;
   position: absolute;
   top: 380px;
   /* right: 20px; */
@@ -129,6 +140,7 @@
 }
 
 .leaflet-control-measure a {
+  border-radius: 50% !important;
   /* Estilos gerais do botão */
   background: none !important;
   background-color: #01579b !important;

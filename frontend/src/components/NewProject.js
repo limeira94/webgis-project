@@ -25,7 +25,7 @@ function NewProject() {
     return (
         <>
           {/* <NavbarComponent /> */}
-          <MapComponent rasters={rasters} geojsons={geojsons}/>
+          <MapComponent rasters={rasters} geojsons={geojsons} setRasters={setRasters} setGeoJSONs={setGeoJSONs}/>
         </>
       );
     }
