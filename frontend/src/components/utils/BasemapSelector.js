@@ -1,56 +1,76 @@
+// import React, { useState } from 'react';
 import React, { useState, useEffect, useRef } from 'react';
-import Dialog from '@mui/material/Dialog';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import {
+    parseGeoJSON,
+    ListItemWithStyleControls,
+    getCenterOfGeoJSON
+  } from '../utils/MapUtils';
 
 const BasemapSelector = (
     { 
-      setSelectedTileLayer,
-      tileLayersData,
+      geojsons, 
+      polygonStyles,
+      setPolygonStyles,
+      visibleGeoJSONs, 
+      setVisibleGeoJSONs, 
+      mapInstance,
     }) => {
-    const [isMapStyleDrawerOpen, setIsMapStyleDrawerOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 //   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
-  
-    const toggleMapStyleDrawer = (open) => () => {
-    setIsMapStyleDrawerOpen(open);
+  const geojsonLayerRefs = useRef({});
+
+
+  const updateStyle = (polygonId, styleKey, value) => {
+    setPolygonStyles(prevStyles => ({
+      ...prevStyles,
+      [polygonId]: {
+        ...prevStyles[polygonId],
+        [styleKey]: value
+      }
+    }));
   };
 
-    const changeMapStyle = (newTileLayerUrl) => {
-    setSelectedTileLayer(newTileLayerUrl);
+  const toggleDrawer = (open) => () => {
+    setIsDrawerOpen(open);
   };
 
+  const zoomToLayer = (geojsonId) => {
+    const layer = geojsonLayerRefs.current[geojsonId];
+    if (layer && mapInstance) {
+      const bounds = layer.getBounds();
+      mapInstance.flyToBounds(bounds);
+    }
+  };
 
   return (
     <>
-      <Dialog
-        open={isMapStyleDrawerOpen}
-        onClose={toggleMapStyleDrawer(false)}
-        aria-labelledby="map-style-dialog-title"
+      <Drawer
+        anchor={'left'}
+        open={isDrawerOpen}
+        onClose={toggleDrawer(false)}
+        PaperProps={{ className: "drawer-side-bar" }}
       >
-        <div className="dialog-titlebar">
-          <h3>Basemap Gallery</h3>
-          <IconButton className="close-button" onClick={toggleMapStyleDrawer(false)}>
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <div className="map-styles-container">
-          <div className="map-styles">
-            {tileLayersData.map((layer) => (
-              <div key={layer.key} className="map-style-item" onClick={() => {
-                changeMapStyle(layer.url);
-                // toggleMapStyleDrawer(false)(); // Close drawer after selection
-              }}>
-                <img src={layer.thumbnail} alt={layer.name} />
-                <p>{layer.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Dialog>
+        <div className="sidebar-title">Select your vector dataset:</div>
+        <List>
+          {geojsons.map((geojson) => (
+            <ListItemWithStyleControls
+              key={geojson.properties.id}
+              geojson={geojson}
+              updateStyle={updateStyle}
+              polygonStyles={polygonStyles}
+              visibleGeoJSONs={visibleGeoJSONs}
+              setVisibleGeoJSONs={setVisibleGeoJSONs}
+              zoomToLayer={zoomToLayer}
+            />
+          ))}
+        </List>
+      </Drawer>
       <div className='map-style-selector'>
         <a
-          className="btn-floating waves-effect waves-light btn-color"
-          onClick={toggleMapStyleDrawer(true)}>
+          className="btn-floating btn-large waves-effect waves-light green"
+          onClick={toggleDrawer(true)}>
           <i className="material-icons">public</i>
         </a>
       </div>

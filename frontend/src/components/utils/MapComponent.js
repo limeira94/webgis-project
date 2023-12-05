@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import tileLayersData from '../tileLayers.json';
 import defaultStyle from "./defaultStyle.json";
 
 import './MapComponent.css'
 import 'leaflet/dist/leaflet.css';
+
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import Dialog from '@mui/material/Dialog';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 import {
   MapContainer,
@@ -14,10 +22,15 @@ import {
   ImageOverlay
 } from 'react-leaflet';
 
+import {
+  parseGeoJSON,
+  ListItemWithStyleControls,
+  getCenterOfGeoJSON
+} from '../utils/MapUtils';
+
+// TODO:
+// IMPLEMENTAR ISSO
 import BasemapSelector from './BasemapSelector';
-import ToggleLayersSelector from './ToggleLayersSelector'
-import UpDelButttons from './UploadAndDeleteButtons';
-import { leafletDefaultButtons } from './LeafletButtons';
 
 import L from 'leaflet';
 
@@ -44,28 +57,227 @@ L.Icon.Default.mergeOptions({
 
 export const MapComponent = ({
     rasters,
-    geojsons,
-    setRasters,
-    setGeoJSONs,
+    geojsons
 }) => {
     const [mapInstance, setMapInstance] = useState(null);
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isMapStyleDrawerOpen, setIsMapStyleDrawerOpen] = useState(false);
+
     const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
     const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
     const [polygonStyles, setPolygonStyles] = useState({});
     const [selectedPolygon, setSelectedPolygon] = useState(null);
-    const [buttonsCreated,setButtonsCreated] = useState(false); 
 
     const geojsonLayerRefs = useRef({});
 
-    useEffect(() => {
-      leafletDefaultButtons({
-        mapInstance: mapInstance,
-        buttonsCreated: buttonsCreated,
-        setButtonsCreated: setButtonsCreated
-      });
-    }, [mapInstance,buttonsCreated,setButtonsCreated]);
 
-    const MapItem = <>
+    // #####################################################################################33
+    // TODO:
+    // Quero remover todas essas funções aqui e inserir dentro do "Basemapselector.js" e outros códigos se der
+    const toggleDrawer = (open) => () => {
+      setIsDrawerOpen(open);
+    };
+    const toggleMapStyleDrawer = (open) => () => {
+      setIsMapStyleDrawerOpen(open);
+    };
+
+    const updateStyle = (polygonId, styleKey, value) => {
+      setPolygonStyles(prevStyles => ({
+        ...prevStyles,
+        [polygonId]: {
+          ...prevStyles[polygonId],
+          [styleKey]: value
+        }
+      }));
+    };
+
+    const zoomToLayer = (geojsonId) => {
+      const layer = geojsonLayerRefs.current[geojsonId];
+      if (layer && mapInstance) {
+        const bounds = layer.getBounds();
+        mapInstance.flyToBounds(bounds);
+      }
+    };
+
+    const changeMapStyle = (newTileLayerUrl) => {
+      setSelectedTileLayer(newTileLayerUrl);
+    };
+
+    // Até aqui
+    // #####################################################################################33
+
+
+
+
+
+
+
+    // TODO:
+    // Isso aqui vai virar o BasemapSelector
+    const choose_basemaps = <>
+    <Drawer
+        anchor={'left'}
+        open={isDrawerOpen}
+        onClose={toggleDrawer(false)}
+        PaperProps={{ className: "drawer-side-bar" }}
+      >
+        <div className="sidebar-title">Select your vector dataset:</div>
+        <List>
+          {geojsons.map((geojson) => (
+            <ListItemWithStyleControls
+              key={geojson.properties.id}
+              geojson={geojson}
+              updateStyle={updateStyle}
+              polygonStyles={polygonStyles}
+              visibleGeoJSONs={visibleGeoJSONs}
+              setVisibleGeoJSONs={setVisibleGeoJSONs}
+              zoomToLayer={zoomToLayer}
+            />
+          ))}
+        </List>
+      </Drawer>
+      <div className='map-style-selector'>
+        <a
+          className="btn-floating btn-large waves-effect waves-light green"
+          onClick={toggleMapStyleDrawer(true)}>
+          <i className="material-icons">public</i>
+        </a>
+      </div>
+    </>
+
+
+
+
+
+
+
+
+    // TODO:
+    // Esse vai virar outro componente separado
+    const toggle_layers = <>
+    <Dialog
+        open={isMapStyleDrawerOpen}
+        onClose={toggleMapStyleDrawer(false)}
+        aria-labelledby="map-style-dialog-title"
+      >
+        <div className="dialog-titlebar">
+          <h3>Basemap Gallery</h3>
+          <IconButton className="close-button" onClick={toggleMapStyleDrawer(false)}>
+            <CloseIcon />
+          </IconButton>
+        </div>
+        <div className="map-styles-container">
+          <div className="map-styles">
+            {tileLayersData.map((layer) => (
+              <div key={layer.key} className="map-style-item" onClick={() => {
+                changeMapStyle(layer.url);
+                // toggleMapStyleDrawer(false)(); // Close drawer after selection
+              }}>
+                <img src={layer.thumbnail} alt={layer.name} />
+                <p>{layer.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Dialog>
+
+      <div className='btn-menu'>
+        <a
+          className="btn-floating btn-large waves-effect waves-light blue"
+          onClick={toggleDrawer(true)}>
+          <i className="material-icons">menu</i>
+        </a>
+      </div>
+    </>
+
+
+
+      // TODO:
+      // Mais um componente a ser desenvolvido separadamente
+
+  //   const upload_delete_layers = <>
+  //   <div className="fixed-action-btn file-upload-container custom-file-input">
+  //       <a className="btn-floating btn-large red">
+  //         <i className="large material-icons">attach_file</i>
+  //       </a>
+  //       <ul>
+  //         <li><a className="btn-floating waves-effect waves-light green tooltipped" data-position="bottom" data-tooltip="Delete all rasters" onClick={() => handleDeleteClick(setGeoJSONs)}><i className="material-icons">delete</i></a></li>
+  //         <li><a className="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-tooltip="Delete all vectors" onClick={() => handleDeleteRasterClick(setRasters)}><i className="material-icons">delete</i></a></li>
+  //         <li>
+  //           <div className="raster-upload-container">
+  //             <div>
+  //               <input
+  //                 type="file"
+  //                 onChange={handleRaster}
+  //                 ref={rasterInputRef}
+  //                 style={{ display: 'none' }}
+  //               // accept=".tif, application/geo+json"
+  //               />
+  //               <a
+  //                 className="btn-floating waves-effect waves-light green tooltipped" data-position="bottom" data-tooltip="Upload raster"
+  //                 onClick={handleFileClickRaster}>
+  //                 <i className="material-icons">file_upload</i>
+  //               </a>
+  //             </div>
+  //           </div></li>
+  //         <li><div>
+  //           <div>
+  //             <input
+  //               type="file"
+  //               onChange={(event) => handleFileChange(event, getCenterOfGeoJSON, setGeoJSONs, mapInstance, isAuthenticated)}
+  //               ref={fileInputRef}
+  //               style={{ display: 'none' }}
+  //               accept=".geojson, application/geo+json"
+  //             />
+  //             <a
+  //               className="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-tooltip="Upload geojson"
+  //               onClick={handleFileClick}>
+  //               <i className="material-icons">file_upload</i>
+  //             </a>
+  //           </div>
+  //         </div></li>
+  //       </ul>
+  //     </div>
+  //     <div className='delete-button'>
+  //       <a href="/" className="btn-floating btn-large waves-effect waves-light black ">
+  //         <i className="material-icons">home</i>
+  //       </a>
+  //     </div>
+  // </>
+
+
+
+
+  // TODO:
+  // Assim fica bem mais organizado se conseguirmos fazer, dai a gente pode até inserir ou não dependendo
+  // De alguma variavel, por exemplo, casos emque não queremos inserir o "upload_delete_layers", basta
+  // colocar uma variavel de input lá em cima e quando for gerar o MapComponent, incluir isso ou não
+
+    return (
+    <>
+
+
+      {/* <BasemapSelector
+        geojsons={geojsons}
+        updateStyle={updateStyle}
+        polygonStyles={polygonStyles}
+        visibleGeoJSONs={visibleGeoJSONs}
+        setVisibleGeoJSONs={setVisibleGeoJSONs}
+        zoomToLayer={zoomToLayer}
+      /> */}
+      {choose_basemaps}
+
+
+
+      {toggle_layers}
+
+
+
+      {/* {upload_delete_layers} */}
+
+
+
       <MapContainer className='map-container'
         ref={(map) => {
           if (map) {
@@ -176,51 +388,6 @@ export const MapComponent = ({
         <FullscreenControl position="bottomright" />
         <ZoomControl position="bottomright" />
       </MapContainer>
-    
-    </>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return (
-    <>
-      <ToggleLayersSelector
-        geojsons={geojsons}
-        polygonStyles={polygonStyles}
-        visibleGeoJSONs={visibleGeoJSONs}
-        setVisibleGeoJSONs={setVisibleGeoJSONs}
-      /> 
-      
-      <BasemapSelector  
-      setSelectedTileLayer={setSelectedTileLayer}
-      tileLayersData={tileLayersData}
-      />
-
-      <UpDelButttons
-      setGeoJSONs={setGeoJSONs}
-      setRasters={setRasters}
-      mapInstance={mapInstance}
-      />
-
-
-      <div className='home-button-map'>
-        <a href="/" className="btn-floating waves-effect waves-light btn-color">
-          <i className="material-icons tiny">home</i>
-        </a>
-      </div>
-    
-    
-    {MapItem}
-      
     </>
   );
 };
