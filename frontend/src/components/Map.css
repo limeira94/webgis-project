@@ -4,49 +4,21 @@
   width: 100%;
 }
 
-.btn-upload {
-  position: absolute;
-  top: 20px;
-  right: 90px;
-  z-index: 1000;
-  border: none;
-  background-color: olive;
-}
-
 .btn-menu {
     position: absolute;
     top: 20px;
     right: 20px;
     z-index: 1000;
+    /* border-radius: 50%; */
   }
 
-/* .top-bar {
-  height: 40px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-} */
-
-
-/* input[type=text] {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  border: none;
-  background-color: olive;
-} */
+.btn-color{
+  background-color: #01579b ;
+}
 
 .raster-upload-container {
   text-align: center;
   padding: 0px;
-}
-
-.custom-raster-input {
-  position: absolute;
-  top: 20px;
-  right: 90px;
-  z-index: 1000;
 }
 
 
@@ -58,28 +30,14 @@
 .custom-file-input {
   position: absolute;
   top: 20px;
-  right: 90px;
+  right: 70px;
   z-index: 1000;
 }
 
-.delete-button {
+.home-button-map {
   position: absolute;
-  top: 90px;
+  top: 70px;
   right: 20px;
-  z-index: 1000;
-}
-
-.delete-button-2 {
-  position: absolute;
-  top: 90px;
-  right: 90px;
-  z-index: 1000;
-}
-
-.test-bt {
-  position: absolute;
-  top: 5px;
-  right: 150px;
   z-index: 1000;
 }
 
@@ -92,13 +50,14 @@
 }
 
 .leaflet-control-geocoder {
+  border-radius: 50% !important;
   position: absolute;
   background-color: #01579b !important;
   color: yellow !important;
   top: 510px;
   /* right: 20px; */
   z-index: 1000;
-  border-radius: 50%;
+  /* border-radius: 50%; */
   cursor: pointer;
 }
 
@@ -111,8 +70,8 @@
   position: relative !important; /* Necessário para o pseudo-elemento */
 
   /* Ajusta o tamanho do botão para ser um círculo */
-  width: 30px !important; /* Largura do botão */
-  height: 30px !important; /* Altura do botão */
+  /* width: 40px !important;  */
+  /* height: 40px !important;  */
   line-height: 30px !important; /* Centraliza verticalmente o ícone */
 }
 
@@ -128,10 +87,12 @@
 }
 
 .leaflet-control-geocoder-form input {
+  border-radius: 0% !important;
   color: white !important; /* Muda a cor do texto para branco */
 }
 
 .leaflet-control-geocoder-address-context {
+  border-radius: 0% !important;
   color: white !important; /* Muda a cor do texto para branco */
 }
 
@@ -140,42 +101,13 @@
   margin-left: 10px;
 }
 
-.style-form-container {
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 5px;
-  padding: 10px;
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
-  width: 200px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.style-form-container label {
-  display: block;
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: black;
-}
-
-.style-form-container input[type="range"] {
-  width: 100%;
-}
-
-.style-form-container input[type="color"] {
-  width: 100%;
-  padding: 5px;
-  border: none;
-  border-radius: 3px;
-}
-
 .drawer-side-bar {
   width: 250px;
 }
 
 .leaflet-control-browser-print {
   /* position: absolute; */
+  border-radius: 50% !important;
   position: relative;
   top: 510px;
   /* display: none; */
@@ -185,8 +117,9 @@
   background: none !important;
   background-color: #01579b !important;
   color: white !important;
-  border-radius: 50%;
+  border-radius: 50% !important;
   cursor: pointer;
+  
 }
 
 .leaflet-control-browser-print a::before {
@@ -198,6 +131,7 @@
 }
 
 .leaflet-control-measure {
+  border-radius: 50% !important;
   position: absolute;
   top: 380px;
   /* right: 20px; */
@@ -206,6 +140,7 @@
 }
 
 .leaflet-control-measure a {
+  border-radius: 50% !important;
   /* Estilos gerais do botão */
   background: none !important;
   background-color: #01579b !important;
@@ -234,16 +169,6 @@
 
 }
 
-
-/* .leaflet.browser.print {
-  position: absolute;
-  height: calc(100vh - 40px);
-  top: 100px;
-  right: 20px;
-  z-index: 1000;
-  cursor: pointer;
-} */
-
 .dropdown-button {
   background-color: transparent;
   color: black;
@@ -254,19 +179,6 @@
 }
 
 .dropdown-button .material-icons {
-  font-size: 15px; 
-}
-
-.zoom-button {
-  background-color: transparent;
-  color: black;
-  border: none;
-  padding: 5px;
-  width: 30px;
-  height: 30px;
-}
-
-.zoom-button .material-icons {
   font-size: 15px; 
 }
 

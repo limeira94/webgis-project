@@ -5,6 +5,7 @@ import {
   useNavigate 
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { MapComponent } from './utils/MapComponent';
 import M from 'materialize-css';
 
 function NewProject() {
@@ -12,6 +13,9 @@ function NewProject() {
     const dispatch = useDispatch();
     const [confirmDelete, setConfirmDelete] = useState(false);
     const { isAuthenticated, user, loading } = useSelector(state => state.user);
+
+    const [rasters, setRasters] = useState([]);
+    const [geojsons, setGeoJSONs] = useState([]); 
     
     useEffect(() => {
       M.AutoInit();
@@ -20,8 +24,8 @@ function NewProject() {
 
     return (
         <>
-          <NavbarComponent />
-          
+          {/* <NavbarComponent /> */}
+          <MapComponent rasters={rasters} geojsons={geojsons} setRasters={setRasters} setGeoJSONs={setGeoJSONs}/>
         </>
       );
     }

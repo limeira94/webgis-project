@@ -214,12 +214,6 @@ const Map = () => {
     rasterInputRef.current.click();
   };
 
-  const tileLayers = tileLayersData.map((layer) => ({
-    key: layer.key,
-    name: layer.name,
-    url: layer.url,
-  }));
-
   // console.log(isAuthenticated)
   // if (!isAuthenticated && !loading && user === null)
   //     return <Navigate to='/login'/>;
@@ -277,27 +271,27 @@ const Map = () => {
 
       <div className='map-style-selector'>
         <a
-          className="btn-floating btn-large waves-effect waves-light green"
+          className="btn-floating waves-effect waves-light btn-color"
           onClick={toggleMapStyleDrawer(true)}>
-          <i className="material-icons">public</i>
+          <i className="material-icons tiny">public</i>
         </a>
       </div>
 
       <div className='btn-menu'>
         <a
-          className="btn-floating btn-large waves-effect waves-light blue"
-          onClick={toggleDrawer(true)}>
-          <i className="material-icons">menu</i>
+          className="btn-floating waves-effect waves-light btn-color"
+          onClick={toggleDrawer(true)} >
+          <i className="material-icons tiny">menu</i>
         </a>
       </div>
 
       <div className="fixed-action-btn file-upload-container custom-file-input">
-        <a className="btn-floating btn-large red">
-          <i className="large material-icons">attach_file</i>
+        <a className="btn-floating btn-color">
+          <i className="large material-icons tiny">attach_file</i>
         </a>
         <ul>
-          <li><a className="btn-floating waves-effect waves-light green tooltipped" data-position="bottom" data-tooltip="Delete all rasters" onClick={() => handleDeleteClick(setGeoJSONs)}><i className="material-icons">delete</i></a></li>
-          <li><a className="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-tooltip="Delete all vectors" onClick={() => handleDeleteRasterClick(setRasters)}><i className="material-icons">delete</i></a></li>
+          <li><a className="btn-floating waves-effect waves-light green tooltipped" data-position="bottom" data-tooltip="Delete all rasters" onClick={() => handleDeleteClick(setGeoJSONs)}><i className="material-icons tiny">delete</i></a></li>
+          <li><a className="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-tooltip="Delete all vectors" onClick={() => handleDeleteRasterClick(setRasters)}><i className="material-icons tiny">delete</i></a></li>
           <li>
             <div className="raster-upload-container">
               <div>
@@ -311,7 +305,7 @@ const Map = () => {
                 <a
                   className="btn-floating waves-effect waves-light green tooltipped" data-position="bottom" data-tooltip="Upload raster"
                   onClick={handleFileClickRaster}>
-                  <i className="material-icons">file_upload</i>
+                  <i className="material-icons tiny ">file_upload</i>
                 </a>
               </div>
             </div></li>
@@ -327,15 +321,15 @@ const Map = () => {
               <a
                 className="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-tooltip="Upload geojson"
                 onClick={handleFileClick}>
-                <i className="material-icons">file_upload</i>
+                <i className="material-icons tiny">file_upload</i>
               </a>
             </div>
           </div></li>
         </ul>
       </div>
-      <div className='delete-button'>
-        <a href="/" className="btn-floating btn-large waves-effect waves-light black ">
-          <i className="material-icons">home</i>
+      <div className='home-button-map'>
+        <a href="/" className="btn-floating waves-effect waves-light btn-color">
+          <i className="material-icons tiny">home</i>
         </a>
       </div>
       <MapContainer className='map-container'
