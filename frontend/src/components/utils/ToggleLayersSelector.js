@@ -11,11 +11,10 @@ const ToggleLayersSelector = (
     setPolygonStyles,
     visibleGeoJSONs,
     setVisibleGeoJSONs,
+    geojsonLayerRefs,
     mapInstance,
   }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const geojsonLayerRefs = useRef({});
-
 
   const updateStyle = (polygonId, styleKey, value) => {
     setPolygonStyles(prevStyles => ({
@@ -32,10 +31,7 @@ const ToggleLayersSelector = (
   };
 
   const zoomToLayer = (geojsonId) => {  
-    console.log(Object.keys(geojsonLayerRefs.current));
     const layer = geojsonLayerRefs.current[geojsonId];
-    console.log('Referência da Camada:', geojsonLayerRefs.current[geojsonId]);
-    console.log('ZOOM TO LAYER', layer, geojsonId, mapInstance)
     if (layer && mapInstance) {
       const bounds = layer.getBounds();
       mapInstance.flyToBounds(bounds);

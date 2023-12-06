@@ -42,7 +42,6 @@ export const MapComponent = ({
   setRasters,
   setGeoJSONs,
 }) => {
-  const [mapInstance, setMapInstance] = useState(null);
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
   const [polygonStyles, setPolygonStyles] = useState({});
@@ -50,6 +49,8 @@ export const MapComponent = ({
   const [buttonsCreated, setButtonsCreated] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const geojsonLayerRefs = useRef({});
+  const [mapInstance, setMapInstance] = useState(null);
+
 
   useEffect(() => {
     leafletDefaultButtons({
@@ -132,6 +133,8 @@ export const MapComponent = ({
         setPolygonStyles={setPolygonStyles}
         visibleGeoJSONs={visibleGeoJSONs}
         setVisibleGeoJSONs={setVisibleGeoJSONs}
+        geojsonLayerRefs={geojsonLayerRefs}
+        mapInstance={mapInstance}
       />
 
       <BasemapSelector
