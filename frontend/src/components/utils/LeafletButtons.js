@@ -9,6 +9,17 @@ export const leafletDefaultButtons = ({
         
         L.control.browserPrint({ position: "topright" }).addTo(mapInstance);
         
+        L.Control.Measure.include({
+          _setCaptureMarkerIcon: function () {
+            this._captureMarker.options.autoPanOnFocus = false;
+            this._captureMarker.setIcon(
+              L.divIcon({
+                iconSize: this._map.getSize().multiplyBy(2)
+              })
+            );
+          },
+        });
+
         L.control.measure({
           position: "topright",
           primaryLengthUnit: 'meters',

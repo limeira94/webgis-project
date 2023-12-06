@@ -1,0 +1,298 @@
+.map-container {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+  }
+  
+  .btn-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      /* border-radius: 50%; */
+    }
+  
+  .btn-color{
+    background-color: #01579b ;
+  }
+  
+  .raster-upload-container {
+    text-align: center;
+    padding: 0px;
+  }
+  
+  
+  .file-upload-container {
+    text-align: center;
+    padding: 0px;
+  }
+  
+  .custom-file-input {
+    position: absolute;
+    top: 20px;
+    right: 70px;
+    z-index: 1000;
+  }
+  
+  .home-button-map {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    z-index: 1000;
+  }
+  
+  .custom-file-input button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .leaflet-control-geocoder {
+    border-radius: 50% !important;
+    position: absolute;
+    background-color: #01579b !important;
+    color: yellow !important;
+    top: 510px;
+    /* right: 20px; */
+    z-index: 1000;
+    /* border-radius: 50%; */
+    cursor: pointer;
+  }
+  
+  .leaflet-control-geocoder-icon {
+    background-image: none !important; /* Remove o ícone padrão */
+    background-color: #01579b !important; /* Cor de fundo */
+    color: white !important; /* Cor da fonte */
+    border-radius: 50% !important; /* Torna o botão circular */
+    text-indent: -9999px !important; /* Esconde qualquer texto padrão */
+    position: relative !important; /* Necessário para o pseudo-elemento */
+  
+    /* Ajusta o tamanho do botão para ser um círculo */
+    /* width: 40px !important;  */
+    /* height: 40px !important;  */
+    line-height: 30px !important; /* Centraliza verticalmente o ícone */
+  }
+  
+  .leaflet-control-geocoder-icon::before {
+    content: 'search' !important; /* Texto do ícone do Materialize */
+    font-family: 'Material Icons' !important; /* Fonte do Materialize */
+    text-indent: 0 !important; /* Mostra o texto do ícone */
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important; /* Centraliza o ícone */
+    font-size: 20px !important; /* Tamanho do ícone */
+  }
+  
+  .leaflet-control-geocoder-form input {
+    border-radius: 0% !important;
+    color: white !important; /* Muda a cor do texto para branco */
+  }
+  
+  .leaflet-control-geocoder-address-context {
+    border-radius: 0% !important;
+    color: white !important; /* Muda a cor do texto para branco */
+  }
+  
+  
+  .custom-file-input span {
+    margin-left: 10px;
+  }
+  
+  .drawer-side-bar {
+    width: 250px;
+  }
+  
+  .leaflet-control-browser-print {
+    /* position: absolute; */
+    border-radius: 50% !important;
+    position: relative;
+    top: 510px;
+    /* display: none; */
+  }
+  
+  .leaflet-control-browser-print a {
+    background: none !important;
+    background-color: #01579b !important;
+    color: white !important;
+    border-radius: 50% !important;
+    cursor: pointer;
+    
+  }
+  
+  .leaflet-control-browser-print a::before {
+    content: 'print'; /* Nome do ícone de impressão do Material Icons */
+    font-family: 'Material Icons'; /* Define a fonte para Material Icons */
+    display: block; /* Faz com que o ícone ocupe toda a largura do botão */
+    font-size: 16px; /* Ajusta o tamanho do ícone */
+    line-height: inherit; /* Alinha verticalmente o ícone */
+  }
+  
+  .leaflet-control-measure {
+    border-radius: 50% !important;
+    position: absolute;
+    top: 380px;
+    /* right: 20px; */
+    z-index: 1000;
+    cursor: pointer;
+  }
+  
+  .leaflet-control-measure a {
+    border-radius: 50% !important;
+    /* Estilos gerais do botão */
+    background: none !important;
+    background-color: #01579b !important;
+    position: relative; /* Necessário para posicionar corretamente o pseudo-elemento */
+    /* outros estilos necessários para o botão */
+  }
+  
+  .leaflet-control-measure a::before {
+    content: 'straighten'; /* Nome do ícone do Material Icons */
+    font-family: 'Material Icons';
+    font-size: 16px; /* Ajuste o tamanho conforme necessário */
+    position: absolute; /* Posiciona o ícone corretamente dentro do botão */
+    color: white;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%); /* Centraliza o ícone */
+    /* outros estilos necessários para o ícone */
+  }
+  
+  .leaflet-control-measure .leaflet-control-measure-interaction {
+    padding: 10px 12px;
+    border-radius: 3px;
+    background-color: #01579b;
+    color: white;
+    font-size: 12px;
+  
+  }
+  
+  .dropdown-button {
+    background-color: transparent;
+    color: black;
+    border: none;
+    padding: 5px;
+    width: 30px;
+    height: 30px;
+  }
+  
+  .dropdown-button .material-icons {
+    font-size: 15px; 
+  }
+  
+  .sidebar-title {
+    font-size: 20px;
+    padding: 15px;
+    margin-top: 10;
+    font-weight: bold;
+  }
+  
+  .map-style-selector {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    z-index: 1000;
+  }
+  
+  .map-style-selector a {
+    display: flex; /* Isso vai centralizar o ícone dentro do botão */
+    justify-content: center; /* Alinha horizontalmente */
+    align-items: center; /* Alinha verticalmente */
+    width: 56px; /* Largura do Materialize FAB */
+    height: 56px; /* Altura do Materialize FAB */
+    padding: 5px;
+  }
+  
+  .drawer-map-style {
+    width: 250px; /* ou a largura que você desejar */
+    /* Adicione outros estilos conforme necessário */
+  }
+  
+  .map-styles-container {
+    padding: 16px;
+  }
+  
+  .map-styles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Espaçamento entre as imagens */
+    justify-content: center; /* Centraliza os itens se não preencherem toda a largura */
+    align-items: center; /* Alinha verticalmente */
+  }
+  
+  .map-style-item {
+    flex: 0 1 auto; /* Permite que os itens se ajustem e cresçam conforme necessário */
+    margin: 5px;
+    text-align: center; /* Alinha o texto abaixo da imagem */
+  }
+  
+  .map-style-item p {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  
+  .map-style-item img {
+    width: 100px;
+    height: auto;
+    border: 2px solid #000000;
+    border-radius: 5px;
+  }
+  
+  .dialog-titlebar {
+    background-color: #366436; /* Cor verde para a barra de título */
+    height: 40px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em;
+  
+  }
+  
+  .dialog-titlebar h3 {
+    font-size: 1.2rem;
+    margin: 0; 
+  }
+  
+  .close-button {
+    cursor: pointer;
+    font-size: 1.5em;
+    color: white;
+  }
+  /* Estilizar o botão de zoom out */
+  .leaflet-control-zoom-out {
+    background-color: #28a745; /* Cor de fundo verde */
+    color: white; /* Cor do texto */
+    border: none; /* Remover borda */
+  }
+  
+  /* CSS para customizar o botão Fullscreen */
+  .leaflet-control-fullscreen {
+    background-color: #01579b !important; /* Altere para a cor que desejar */
+    color: white !important; /* Altere para a cor que desejar */
+  }
+  
+  /* CSS para customizar os botões de Zoom */
+  .leaflet-control-zoom-in,
+  .leaflet-control-zoom-out {
+    background-color: #01579b !important; /* Altere para a cor que desejar */
+    color: white !important; /* Altere para a cor que desejar */
+  }
+  
+  .fullscreen-icon {
+    background-color: #01579b !important; /* Altere para a cor que desejar */
+    background-image: none !important; /* Isso removerá o ícone existente, se você quiser manter o ícone, remova esta linha */
+  }
+  .fullscreen-icon::before {
+    content: 'fullscreen'; /* Nome do ícone do Material Icons */
+    font-family: 'Material Icons';
+    font-size: 30px; /* Ajuste o tamanho conforme necessário */
+    display: block; /* Faz com que o pseudo-elemento se comporte como um bloco */
+    color: white; /* Cor do ícone */
+    position: absolute; /* Posiciona o ícone corretamente dentro do botão */
+    text-align: center;
+  }

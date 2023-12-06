@@ -1,24 +1,19 @@
 // import React, { useState } from 'react';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-import {
-    parseGeoJSON,
-    ListItemWithStyleControls,
-    getCenterOfGeoJSON
-  } from './MapUtils';
+import { ListItemWithStyleControls } from './MapUtils';
 
 const ToggleLayersSelector = (
-    { 
-      geojsons, 
-      polygonStyles,
-      setPolygonStyles,
-      visibleGeoJSONs, 
-      setVisibleGeoJSONs, 
-      mapInstance,
-    }) => {
+  {
+    geojsons,
+    polygonStyles,
+    setPolygonStyles,
+    visibleGeoJSONs,
+    setVisibleGeoJSONs,
+    mapInstance,
+  }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-//   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
   const geojsonLayerRefs = useRef({});
 
 
@@ -36,8 +31,11 @@ const ToggleLayersSelector = (
     setIsDrawerOpen(open);
   };
 
-  const zoomToLayer = (geojsonId) => {
+  const zoomToLayer = (geojsonId) => {  
+    console.log(Object.keys(geojsonLayerRefs.current));
     const layer = geojsonLayerRefs.current[geojsonId];
+    console.log('Referência da Camada:', geojsonLayerRefs.current[geojsonId]);
+    console.log('ZOOM TO LAYER', layer, geojsonId, mapInstance)
     if (layer && mapInstance) {
       const bounds = layer.getBounds();
       mapInstance.flyToBounds(bounds);
