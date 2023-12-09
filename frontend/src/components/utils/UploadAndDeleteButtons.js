@@ -36,9 +36,11 @@ return (
 
 <>
     <div className="fixed-action-btn file-upload-container custom-file-input">
-        <a className="btn-floating btn-color">
-            <i className="large material-icons">attach_file</i>
-        </a>
+        <div className="bottom-position-button">
+            <a className="btn-floating btn-color">
+                <i className="large material-icons">attach_file</i>
+            </a>
+        </div>
         <ul>
             <li><a className="btn-floating waves-effect waves-light green tooltipped" data-position="bottom" data-tooltip="Delete all rasters" onClick={() => handleDeleteClick(setGeoJSONs)}><i className="material-icons">delete</i></a></li>
             <li><a className="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-tooltip="Delete all vectors" onClick={() => handleDeleteRasterClick(setRasters)}><i className="material-icons">delete</i></a></li>

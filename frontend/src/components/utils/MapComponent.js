@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import tileLayersData from '../tileLayers.json';
+import tileLayersData from './tileLayers.json';
 import defaultStyle from "./defaultStyle.json";
 import './MapComponent.css'
 import 'leaflet/dist/leaflet.css';
@@ -149,7 +149,7 @@ export const MapComponent = ({
       />
 
       <div className='home-button-map'>
-        <a href="/" className="btn-floating waves-effect waves-light btn-color">
+        <a href="/" className="btn-floating waves-effect waves-light black">
           <i className="material-icons tiny">home</i>
         </a>
       </div>

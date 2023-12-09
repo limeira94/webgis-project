@@ -63,7 +63,7 @@ const ToggleLayersSelector = (
       </Drawer>
       <div className='btn-menu'>
         <a
-          className="btn-floating waves-effect waves-light btn-color"
+          className="btn-floating waves-effect waves-light black tooltipped"
           onClick={toggleDrawer(true)}>
           <i className="material-icons">menu</i>
         </a>
