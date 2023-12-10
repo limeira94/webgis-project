@@ -49,14 +49,14 @@
   cursor: pointer;
 }
 
-.leaflet-control-geocoder {
+/* .leaflet-control-geocoder {
   position: absolute;
   background-color: #01579b !important;
   color: yellow !important;
   top: 510px;
   z-index: 1000;
   cursor: pointer;
-}
+} */
 
 .leaflet-control-geocoder-icon {
   background-image: none !important; 
@@ -97,10 +97,10 @@
   width: 250px;
 }
 
-.leaflet-control-browser-print {
+/* .leaflet-control-browser-print {
   position: relative;
   top: 510px;
-}
+} */
 
 .leaflet-control-browser-print a {
   background: none !important;
@@ -118,12 +118,12 @@
   line-height: inherit; 
 }
 
-.leaflet-control-measure {
+/* .leaflet-control-measure {
   position: absolute;
   top: 510px;
   z-index: 1000;
   cursor: pointer;
-}
+} */
 
 .leaflet-control-measure a {
   background: none !important;
@@ -171,8 +171,16 @@
   font-weight: bold;
 }
 
+.fixed-action-btn {
+  position: fixed;
+  bottom: 20px;
+  right:51%;
+  z-index: 1000;
+}
+
+
 .map-style-selector {
-  position: absolute;
+  position: fixed;
   left: 50%;
   bottom: 20px;
   z-index: 1000;
@@ -182,9 +190,8 @@
   display: flex; 
   justify-content: center; 
   align-items: center; 
-  width: 45px;
-  height: 45px; 
-  padding: 5px;
+  width: 41px;
+  height: 41px; 
 }
 
 .drawer-map-style {
@@ -251,15 +258,14 @@
   border: none; 
 }
 
-.leaflet-control-fullscreen {
-  background-color: #01579b !important; 
-  color: white !important; 
-}
-
-
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out {
   background-color: #01579b !important;
+  color: white !important; 
+}
+
+.leaflet-control-fullscreen {
+  background-color: #01579b !important; 
   color: white !important; 
 }
 
@@ -275,19 +281,4 @@
   color: white; 
   position: absolute;
   text-align: center;
-}
-
-.bottom-position-button {
-  position: absolute; /* ou 'fixed' se necessário */
-  bottom: -4px;
-  right: 910px;
-}
-.btn-floating {
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  width: 46px;
-  height: 46px; 
-  padding: 5px;
-  right: 10px;
 }

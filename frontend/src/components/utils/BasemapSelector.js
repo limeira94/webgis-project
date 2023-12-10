@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
@@ -9,7 +9,6 @@ const BasemapSelector = (
       tileLayersData,
     }) => {
     const [isMapStyleDrawerOpen, setIsMapStyleDrawerOpen] = useState(false);
-//   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
   
     const toggleMapStyleDrawer = (open) => () => {
     setIsMapStyleDrawerOpen(open);
@@ -38,7 +37,6 @@ const BasemapSelector = (
             {tileLayersData.map((layer) => (
               <div key={layer.key} className="map-style-item" onClick={() => {
                 changeMapStyle(layer.url);
-                // toggleMapStyleDrawer(false)(); // Close drawer after selection
               }}>
                 <img src={layer.thumbnail} alt={layer.name} />
                 <p>{layer.name}</p>

@@ -5,9 +5,9 @@ export const leafletDefaultButtons = ({
 }) => {
     if (mapInstance && !buttonsCreated) {
 
-        L.Control.geocoder().addTo(mapInstance);
+        L.Control.geocoder({position:'bottomright'}).addTo(mapInstance);
         
-        L.control.browserPrint({ position: "topright" }).addTo(mapInstance);
+        L.control.browserPrint({position:'bottomright'}).addTo(mapInstance);
         
         L.Control.Measure.include({
           _setCaptureMarkerIcon: function () {
@@ -21,13 +21,12 @@ export const leafletDefaultButtons = ({
         });
 
         L.control.measure({
-          position: "topright",
+          position: 'bottomright',
           primaryLengthUnit: 'meters',
           secondaryLengthUnit: undefined,
           primaryAreaUnit: 'sqmeters',
           secondaryAreaUnit: undefined
         }).addTo(mapInstance);
-        // // {left: 10, top: 40}
         setButtonsCreated(true)
       }
 }

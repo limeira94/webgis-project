@@ -119,7 +119,7 @@ export const MapComponent = ({
         )
       })}
       <ScaleControl position="bottomleft" />
-      <FullscreenControl position="bottomright" />
+      <FullscreenControl className="custom-fullscreen-control" position="bottomright" />
       <ZoomControl position="bottomright" />
     </MapContainer>
 
