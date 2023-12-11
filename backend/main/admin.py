@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import *#RasterFile,GeoJSONFile
 
-# Register your models here.
+from .models import * 
 
 
 admin.site.register(RasterFile)

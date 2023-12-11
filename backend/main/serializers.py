@@ -1,51 +1,60 @@
-from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import GeoJSONFile,RasterFile,Vector,Project
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
+from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from .models import GeoJSONFile, Project, RasterFile, Vector
+
 
 class VectorSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = Vector
-    fields = '__all__'
+    class Meta:
+        model = Vector
+        fields = '__all__'
+
 
 class UserSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = User
-    fields = '__all__'
-    # model = get_user_model()
-    # fields = ('username', 'email',)
-    # fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile_picture']
-    # read_only_fields = ()
+    class Meta:
+        model = User
+        fields = '__all__'
+        # model = get_user_model()
+        # fields = ('username', 'email',)
+        # fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile_picture']
+        # read_only_fields = ()
+
 
 class resetpasswordSerializer(serializers.ModelSerializer):
-    
-    username=serializers.CharField(max_length=100)
-    password=serializers.CharField(max_length=100)
+
+    username = serializers.CharField(max_length=100)
+    password = serializers.CharField(max_length=100)
 
     class Meta:
-        model=User
-        fields='__all__'
+        model = User
+        fields = '__all__'
 
     def save(self):
-        username=self.validated_data['username']
-        password=self.validated_data['password']
+        username = self.validated_data['username']
+        password = self.validated_data['password']
         if User.objects.filter(username=username).exists():
-            user=User.objects.get(username=username)
+            user = User.objects.get(username=username)
             user.set_password(password)
             user.save()
             return user
         else:
-            raise serializers.ValidationError({'error':'please enter valid crendentials'})
+            raise serializers.ValidationError(
+                {'error': 'please enter valid crendentials'}
+            )
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
-            required=True,
-            validators=[UniqueValidator(queryset=User.objects.all())]
-            )
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())],
+    )
 
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password = serializers.CharField(
+        write_only=True, required=True, validators=[validate_password]
+    )
     password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
@@ -54,7 +63,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
+            raise serializers.ValidationError(
+                {'password': "Password fields didn't match."}
+            )
 
         return attrs
 
@@ -68,7 +79,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
-    
+
+
 # class UserSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = User
@@ -96,11 +108,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
-       data = super().validate(attrs)
-       refresh = self.get_token(self.user)
-       data['refresh'] = str(refresh)
-       data['access'] = str(refresh.access_token)
-       return data
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+        return data
 
 
 class GeoJsonFileSerializer(serializers.ModelSerializer):
@@ -108,10 +120,11 @@ class GeoJsonFileSerializer(serializers.ModelSerializer):
         model = GeoJSONFile
         fields = ('id', 'name', 'geojson')
 
+
 class RasterFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = RasterFile
-        fields = ('id', 'name',"user", 'raster')
+        fields = ('id', 'name', 'user', 'raster')
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -119,11 +132,12 @@ class RasterFileSerializer(serializers.ModelSerializer):
 
         if request and request.method == 'GET':
             # if instance.png.name!='':
-            #     data['png'] = instance.png  
-            if instance.tiles!='':
-                data['tiles'] = instance.tiles    
-        
+            #     data['png'] = instance.png
+            if instance.tiles != '':
+                data['tiles'] = instance.tiles
+
         return data
+
 
 class ProjectSerializer(serializers.ModelSerializer):
 
@@ -139,21 +153,21 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_created_at(self, obj):
         return obj.get_create_at()
-    
+
     def get_updated_at(self, obj):
         return obj.get_updated_at()
-        
+
+
 class UserRegister(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    
+
     class Meta:
         model = User
         fields = ('username', 'password', 'email')
-        
+
     def create(self, validated_data):
         user = User(
-            username=validated_data['username'],
-            email=validated_data['email']
+            username=validated_data['username'], email=validated_data['email']
         )
         user.set_password(validated_data['password'])
         user.save()

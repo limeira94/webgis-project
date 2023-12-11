@@ -1,45 +1,46 @@
-from django.db import models
-from django.conf import settings
-from django.contrib.gis.db import models
-from django.core.exceptions import ValidationError
-from django.core.files import File
-from django.contrib.auth.models import User
-from django.contrib.humanize.templatetags.humanize import naturaltime
-
-import time
-import datetime
 import io
-import subprocess
 import os
-import requests
+import subprocess
 
 import numpy as np
-from PIL import Image
-
+import pyproj
+import requests
 import tifffile as tiff
-from osgeo import gdal,osr
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.gis.db import models
+from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.core.exceptions import ValidationError
+from django.core.files import File
+from django.db import models
+from osgeo import gdal, osr
+from PIL import Image
 from shapely.geometry import Polygon
 from shapely.ops import transform
-import pyproj
 
 from .geoserver import upload_file
 
-def validate_file_extension(value):    
+
+def validate_file_extension(value):
     ext = os.path.splitext(value.name)[1]
     valid_extensions = ['.tif']
     if not ext.lower() in valid_extensions:
         raise ValidationError('Unsupported file extension.')
-    
+
+
 class Shapefile(models.Model):
     name = models.CharField(max_length=100)
     shapefile = models.FileField(upload_to='shapefiles/')
-    
+
+
 class GeoJSONFile(models.Model):
     name = models.CharField(max_length=255)
-    user = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, blank=True, null=True
+    )
     geojson = models.GeometryField()
 
-    #TODO:
+    # TODO:
     # Banco de dados unico para cada usuário.
 
 
@@ -47,15 +48,17 @@ class GeoserverData(models.Model):
     url = models.CharField(max_length=300)
     workspace = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
-    epsg=models.IntegerField()
+    epsg = models.IntegerField()
+
 
 def normalize_ar(ar):
-    array = (ar-ar.min())/(ar.max()-ar.min())
-    ar[ar>1]=1
-    ar[ar<0]=0
-    array = array*255
+    array = (ar - ar.min()) / (ar.max() - ar.min())
+    ar[ar > 1] = 1
+    ar[ar < 0] = 0
+    array = array * 255
     array = array.astype(np.uint8)
     return array
+
 
 def get_bounds(file):
     ds = gdal.Open(file)
@@ -63,42 +66,41 @@ def get_bounds(file):
     width, height = ds.RasterXSize, ds.RasterYSize
     xmax = xmin + width * xpixel
     ymin = ymax + height * ypixel
-    poly = Polygon(
-            [
-                [xmin,ymax],
-                [xmax,ymax],
-                [xmax,ymin],
-                [xmin,ymin]
-            ]
-        )
+    poly = Polygon([[xmin, ymax], [xmax, ymax], [xmax, ymin], [xmin, ymin]])
     proj = osr.SpatialReference(wkt=ds.GetProjection())
-    epsg = proj.GetAttrValue('AUTHORITY',1)
-    if int(epsg)!=4326:
+    epsg = proj.GetAttrValue('AUTHORITY', 1)
+    if int(epsg) != 4326:
 
         wgs84 = pyproj.CRS('EPSG:4326')
         utm = ds.GetProjection()
 
-        project = pyproj.Transformer.from_crs(utm, wgs84,  always_xy=True).transform
+        project = pyproj.Transformer.from_crs(
+            utm, wgs84, always_xy=True
+        ).transform
         poly = transform(project, poly)
-    
+
     return poly.bounds
 
 
 class RasterFile(models.Model):
     name = models.CharField(max_length=100)
-    raster = models.FileField(upload_to='rasters/', validators=[validate_file_extension])
-    user = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)
-    tiles = models.CharField(max_length=300,default='',null=True,blank=True)
+    raster = models.FileField(
+        upload_to='rasters/', validators=[validate_file_extension]
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, blank=True, null=True
+    )
+    tiles = models.CharField(max_length=300, default='', null=True, blank=True)
     # wms = models.CharField(max_length=300,default='',null=True,blank=True)
 
     def __str__(self):
         return self.name
 
-    #TODO:
+    # TODO:
     # Solve problem with render raster
     # Options:
     # Create tiles using gdal2tiles
-    # Use Geoserver 
+    # Use Geoserver
     # Convert to PNG
     # Other....
     def save(self, *args, **kwargs):
@@ -106,18 +108,18 @@ class RasterFile(models.Model):
 
         # # To create zoom levels
         # N = 18
-        
-        if self.tiles=="":
+
+        if self.tiles == '':
             ###############
             ###     PNG
             # name=self.raster.url
             # file = self.raster.storage.path(name=name.replace('/media/',''))#
-            #TODO: 
+            # TODO:
             # solve this problem with the file.
             site = 'https://webgis.site'
-            if os.environ.get("LOCAL")=="True":
+            if os.environ.get('LOCAL') == 'True':
                 site = 'http://127.0.0.1:8000'
-            file = site+self.raster.url
+            file = site + self.raster.url
 
             bounds = get_bounds(file)
 
@@ -127,26 +129,24 @@ class RasterFile(models.Model):
             # TODO:
             ### Create the way to select the bands to use and way to stretch for better visual
             try:
-                r = Image.fromarray(normalize_ar(img[:,:,0]))
-                g = Image.fromarray(normalize_ar(img[:,:,1]))
-                b = Image.fromarray(normalize_ar(img[:,:,2]))
-                im1 = Image.merge( 'RGB', (r, g, b))
+                r = Image.fromarray(normalize_ar(img[:, :, 0]))
+                g = Image.fromarray(normalize_ar(img[:, :, 1]))
+                b = Image.fromarray(normalize_ar(img[:, :, 2]))
+                im1 = Image.merge('RGB', (r, g, b))
             except IndexError as e:
                 # print(e)
                 # print(img.shape)
                 ar = normalize_ar(img)
                 im1 = Image.fromarray(ar)
 
-
             with io.BytesIO() as buffer:
-                im1.save(buffer, format="PNG")
+                im1.save(buffer, format='PNG')
                 image_data = buffer.getvalue()
 
-            filename = self.raster.url.replace('.tif','.png')[1:]
+            filename = self.raster.url.replace('.tif', '.png')[1:]
 
             self.tiles = ','.join([str(i) for i in bounds])
             self.raster.save(filename, File(io.BytesIO(image_data)))
-
 
             # ##############
             # ###   GEOSERVER
@@ -159,13 +159,12 @@ class RasterFile(models.Model):
             # self.tiles=f'{url}{workspace}/wms&format=image/png&layers={name}&styles=&crs=EPSG:{epsg}'
             # self.save()
 
-
             #############
             ##  TILES
 
             #
             # bn = os.path.basename(file).replace(".tif","")
-            
+
             # output = f'media/tiles/{bn}'
             # if not os.path.exists(output):
             #     os.makedirs(output)
@@ -184,7 +183,7 @@ class RasterFile(models.Model):
 
             # f = f'gdal2tiles.py {temp_vrt} {output} -z "1-{N}" '
             # os.system(f)
-            
+
             # self.tiles = output
             # self.save()
             # d = str(datetime.timedelta(seconds=time.time()-t1))
@@ -192,10 +191,10 @@ class RasterFile(models.Model):
             # print(f"TIME TO PROCESS {N} tiles: {d}")
             # print("#"*50)
 
-        
+
 # #### FUTURE IMPROVEMENTS
 # #TODO?:
-# # Create the way to allow users to create a VIEW, selecting bands 
+# # Create the way to allow users to create a VIEW, selecting bands
 # # for example, this option of selecting bands works with geoserver.
 # class RasterView(models.Model):
 #     raster = models.ForeignKey(RasterFile,on_delete=models.CASCADE)
@@ -211,19 +210,22 @@ def upload_to(instance, filename):
     return 'vector/%s/%s' % (instance.user.username, filename)
 
 
-'''
+"""
 ogr2ogr -f "PostgreSQL" PG:"dbname=mydatabase user=myuser password=mypassword host=localhost port=5432" -nln mytable -nlt PROMOTE_TO_MULTI -update -overwrite -skipfailures /path/to/your/shapefile
-'''
+"""
+
 
 class Vector(models.Model):
-    filename = models.CharField(max_length=100,null=True,blank=True)
-    format_name = models.CharField(max_length=10,null=True,blank=True)
-    file = models.FileField(upload_to=upload_to)#"vectors/")
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    dbname = models.CharField(max_length=100,unique=True,null=True,blank=True)
+    filename = models.CharField(max_length=100, null=True, blank=True)
+    format_name = models.CharField(max_length=10, null=True, blank=True)
+    file = models.FileField(upload_to=upload_to)  # "vectors/")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    dbname = models.CharField(
+        max_length=100, unique=True, null=True, blank=True
+    )
 
     def __str__(self):
-        return f"{self.filename} -> USER: {self.user.username}"
+        return f'{self.filename} -> USER: {self.user.username}'
 
     def save(self, *args, **kwargs):
         if not self.filename:
@@ -231,35 +233,48 @@ class Vector(models.Model):
 
         name = os.path.splitext(os.path.basename(self.filename))[0]
         dbname = f'{self.user.username}-{name}'
-        dbname = dbname.lower().replace("-","_").replace(")","").replace("(","_").replace(" ","")
+        dbname = (
+            dbname.lower()
+            .replace('-', '_')
+            .replace(')', '')
+            .replace('(', '_')
+            .replace(' ', '')
+        )
 
         self.dbname = dbname
         self.format_name = os.path.splitext(self.file.name)[-1]
-        
+
         super().save(*args, **kwargs)
         self.import_to_postgis()
 
     def get_file_name(self):
         return os.path.splitext(self.file.name)[0]
 
-
     def generate_unique_filename(self):
         base_filename = os.path.splitext(self.file.name)[0]
         counter = 1
         unique_filename = base_filename
 
-        while Vector.objects.filter(filename=unique_filename, user=self.user).exists():
-            unique_filename = f"{base_filename}({counter})"
+        while Vector.objects.filter(
+            filename=unique_filename, user=self.user
+        ).exists():
+            unique_filename = f'{base_filename}({counter})'
             counter += 1
 
         return unique_filename
-    
+
     def run_command(self, command):
-        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(
+            command,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
         return result
 
     def import_to_postgis(self):
-        #TODO:
+        # TODO:
         # There is a problem when there is an error with the Postgres command
         # If the error is with the ogr2ogr command I could raise the exception
         # but when the error is inside postgres, I got no error and the code runs ok
@@ -280,13 +295,11 @@ class Vector(models.Model):
         db_host = db_settings['HOST']
         db_port = db_settings['PORT']
 
-        #TODO:
-        #### NEED TO DOUBLE CHECK THIS!!!!! 
+        # TODO:
+        #### NEED TO DOUBLE CHECK THIS!!!!!
         ogr2ogr_command = f"ogr2ogr -f PostgreSQL PG:'dbname={db_name} user={db_user} password={db_password} host={db_host} port={db_port}' {self.file.path} -nln {self.dbname}"
         print(ogr2ogr_command)
         return ogr2ogr_command
-
-        
 
 
 # #### SOME OPTIONS:
@@ -303,25 +316,23 @@ class Vector(models.Model):
 #     username = models.CharField()
 
 
-
 class Project(models.Model):
     name = models.CharField(max_length=100)
-    thumbnail = models.ImageField(null=True,blank=True)
-    geojson = models.ManyToManyField(GeoJSONFile,blank=True)
-    vector = models.ManyToManyField(Vector,blank=True)
+    thumbnail = models.ImageField(null=True, blank=True)
+    geojson = models.ManyToManyField(GeoJSONFile, blank=True)
+    vector = models.ManyToManyField(Vector, blank=True)
     # vector = models.ManyToManyField(GeoJSONFile,blank=True)
-    raster = models.ManyToManyField(RasterFile ,blank=True)
+    raster = models.ManyToManyField(RasterFile, blank=True)
     public = models.BooleanField(default=False)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
-    updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return self.name
-    
 
     def get_create_at(self):
         return naturaltime(self.created_at)
-    
+
     def get_updated_at(self):
         return naturaltime(self.updated_at)

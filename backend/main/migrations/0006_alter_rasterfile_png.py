@@ -13,6 +13,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='rasterfile',
             name='png',
-            field=models.FileField(blank=True, null=True, upload_to='rasters/'),
+            field=models.FileField(
+                blank=True, null=True, upload_to='rasters/'
+            ),
         ),
     ]

@@ -8,22 +8,42 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='GeoJSONFile',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=255)),
-                ('geojson', django.contrib.gis.db.models.fields.PolygonField(srid=4326)),
+                (
+                    'geojson',
+                    django.contrib.gis.db.models.fields.PolygonField(
+                        srid=4326
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
             name='Shapefile',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=100)),
                 ('shapefile', models.FileField(upload_to='shapefiles/')),
             ],

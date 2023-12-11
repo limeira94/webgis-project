@@ -1,13 +1,14 @@
+import os
 from datetime import timedelta
 from pathlib import Path
-import os
+
 from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='mydefaultsecretkey')
 
-DEBUG = True #config('DEBUG', default=False, cast=bool)
+DEBUG = True   # config('DEBUG', default=False, cast=bool)
 
 GDAL_LIBRARY_PATH = config('GDAL_LIBRARY_PATH', default='')
 
@@ -17,8 +18,8 @@ SETTINGS_MODULE = 'backend.settings'
 
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR,'build')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'build')
 
 ALLOWED_HOSTS = [
     # '*'
@@ -30,17 +31,17 @@ ALLOWED_HOSTS = [
     'webgis.site'
     # 'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com/'
     # 'ec2-3-144-137-244.us-east-2.compute.amazonaws.com'
-    ]
+]
 
 if DEBUG:
     ALLOWED_HOSTS.append('127.0.0.1')
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  
+    'http://localhost:3000',
     'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
     'http://localhost:8080',
     'http://ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
-    'https://webgis.site'
+    'https://webgis.site',
 ]
 
 if DEBUG:
@@ -52,8 +53,8 @@ CSRF_TRUSTED_ORIGINS = [
     #'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
     'http://ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
     'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
-    'https://webgis.site'
-    ]
+    'https://webgis.site',
+]
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
@@ -65,12 +66,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    "rest_framework",
+    'rest_framework',
     'rest_framework_simplejwt',
     'main',
     'corsheaders',
     'crispy_forms',
-    "crispy_bootstrap4",
+    'crispy_bootstrap4',
 ]
 
 MIDDLEWARE = [
@@ -90,10 +91,9 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-                    os.path.join(BASE_DIR, "build"),
-                    os.path.join(BASE_DIR,"main",'templates',"main")
-                 
-                ],
+            os.path.join(BASE_DIR, 'build'),
+            os.path.join(BASE_DIR, 'main', 'templates', 'main'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -114,16 +114,15 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-         'NAME': config("DB_NAME_WG"),#'webgis-project',
-         'USER': config("DB_USER_WG"),
-         'PASSWORD': config("DB_PASSWORD_WG"),
-         'HOST': config("DB_HOST_WG"), # --> conexão local
-         #'HOST': 'host.docker.internal', --> conexão docker local
-         'PORT': '5432',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': config('DB_NAME_WG'),  #'webgis-project',
+        'USER': config('DB_USER_WG'),
+        'PASSWORD': config('DB_PASSWORD_WG'),
+        'HOST': config('DB_HOST_WG'),  # --> conexão local
+        #'HOST': 'host.docker.internal', --> conexão docker local
+        'PORT': '5432',
     },
 }
-
 
 
 # Password validation
@@ -150,12 +149,12 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-#USE_L10N = True
+# USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-  os.path.join(BASE_DIR, "build/static"),
+    os.path.join(BASE_DIR, 'build/static'),
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -172,7 +171,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
 }
 
 
@@ -192,10 +191,10 @@ SIMPLE_JWT = {
 
 
 GEOSERVER = {
-    "URL":config('GEOSERVER_URL_WG', default='http://localhost:8080/'),
-    "WORKSPACE":config('GEOSERVER_WORKSPACE_WG', default='webgis'),
-    "USERNAME":config('GEOSERVER_USERNAME_WG', default='admin'),
-    "PASSWORD":config('GEOSERVER_PASSWORD_WG', default='geoserver'),
+    'URL': config('GEOSERVER_URL_WG', default='http://localhost:8080/'),
+    'WORKSPACE': config('GEOSERVER_WORKSPACE_WG', default='webgis'),
+    'USERNAME': config('GEOSERVER_USERNAME_WG', default='admin'),
+    'PASSWORD': config('GEOSERVER_PASSWORD_WG', default='geoserver'),
 }
 
 # GEOSERVER_URL = config('GEOSERVER_URL_WG', default='http://localhost:8080/')
@@ -204,12 +203,13 @@ GEOSERVER = {
 # GEOSERVER_PASSWORD = config('GEOSERVER_PASSWORD_WG', default='geoserver')
 
 
-
 # EMAIL
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'#'smtp-mail.outlook.com'
-EMAIL_HOST_USER = os.environ.get("EMAIL_USER")#secrets['email_gmail']
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS_WEBGIS")#secrets['pass_gmail']
+EMAIL_HOST = 'smtp.gmail.com'  #'smtp-mail.outlook.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_USER')  # secrets['email_gmail']
+EMAIL_HOST_PASSWORD = os.environ.get(
+    'EMAIL_PASS_WEBGIS'
+)  # secrets['pass_gmail']
 EMAIL_PORT = 587
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

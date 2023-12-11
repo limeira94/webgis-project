@@ -13,11 +13,15 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='rasterfile',
             name='bounds',
-            field=models.CharField(blank=True, default='', max_length=300, null=True),
+            field=models.CharField(
+                blank=True, default='', max_length=300, null=True
+            ),
         ),
         migrations.AddField(
             model_name='rasterfile',
             name='png',
-            field=models.FileField(blank=True, default='', null=True, upload_to='rasters/'),
+            field=models.FileField(
+                blank=True, default='', null=True, upload_to='rasters/'
+            ),
         ),
     ]

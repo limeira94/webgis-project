@@ -1,5 +1,6 @@
-from django.contrib.gis.geos import GEOSGeometry
 import json
+
+from django.contrib.gis.geos import GEOSGeometry
 
 
 def get_geojson_bounds(geojson_data):
