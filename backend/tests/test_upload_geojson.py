@@ -14,81 +14,74 @@ def client():
 
 @pytest.mark.django_db
 def test_successful_geojson_upload_point(client):
-    url = reverse('upload_geojson_api')
+    url = reverse('main:upload_geojson_api-list')
     geojson_path = './tests/data/point.geojson'
-    with open(geojson_path, 'r') as file:
-        data = {'name': 'Teste', 'geojson': file}
+    with open(geojson_path, 'r', encoding='utf-8') as file:
+        data = {'geojson': file}
         response = client.post(url, data, format='multipart')
     assert response.status_code == 201
     assert GeoJSONFile.objects.count() == 1
-    assert GeoJSONFile.objects.get().name == 'Teste'
 
 
 @pytest.mark.django_db
 def test_successful_geojson_upload_line(client):
-    url = reverse('upload_geojson_api')
+    url = reverse('main:upload_geojson_api-list')
     geojson_path = './tests/data/line.geojson'
-    with open(geojson_path, 'r') as file:
-        data = {'name': 'Teste', 'geojson': file}
+    with open(geojson_path, 'r', encoding='utf-8') as file:
+        data = {'geojson': file}
         response = client.post(url, data, format='multipart')
     assert response.status_code == 201
     assert GeoJSONFile.objects.count() == 1
-    assert GeoJSONFile.objects.get().name == 'Teste'
 
 
 @pytest.mark.django_db
 def test_successful_geojson_upload_polygon(client):
-    url = reverse('upload_geojson_api')
+    url = reverse('main:upload_geojson_api-list')
     geojson_path = './tests/data/polygon.geojson'
-    with open(geojson_path, 'r') as file:
-        data = {'name': 'Teste', 'geojson': file}
+    with open(geojson_path, 'r', encoding='utf-8') as file:
+        data = {'geojson': file}
         response = client.post(url, data, format='multipart')
     assert response.status_code == 201
     assert GeoJSONFile.objects.count() == 1
-    assert GeoJSONFile.objects.get().name == 'Teste'
-
+    
 
 @pytest.mark.django_db
 def test_successful_geojson_upload_mult_point(client):
-    url = reverse('upload_geojson_api')
+    url = reverse('main:upload_geojson_api-list')
     geojson_path = './tests/data/multipoint.geojson'
-    with open(geojson_path, 'r') as file:
-        data = {'name': 'Teste', 'geojson': file}
+    with open(geojson_path, 'r', encoding='utf-8') as file:
+        data = {'geojson': file}
         response = client.post(url, data, format='multipart')
     assert response.status_code == 201
     assert GeoJSONFile.objects.count() == 1
-    assert GeoJSONFile.objects.get().name == 'Teste'
-
+    
 
 @pytest.mark.django_db
 def test_successful_geojson_upload_mult_line(client):
-    url = reverse('upload_geojson_api')
+    url = reverse('main:upload_geojson_api-list')
     geojson_path = './tests/data/multiline.geojson'
-    with open(geojson_path, 'r') as file:
-        data = {'name': 'Teste', 'geojson': file}
+    with open(geojson_path, 'r', encoding='utf-8') as file:
+        data = {'geojson': file}
         response = client.post(url, data, format='multipart')
     assert response.status_code == 201
     assert GeoJSONFile.objects.count() == 1
-    assert GeoJSONFile.objects.get().name == 'Teste'
-
+    
 
 @pytest.mark.django_db
 def test_successful_geojson_upload_mult_polygon(client):
-    url = reverse('upload_geojson_api')
+    url = reverse('main:upload_geojson_api-list')
     geojson_path = './tests/data/multipolygon.geojson'
-    with open(geojson_path, 'r') as file:
-        data = {'name': 'Teste', 'geojson': file}
+    with open(geojson_path, 'r', encoding='utf-8') as file:
+        data = {'geojson': file}
         response = client.post(url, data, format='multipart')
     assert response.status_code == 201
     assert GeoJSONFile.objects.count() == 1
-    assert GeoJSONFile.objects.get().name == 'Teste'
-
+    
 
 @pytest.mark.django_db
 def test_malformed_geojson_upload(client):
-    url = reverse('upload_geojson_api')
-    data = {'name': 'Teste', 'geojson': '{"some": "invalid", "json", "data"}'}
-
+    url = reverse('main:upload_geojson_api-list')
+    data = {'geojson': '{"some": "invalid", "json", "data"}'}
     response = client.post(url, data, format='multipart')
     assert response.status_code == 400
     assert 'error' in response.data
@@ -96,12 +89,12 @@ def test_malformed_geojson_upload(client):
 
 
 @pytest.mark.django_db
-def test_non_geojson_file(client):
-    url = reverse('upload_geojson_api')
+def test_dont_geojson_file(client):
+    url = reverse('main:upload_geojson_api-list')
 
     file_path = './tests/data/image.jpg'
     with open(file_path, 'rb') as file:
-        data = {'name': 'Teste', 'geojson': file}
+        data = {'geojson': file}
         response = client.post(url, data, format='multipart')
     assert response.status_code == 400
     assert 'error' in response.data
@@ -110,7 +103,7 @@ def test_non_geojson_file(client):
 
 @pytest.mark.django_db
 def test_upload_without_geojon_field(client):
-    url = reverse('upload_geojson_api')
+    url = reverse('main:upload_geojson_api-list')
     data = {
         'name': 'Teste',
     }
@@ -147,11 +140,10 @@ def test_successful_geojson_upload_multiple_polygon(client):
 
 @pytest.mark.django_db
 def test_successful_geojson_upload_multiple_geometries_polygon(client):
-    url = reverse('upload_geojson_api')
+    url = reverse('main:upload_geojson_api-list')
     geojson_path = './tests/data/polygon3.geojson'
-    with open(geojson_path, 'r') as file:
-        data = {'name': 'Teste', 'geojson': file}
+    with open(geojson_path, 'r', encoding='utf-8') as file:
+        data = {'geojson': file}
         response = client.post(url, data, format='multipart')
-    print(response.data)
     assert response.status_code == 201
     assert GeoJSONFile.objects.count() == 2

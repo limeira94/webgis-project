@@ -8,7 +8,7 @@ from shapely.ops import transform
 import pyproj
 
 
-def generate_upload_path(instance, filename):
+def upload_to(instance, filename):
     return 'vector/%s/%s' % (instance.user.username, filename)
 
 
