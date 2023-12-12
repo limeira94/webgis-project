@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'
 
 export const geojson = createAsyncThunk(
     'geojson',
-    async ({},thunkAPI) => {
+    async (thunkAPI) => {
         try{
             const res = await fetch(
 				`${process.env.REACT_APP_API_URL}api/main/geojson/`
@@ -14,17 +14,14 @@ export const geojson = createAsyncThunk(
                     Authorization: `Bearer ${Cookies.get('access_token')}`
                 },
             });
-            console.log("EITA")
             const data = await res.json();
-            console.log("VISH")
-            if (res.status === 201) {
+            if (res.status === 200) {
                 return data;   
             } else {
                 return thunkAPI.rejectWithValue(data);
             }
 
         } catch (err) {
-            console.log("ADFASDFASD")
             return thunkAPI.rejectWithValue(err.response.data);
         }
     }
@@ -32,7 +29,7 @@ export const geojson = createAsyncThunk(
 
 export const raster = createAsyncThunk(
     'raster',
-    async ({},thunkAPI) => {
+    async (thunkAPI) => {
         try{
             const res = await fetch(
 				`${process.env.REACT_APP_API_URL}api/main/rasters/`
@@ -44,7 +41,7 @@ export const raster = createAsyncThunk(
                 },
             });
             const data = await res.json();
-            if (res.status === 201) {
+            if (res.status === 200) {
                 return data;   
             } else {
                 return thunkAPI.rejectWithValue(data);
@@ -162,7 +159,7 @@ export const delete_geojson = createAsyncThunk(
     }
     )
 
-const delete_raster = createAsyncThunk(
+export const delete_raster = createAsyncThunk(
     'raster/delete',
     async ({id},thunkAPI) => {
         try {
@@ -191,9 +188,9 @@ const delete_raster = createAsyncThunk(
 )
 
 const initialState =  {
-    geojson: null,
-    vector: null,
-    raster: null,
+    geojson: [],
+    vector: [],
+    raster: [],
     loading: true,
 }
 
@@ -201,6 +198,12 @@ const dataSlice = createSlice({
     name:'data',
     initialState,
     reducers:{
+        addGeojsons:(state,action) => {
+            state.geojson = action.payload;
+        },
+        addRasters:(state,action) => {
+            state.raster = action.payload;
+        }
         // resetRegistered: state => {
         //     state.registered = false
         // },
@@ -208,16 +211,13 @@ const dataSlice = createSlice({
     extraReducers: builder => {
         builder
             .addCase(geojson.pending, state => {
-                console.log("AZ")
                 state.loading = true;
             })
             .addCase(geojson.fulfilled, (state, action) => {
                 state.loading = false;
-                console.log("AZ2")
                 state.geojson = action.payload;
             })
             .addCase(geojson.rejected, state => {
-                console.log("AZ3")
                 state.loading = false;
             })
             .addCase(raster.pending, state => {
@@ -235,4 +235,5 @@ const dataSlice = createSlice({
 })
 
 // export const { resetRegistered } = userSlice.actions;
+export const {addGeojsons,addRasters} = dataSlice.actions;
 export default dataSlice.reducer;

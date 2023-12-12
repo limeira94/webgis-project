@@ -12,7 +12,7 @@ from django.core.files import File
 
 from PIL import Image
 
-from .geoserver import upload_file
+# from .geoserver import upload_file
 from .utils import generate_upload_path, normalize_ar, validate_file_extension, get_bounds
 
 
