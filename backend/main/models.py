@@ -12,7 +12,7 @@ from django.contrib.gis.db import models
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.exceptions import ValidationError
 from django.core.files import File
-from django.db import models
+# from django.db import models
 from osgeo import gdal, osr
 from PIL import Image
 from shapely.geometry import Polygon

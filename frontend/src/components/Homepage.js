@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import 'materialize-css';
 import Navbar from './include/Navbar';
 import M from 'materialize-css';
 import axios from 'axios'
+import Project from './Project';
 import './Homepage.css'
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
 const Homepage = () => {
+    const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
 
     useEffect(()=>{
@@ -19,8 +22,6 @@ const Homepage = () => {
         const getProjects = async () => {
             try {
               const response = await axios.get(`${API_URL}api/main/projects/`);
-            //   console.log(response )
-
               setProjects(response.data)
             } catch (error) {
               console.error('Error fetching GeoJSON data:', error);
@@ -38,6 +39,10 @@ const Homepage = () => {
     var url = process.env.PUBLIC_URL
     // var url = 'http://127.0.0.1:3000/'
     console.log(projects)
+
+    const handleAddProject = (projectId) => {
+        navigate(`/project/${projectId}`);
+      };
     
 
     return (
@@ -64,7 +69,7 @@ const Homepage = () => {
                                     <img src={url + "/thumbnail_map.png"}  alt={`Project ${index + 1}`} />
                                     )}
                                     <span className="card-title">{project.name}</span>
-                                    <a className="btn-floating halfway-fab waves-effect waves-light red"><i className="material-icons">add</i></a>
+                                    <a onClick={() => handleAddProject(project.id)} className="btn-floating halfway-fab waves-effect waves-light red"><i className="material-icons">add</i></a>
                                 </div>
                                 <div className="card-content">
                                     <p>{project.updated_at}</p>

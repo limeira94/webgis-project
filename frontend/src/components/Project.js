@@ -2,14 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { getProjects } from './utils/get_infos';
+import { useParams } from 'react-router-dom';
 import { 
   useNavigate 
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import M from 'materialize-css';
 import axios from 'axios'
+import Cookies from 'js-cookie';
 
 import { MapComponent } from './utils/MapComponent';
+
+import { parseGeoJSON } from './utils/MapUtils';
 
 
 import "./Project.css"
@@ -18,11 +22,9 @@ const Map = ({project}) => {
     const [rasters, setRasters] = useState([]);
     const [geojsons, setGeoJSONs] = useState([]);
 
-    console.log("AAAAAAAA",project)
-
     useEffect(()=>{
         if (project) {
-            setGeoJSONs(project.geojson)
+            setGeoJSONs(parseGeoJSON(project.geojson))
         }
     },[])
 
@@ -40,14 +42,46 @@ function Project() {
     const { isAuthenticated, user, loading } = useSelector(state => state.user);
     const [project,setProject] = useState(null)
     const [projects, setProjects] = useState([]);
-    
+
+    const { project_id } = useParams();
+    console.log(project_id,project)
+
+    useEffect(() => {
+        if (project_id && projects) {
+            const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
+            if (selectedProject) {
+                setProject(selectedProject);
+            }
+        }
+    }, [project_id, projects]);
+
+    const createNewProject = async () => {
+            try {
+              const accessToken = Cookies.get('access_token'); 
+              const response = await axios.post(`${API_URL}api/main/projects/`,{
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+              });
+
+              setProjects(response.data)
+            } catch (error) {
+              console.error('Error fetching GeoJSON data:', error);
+            }
+          
+    }
 
     const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
     useEffect(() => {
         M.AutoInit();
         const getProjects = async () => {
             try {
-              const response = await axios.get(`${API_URL}api/main/projects/`);
+              const accessToken = Cookies.get('access_token'); 
+              const response = await axios.get(`${API_URL}api/main/projects/`,{
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+              });
 
               setProjects(response.data)
             } catch (error) {
@@ -60,8 +94,16 @@ function Project() {
     var url = process.env.PUBLIC_URL
 
 
-    const handleChooseOption = (id) => {     
-        setProject(projects[id])
+    const handleChooseOption = (id) => {
+        const selectedProjectId = parseInt(id, 10);
+
+        if (selectedProjectId === parseInt(project_id, 10)) {
+            const selectedProject = projects.find(project => project.id === selectedProjectId);
+            setProject(selectedProject);
+        } else {
+            navigate(`/project/${selectedProjectId}`);
+        }
+
         const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
         modalInstance.close();
     }
@@ -69,7 +111,6 @@ function Project() {
     const clearProject = () => {
         setProject(null)
     }
-    // console.log(project)
 
     if (!isAuthenticated && !loading && user === null)
       return <Navigate to='/login'/>;
@@ -100,7 +141,8 @@ function Project() {
                                         )}
                                         <span className="card-title">{project.name}</span>
                                         <a
-                                        onClick={() => handleChooseOption(index)} 
+                                        // onClick={() => handleChooseOption(index)}
+                                        onClick={() => handleChooseOption(project.id)} 
                                         className="btn-floating halfway-fab waves-effect waves-light red"><i className="material-icons">open_in_browser</i></a>
                                     </div>
                                     <div className="card-content">
@@ -115,18 +157,15 @@ function Project() {
 
 
 
-
-
-
-
-
             </div>
             <div className="modal-footer">
+                <a href="/" className="modal-close waves-effect waves-green btn-flat">Homepage</a>
                 <a href="#!" className="modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
+            
         </div>
 
-        <Map project_id={project} />
+        {/* <Map project_id={project} /> */}
 
         {project ? <Map project={project} /> : null}
 

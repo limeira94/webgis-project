@@ -46,6 +46,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/reset" element={<ResetPassword />}/>
         <Route path="/project" element={<Project />}/>
+        <Route path="/project/:project_id" element={<Project />} />
         <Route path="/new-project" element={<NewProject />}/>
 
       </Routes>

@@ -37,12 +37,23 @@ from .utils import get_geojson_bounds
 
 
 class ProjectList(APIView):
+
+    def post(self, request):
+        serializer = ProjectSerializer(data=request.data)
+
+        if serializer.is_valid():
+            if request.user.is_authenticated:
+                serializer.validated_data['user'] = request.user
+
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
     def get(self, request):
         if request.user.is_authenticated:
-            # projects = Project.objects.filter(Q(user=request.user) | Q(public=True))
-            projects = Project.objects.filter(
-                Q(user=request.user) | Q(public=True)
-            )
+            projects = Project.objects.filter(user=request.user)
         else:
             projects = Project.objects.filter(public=True)
 
