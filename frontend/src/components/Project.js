@@ -22,6 +22,10 @@ const Map = ({project}) => {
     const [rasters, setRasters] = useState([]);
     const [geojsons, setGeoJSONs] = useState([]);
 
+    useEffect(() => {
+        M.AutoInit();
+      }, []);
+
     useEffect(()=>{
         if (project) {
             setGeoJSONs(parseGeoJSON(project.geojson))

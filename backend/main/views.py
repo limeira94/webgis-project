@@ -281,6 +281,8 @@ class RasterViewSet(viewsets.ModelViewSet):
 
 
 class GeoJSONDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
     def get(self, request, pk):
         try:
             geojson_file = GeoJSONFile.objects.get(pk=pk)
@@ -293,6 +295,7 @@ class GeoJSONDetailView(APIView):
             )
 
     def delete(self, request, pk):
+        print("DELETAR")
         try:
             geojson_file = GeoJSONFile.objects.get(pk=pk)
             geojson_file.delete()

@@ -30,7 +30,6 @@ export const handleRaster = async (event) => {
 export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,mapInstance,isAuthenticated) => {
     const file = event.target.files[0];
     event.target.value = null;
-    console.log("AUTH",isAuthenticated)
     if (file) {
       if (isAuthenticated) {
         try {
