@@ -33,7 +33,6 @@ from rest_framework_simplejwt.views import (
 
 from .models import GeoJSONFile, Project, RasterFile, Vector
 from .serializers import *
-from .utils import get_geojson_bounds
 
 
 class ProjectList(APIView):
@@ -323,10 +322,8 @@ class GeoJSONListView(APIView):
         )
 
 
-class GeoJSONFileUploadAPIView(APIView):
-    parser_classes = (MultiPartParser, FormParser)
-
-    def post(self, request, *args, **kwargs):
+class GeoJSONFileUploadViewSet(viewsets.ViewSet):
+    def create(self, request):
         try:
             geojson_data = json.loads(request.data['geojson'].read())
 
@@ -338,8 +335,6 @@ class GeoJSONFileUploadAPIView(APIView):
             for feature in geojson_data['features']:
                 geometry = GEOSGeometry(json.dumps(feature['geometry']))
                 name = feature.get('properties', {}).get('name', 'Unnamed')
-                print('#' * 50)
-                print(name)
                 # name = request.data.get('name', 'Unnamed')
                 # TODO:
                 # Here Im providing a default user but later we will need to check authentication
@@ -364,7 +359,6 @@ class GeoJSONFileUploadAPIView(APIView):
                         'geojson': json.loads(geo_instance.geojson.geojson),
                     }
                 )
-
             return Response(
                 {
                     'message': 'Data saved successfully',
@@ -378,7 +372,7 @@ class GeoJSONFileUploadAPIView(APIView):
             return Response(
                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
-
+            
 
 class UserRegistrarionView(generics.CreateAPIView):
     queryset = User.objects.all()
