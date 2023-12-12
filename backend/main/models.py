@@ -2,30 +2,18 @@ import io
 import os
 import subprocess
 
-import numpy as np
-import pyproj
 import requests
 import tifffile as tiff
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.humanize.templatetags.humanize import naturaltime
-from django.core.exceptions import ValidationError
 from django.core.files import File
-# from django.db import models
-from osgeo import gdal, osr
+
 from PIL import Image
-from shapely.geometry import Polygon
-from shapely.ops import transform
 
 from .geoserver import upload_file
-
-
-def validate_file_extension(value):
-    ext = os.path.splitext(value.name)[1]
-    valid_extensions = ['.tif']
-    if not ext.lower() in valid_extensions:
-        raise ValidationError('Unsupported file extension.')
+from .utils import generate_upload_path, normalize_ar, validate_file_extension, get_bounds
 
 
 class Shapefile(models.Model):
@@ -49,37 +37,6 @@ class GeoserverData(models.Model):
     workspace = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
     epsg = models.IntegerField()
-
-
-def normalize_ar(ar):
-    array = (ar - ar.min()) / (ar.max() - ar.min())
-    ar[ar > 1] = 1
-    ar[ar < 0] = 0
-    array = array * 255
-    array = array.astype(np.uint8)
-    return array
-
-
-def get_bounds(file):
-    ds = gdal.Open(file)
-    xmin, xpixel, _, ymax, _, ypixel = ds.GetGeoTransform()
-    width, height = ds.RasterXSize, ds.RasterYSize
-    xmax = xmin + width * xpixel
-    ymin = ymax + height * ypixel
-    poly = Polygon([[xmin, ymax], [xmax, ymax], [xmax, ymin], [xmin, ymin]])
-    proj = osr.SpatialReference(wkt=ds.GetProjection())
-    epsg = proj.GetAttrValue('AUTHORITY', 1)
-    if int(epsg) != 4326:
-
-        wgs84 = pyproj.CRS('EPSG:4326')
-        utm = ds.GetProjection()
-
-        project = pyproj.Transformer.from_crs(
-            utm, wgs84, always_xy=True
-        ).transform
-        poly = transform(project, poly)
-
-    return poly.bounds
 
 
 class RasterFile(models.Model):
@@ -206,8 +163,6 @@ class RasterFile(models.Model):
 # ### Handle multiple files from "shapefile" format
 # ### I believe that to do this, we will need to create another model just to handle the files
 # ### Something similar to the link bellow
-def upload_to(instance, filename):
-    return 'vector/%s/%s' % (instance.user.username, filename)
 
 
 """
@@ -218,7 +173,7 @@ ogr2ogr -f "PostgreSQL" PG:"dbname=mydatabase user=myuser password=mypassword ho
 class Vector(models.Model):
     filename = models.CharField(max_length=100, null=True, blank=True)
     format_name = models.CharField(max_length=10, null=True, blank=True)
-    file = models.FileField(upload_to=upload_to)  # "vectors/")
+    file = models.FileField(upload_to=generate_upload_path)  # "vectors/")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     dbname = models.CharField(
         max_length=100, unique=True, null=True, blank=True
