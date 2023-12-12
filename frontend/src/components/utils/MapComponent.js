@@ -14,7 +14,8 @@ import {
 } from 'react-leaflet';
 import BasemapSelector from './BasemapSelector';
 import ToggleLayersSelector from './ToggleLayersSelector'
-import UpDelButttons from './UploadAndDeleteButtons';
+// import UpDelButttons from './UploadAndDeleteButtons2';
+import UpDelButttons from './UploadAndDeleteButtons2';
 import { leafletDefaultButtons } from './LeafletButtons';
 import L from 'leaflet';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.js';

@@ -15,11 +15,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='vector',
-            name='file',
-            field=models.FileField(upload_to=main.models.upload_to),
-        ),
+        # migrations.AlterField(
+        #     model_name='vector',
+        #     name='file',
+        #     field=models.FileField(upload_to=main.models.upload_to),
+        # ),
         migrations.AlterField(
             model_name='vector',
             name='user',
