@@ -2,10 +2,11 @@
 import React, { useState, useRef } from 'react';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-import { ListItemWithStyleControls } from './MapUtils';
+import { ListItemWithStyleControls, ListItemWithStyleControlsRaster } from './MapUtils';
 
 const ToggleLayersSelector = (
   {
+    rasters,
     geojsons,
     polygonStyles,
     setPolygonStyles,
@@ -38,6 +39,12 @@ const ToggleLayersSelector = (
     }
   };
 
+  const zoomToLayerRaster = (id) => {
+    const raster = rasters[id]
+
+
+  }
+
   return (
     <>
       <Drawer
@@ -46,7 +53,8 @@ const ToggleLayersSelector = (
         onClose={toggleDrawer(false)}
         PaperProps={{ className: "drawer-side-bar" }}
       >
-        <div className="sidebar-title">Select your vector dataset:</div>
+        {/* <div className="sidebar-title">Select your vector dataset:</div> */}
+        <div className="sidebar-title">Your dataset:</div>
         <List>
           {geojsons.map((geojson) => (
             <ListItemWithStyleControls
@@ -57,6 +65,16 @@ const ToggleLayersSelector = (
               visibleGeoJSONs={visibleGeoJSONs}
               setVisibleGeoJSONs={setVisibleGeoJSONs}
               zoomToLayer={zoomToLayer}
+            />
+          ))}
+        </List>
+        <List>
+          {rasters.map((raster) => (
+            <ListItemWithStyleControlsRaster
+            raster={raster}
+            // visibleRasters={visibleRasters}
+            // setVisibleRasters={setVisibleRasters}
+            // zoomToLayerRaster={zoomToLayerRaster}
             />
           ))}
         </List>

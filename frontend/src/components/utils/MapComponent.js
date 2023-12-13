@@ -50,6 +50,7 @@ export const MapComponent = ({
   const [buttonsCreated, setButtonsCreated] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const geojsonLayerRefs = useRef({});
+  const rasterLayerRefs = useRef({});
   const [mapInstance, setMapInstance] = useState(null);
 
 
@@ -138,6 +139,7 @@ export const MapComponent = ({
   return (
     <>
       <ToggleLayersSelector
+        rasters={rasters}
         geojsons={geojsons}
         polygonStyles={polygonStyles}
         setPolygonStyles={setPolygonStyles}
