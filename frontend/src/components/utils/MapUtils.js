@@ -164,6 +164,7 @@ export const ListItemWithStyleControls = (
           <span className="material-icons">zoom_in_map</span>
         </button>
         <Checkbox
+          className='checkbox-button'
           checked={visibleGeoJSONs[geojson.properties.id] ?? true}
           onClick={() => handleVisibilityChange(geojson.properties.id, !(visibleGeoJSONs[geojson.properties.id] ?? false))}
         />

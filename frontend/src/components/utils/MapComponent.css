@@ -282,3 +282,28 @@
   position: absolute;
   text-align: center;
 }
+
+.zoom-button {
+  background-color: transparent;
+  color: black;
+  border: none;
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+}
+
+.zoom-button .material-icons {
+  font-size: 15px; 
+}
+
+.checkbox-button {
+  transform: scale(0.8) translateY(-2px);
+  background-color: transparent;
+  color: black;
+  border: none;
+  padding: 5px;
+  width: 25px;
+  height: 20px;
+  font-size: 15px;
+  margin: 0;
+}
