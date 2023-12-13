@@ -17,6 +17,7 @@ const UpDelButttons = ({
     setGeoJSONs,
     setRasters,
     mapInstance,
+    setVisibleGeoJSONs,
 
 }) => {
     const rasterInputRef = useRef(null);
@@ -34,8 +35,9 @@ const UpDelButttons = ({
 
 return (
 
-<>
-    <div className="fixed-action-btn file-upload-container clip-button">
+<>  
+    
+    <div className="fixed-action-btn">
         <a className="btn-floating btn-color">
             <i className="large material-icons">attach_file</i>
         </a>
@@ -53,23 +55,24 @@ return (
                 // accept=".tif, application/geo+json"
                 />
                 <a
-                    className="btn-floating waves-effect waves-light green tooltipped" data-position="bottom" data-tooltip="Upload raster"
+                    className="btn-floating waves-effect waves-light green" data-position="bottom" data-tooltip="Upload raster"
                     onClick={handleFileClickRaster}>
                     <i className="material-icons">file_upload</i>
                 </a>
                 </div>
-            </div></li>
+                </div>
+            </li>
             <li><div>
             <div>
                 <input
                 type="file"
-                onChange={(event) => handleFileChange(event, getCenterOfGeoJSON, setGeoJSONs, mapInstance, isAuthenticated)}
+                onChange={(event) => handleFileChange(event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance, isAuthenticated)}
                 ref={fileInputRef}
                 style={{ display: 'none' }}
                 accept=".geojson, application/geo+json"
                 />
                 <a
-                className="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-tooltip="Upload geojson"
+                className="btn-floating waves-effect waves-light blue" data-position="bottom" data-tooltip="Upload geojson"
                 onClick={handleFileClick}>
                 <i className="material-icons">file_upload</i>
                 </a>

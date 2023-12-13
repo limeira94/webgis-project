@@ -27,10 +27,10 @@ export const handleRaster = async (event) => {
     }
 };
 
-export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,mapInstance,isAuthenticated) => {
+export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,setVisibleGeoJSONs,mapInstance,isAuthenticated) => {
     const file = event.target.files[0];
     event.target.value = null;
-    console.log("AUTH",isAuthenticated)
+    
     if (file) {
       if (isAuthenticated) {
         try {
@@ -59,6 +59,15 @@ export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,mapI
             const newCenter = getCenterOfGeoJSON({
               type: 'FeatureCollection',
               features: newGeoJSON,
+            });
+
+            const newGeoJSONIds = newGeoJSON.map(feature => feature.properties.id);
+            setVisibleGeoJSONs(prevVisible => {
+              const updatedVisibility = { ...prevVisible };
+              newGeoJSONIds.forEach(id => {
+                updatedVisibility[id] = true;
+              });
+              return updatedVisibility;
             });
 
             if (mapInstance) {
@@ -92,6 +101,15 @@ export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,mapI
                 name: feature.properties?.name || 'Untitled'
               }
             };
+          });
+
+          const newGeoJSONIds = featuresWithId.map(feature => feature.properties.id);
+          setVisibleGeoJSONs(prevVisible => {
+            const updatedVisibility = { ...prevVisible };
+            newGeoJSONIds.forEach(id => {
+              updatedVisibility[id] = true;
+            });
+            return updatedVisibility;
           });
 
           const featureCollection = getCenterOfGeoJSON({

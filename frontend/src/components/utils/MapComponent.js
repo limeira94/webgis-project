@@ -64,7 +64,6 @@ export const MapComponent = ({
   const geojsonLayerRefs = useRef({});
   const [mapInstance, setMapInstance] = useState(null);
 
-
   useEffect(() => {
     leafletDefaultButtons({
       mapInstance: mapInstance,
@@ -171,6 +170,7 @@ export const MapComponent = ({
         setGeoJSONs={setGeoJSONs}
         setRasters={setRasters}
         mapInstance={mapInstance}
+        setVisibleGeoJSONs={setVisibleGeoJSONs}
       />
 
       <div className='home-button-map'>
