@@ -13,7 +13,7 @@ from django.core.files import File
 from PIL import Image
 
 from .geoserver import upload_file
-from .utils import upload_to, normalize_ar, validate_file_extension, get_bounds
+from .utils import generate_upload_path, normalize_ar, validate_file_extension, get_bounds
 
 
 class Shapefile(models.Model):
@@ -173,7 +173,7 @@ ogr2ogr -f "PostgreSQL" PG:"dbname=mydatabase user=myuser password=mypassword ho
 class Vector(models.Model):
     filename = models.CharField(max_length=100, null=True, blank=True)
     format_name = models.CharField(max_length=10, null=True, blank=True)
-    file = models.FileField(upload_to=upload_to)  # "vectors/")
+    file = models.FileField(upload_to=generate_upload_path)  # "vectors/")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     dbname = models.CharField(
         max_length=100, unique=True, null=True, blank=True
