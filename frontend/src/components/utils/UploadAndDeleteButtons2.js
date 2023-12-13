@@ -35,7 +35,7 @@ const UpDelButttons = ({
 return (
 
 <>
-    <div className="fixed-action-btn file-upload-container">
+    <div className="fixed-action-btn file-upload-container clip-button">
         <a className="btn-floating btn-color">
             <i className="large material-icons">attach_file</i>
         </a>

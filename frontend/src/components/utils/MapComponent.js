@@ -36,12 +36,24 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+const bounds  = [
+  [
+      -22.681892591249113,
+      -47.55402877697244
+  ],
+  [
+      -22.626619650439007,
+      -47.4893943148551
+  ]
+]
+
 
 export const MapComponent = ({
   rasters,
   geojsons,
   setRasters,
   setGeoJSONs,
+  savetomemory=true
 }) => {
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
@@ -71,26 +83,36 @@ export const MapComponent = ({
       center={[51.505, -0.09]}
       zoom={5}
       zoomControl={false}
-      maxZoom={20}
+      maxZoom={18}
       minZoom={2}>
 
       <TileLayer url={selectedTileLayer} />
 
       {rasters.map((raster, index) => {
         const tileCoordinates = raster.tiles.split(',').map(Number);
+        
         const [xmin, ymin, xmax, ymax] = tileCoordinates;
         const bounds = [[ymin, xmin], [ymax, xmax]];
+        // console.log("AAAAAAA",raster.raster,bounds)
         return (
-          <LayersControl.Overlay checked name={raster.name} key={index}>
+          // <LayersControl.Overlay checked name={raster.name} key={index}>
             <ImageOverlay
               url={raster.raster}
               bounds={bounds}
               opacity={1}
               zIndex={10}
             />
-          </LayersControl.Overlay>
+          // </LayersControl.Overlay>
         );
       })}
+      
+      {/* in memory raster */}
+      {/* <ImageOverlay
+              url={'file:///media/felipe/3dbf30eb-9bce-46d8-a833-ec990ba72625/Documentos/projetos_pessoais/webgis-project/backend/tests/data/rasters/SAR/ICEYE_X12_QUICKLOOK_SLH_2155354_20230513T171831_modified5.tif'}
+              bounds={bounds}
+              opacity={1}
+              zIndex={10}
+            /> */}
 
       {geojsons.map((geojson, index) => {
         const isVisible = visibleGeoJSONs[geojson.properties.id];
@@ -142,6 +164,8 @@ export const MapComponent = ({
         setSelectedTileLayer={setSelectedTileLayer}
         tileLayersData={tileLayersData}
       />
+
+      {savetomemory}
 
       <UpDelButttons
         setGeoJSONs={setGeoJSONs}

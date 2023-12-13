@@ -43,7 +43,7 @@ function Register() {
   var url = process.env.PUBLIC_URL
 
   return (
-    <div className='section container center overlay room-register'>
+    <div className='overlay room-register'>
 
       <div class="row">
         <div class="col s12 m5 offset-m4">

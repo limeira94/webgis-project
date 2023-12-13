@@ -54,7 +54,7 @@ const Login = () => {
     return (
     <>
       
-      <div className="section container center overlay room-login ">
+      <div className="center overlay room-login ">
         <div className="row login-position centered-element back-color"  >
         <div className='center'>
               <a href="/" className="brand-logo">

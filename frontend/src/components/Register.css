@@ -1,10 +1,12 @@
 
 .room-register{
-    background-color:darkblue;
+    /* background-color:darkblue; */
     background-size: cover;
 }
 
 .rounded-card{
+    background-color:darkblue;
+    color: white;
     border-radius : 10px;
     box-shadow: 5px 5px 5px 5px ;
   }
