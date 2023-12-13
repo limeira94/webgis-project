@@ -36,18 +36,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-const bounds  = [
-  [
-      -22.681892591249113,
-      -47.55402877697244
-  ],
-  [
-      -22.626619650439007,
-      -47.4893943148551
-  ]
-]
-
-
 export const MapComponent = ({
   rasters,
   geojsons,
@@ -93,7 +81,6 @@ export const MapComponent = ({
         
         const [xmin, ymin, xmax, ymax] = tileCoordinates;
         const bounds = [[ymin, xmin], [ymax, xmax]];
-        // console.log("AAAAAAA",raster.raster,bounds)
         return (
           // <LayersControl.Overlay checked name={raster.name} key={index}>
             <ImageOverlay

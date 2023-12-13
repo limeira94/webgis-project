@@ -133,7 +133,8 @@ export const upload_raster = createAsyncThunk(
 
 export const delete_geojson = createAsyncThunk(
     'geojson/delete',
-    async({id},thunkAPI) => {
+    async(id,thunkAPI) => {
+        console.log("AAAAAAa",id)
         try {
             const res = await fetch(
                 `${process.env.REACT_APP_API_URL}api/main/geojson/${id}`

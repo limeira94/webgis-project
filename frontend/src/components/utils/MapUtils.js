@@ -4,6 +4,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
+import { useDispatch,useSelector } from 'react-redux';
+import { delete_geojson } from '../../features/data';
+
+const handleDeleteGeojson = (geojsonId,dispatch)=> {
+  dispatch(delete_geojson(geojsonId))
+          .then((action) => {
+            
+            if (action.meta.requestStatus === 'fulfilled') {
+              window.location.reload();
+            } else {
+              console.error('Failed to delete request');
+            }
+          })
+          .catch((error) => {
+            console.log("C");
+            console.error('Error occurred while deleting request:', error);
+          });
+}
 
 export const parseGeoJSON = (data) => {
         return data.map(item => ({
@@ -146,6 +164,8 @@ export const ListItemWithStyleControls = (
   ) => {
   const [showStyleControls, setShowStyleControls] = useState(false);
 
+  const dispatch = useDispatch();
+
   const handleVisibilityChange = (id, isVisible) => {
     setVisibleGeoJSONs(prev => ({ ...prev, [id]: isVisible }));
   };
@@ -168,6 +188,7 @@ export const ListItemWithStyleControls = (
           onClick={() => handleVisibilityChange(geojson.properties.id, !(visibleGeoJSONs[geojson.properties.id] ?? false))}
         />
         <ListItemText primary={`${geojson.properties.name}`} />
+        <a href="#" onClick={() => handleDeleteGeojson(geojson.properties.id,dispatch)}><i className='material-icons'>delete</i></a>
       </div>
       {showStyleControls && (
         <div style={{ marginTop: '10px' }}>

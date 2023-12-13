@@ -295,7 +295,6 @@ class GeoJSONDetailView(APIView):
             )
 
     def delete(self, request, pk):
-        print("DELETAR")
         try:
             geojson_file = GeoJSONFile.objects.get(pk=pk)
             geojson_file.delete()
