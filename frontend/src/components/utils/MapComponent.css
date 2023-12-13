@@ -176,6 +176,20 @@
   bottom: 20px;
   right:51%;
   z-index: 1000;
+} */
+
+.clip-button{
+  /* top: 120px; */
+  /* bottom: 800px; */
+  right: 51%;
+}
+
+.upload-geo-button{
+  position:fixed;
+  bottom:20px;
+  right: 51%;
+  z-index: 1000;
+  background-color: #01579b 
 }
 
 

@@ -11,9 +11,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='vector',
-            name='file',
-            field=models.FileField(upload_to=main.utils.generate_upload_path),
-        ),
+        # migrations.AlterField(
+        #     model_name='vector',
+        #     name='file',
+        #     field=models.FileField(upload_to=main.utils.generate_upload_path),
+        # ),
     ]

@@ -4,6 +4,38 @@ import React, { useState, useEffect, useRef } from 'react';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
+import { useDispatch,useSelector } from 'react-redux';
+import { delete_geojson,delete_raster } from '../../features/data';
+
+const handleDeleteRaster = (rasterId,dispatch)=> {
+  dispatch(delete_raster(rasterId))
+          .then((action) => {
+            
+            if (action.meta.requestStatus === 'fulfilled') {
+              // window.location.reload();
+            } else {
+              console.error('Failed to delete raser');
+            }
+          })
+          .catch((error) => {
+            console.error('Error occurred while deleting request:', error);
+          });
+}
+
+const handleDeleteGeojson = (geojsonId,dispatch)=> {
+  dispatch(delete_geojson(geojsonId))
+          .then((action) => {
+            
+            if (action.meta.requestStatus === 'fulfilled') {
+              // window.location.reload();
+            } else {
+              console.error('Failed to delete geojson');
+            }
+          })
+          .catch((error) => {
+            console.error('Error occurred while deleting request:', error);
+          });
+}
 
 export const parseGeoJSON = (data) => {
         return data.map(item => ({
@@ -132,7 +164,42 @@ export const StyleControls = ({ geojson, updateStyle, polygonStyles }) => {
   );
 };
 
+export const ListItemWithStyleControlsRaster = ({
+  raster,
+  // visibleRasters,
+  // setVisibleRasters,
+  zoomToLayerRaster
+}) => {
 
+  const dispatch = useDispatch();
+
+  // const handleVisibilityChange = (id, isVisible) => {
+  //   setVisibleRasters(prev => ({ ...prev, [id]: isVisible }));
+  // };
+
+  return (
+    <ListItem key={raster.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        {/* <button className='zoom-button' onClick={() => zoomToLayer(geojson.properties.id)}>
+          <span className="material-icons">zoom_in_map</span>
+        </button> */}
+        <Checkbox
+          checked={false} //{visibleRasters[raster.id] ?? false}
+        //   onClick={() => handleVisibilityChange(
+        //     raster.id, 
+        //     false  //  !(visibleRasters[raster.id] ?? false)
+        //   )
+        // }
+        
+
+          
+        />
+        <ListItemText primary={`${raster.name}`} />
+        <a href="#" onClick={() => handleDeleteRaster(raster.id,dispatch)}><i className='material-icons'>delete</i></a>
+      </div>
+    </ListItem>
+  );
+}
 
 export const ListItemWithStyleControls = (
   { 
@@ -146,6 +213,8 @@ export const ListItemWithStyleControls = (
   ) => {
   const [showStyleControls, setShowStyleControls] = useState(false);
 
+  const dispatch = useDispatch();
+
   const handleVisibilityChange = (id, isVisible) => {
     setVisibleGeoJSONs(prev => ({ ...prev, [id]: isVisible }));
   };
@@ -158,10 +227,13 @@ export const ListItemWithStyleControls = (
     <ListItem key={geojson.properties.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <button className="dropdown-button" onClick={handleToggleClick}>
-          <span className="material-icons">arrow_drop_down</span>
-        </button>
-        <button className='zoom-button' onClick={() => zoomToLayer(geojson.properties.id)}>
-          <span className="material-icons">zoom_in_map</span>
+          { showStyleControls ? (
+            <span className="material-icons">keyboard_arrow_down</span>
+          ) :(
+            <span className="material-icons">keyboard_arrow_right</span>
+          )
+          }
+
         </button>
         <Checkbox
           className='checkbox-button'
@@ -169,6 +241,10 @@ export const ListItemWithStyleControls = (
           onClick={() => handleVisibilityChange(geojson.properties.id, !(visibleGeoJSONs[geojson.properties.id] ?? false))}
         />
         <ListItemText primary={`${geojson.properties.name}`} />
+        <button className='zoom-button' onClick={() => zoomToLayer(geojson.properties.id)}>
+          <span className="material-icons">zoom_in_map</span>
+        </button>
+        <a className="right"  href="#" onClick={() => handleDeleteGeojson(geojson.properties.id,dispatch)}><i className='material-icons'>delete</i></a>
       </div>
       {showStyleControls && (
         <div style={{ marginTop: '10px' }}>

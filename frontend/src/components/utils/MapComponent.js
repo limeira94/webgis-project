@@ -18,6 +18,7 @@ import ToggleLayersSelector from './ToggleLayersSelector'
 import UpDelButttons from './UploadAndDeleteButtons2';
 import { leafletDefaultButtons } from './LeafletButtons';
 import L from 'leaflet';
+import M from 'materialize-css';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
 import "react-leaflet-fullscreen/styles.css";
@@ -26,6 +27,7 @@ import 'leaflet.browser.print/dist/leaflet.browser.print.min.js';
 import 'leaflet-measure/dist/leaflet-measure.css';
 import 'leaflet-measure/dist/leaflet-measure.js';
 
+import { getCenterOfGeoJSON } from './MapUtils';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -35,18 +37,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
-
-const bounds  = [
-  [
-      -22.681892591249113,
-      -47.55402877697244
-  ],
-  [
-      -22.626619650439007,
-      -47.4893943148551
-  ]
-]
-
 
 export const MapComponent = ({
   rasters,
@@ -62,7 +52,12 @@ export const MapComponent = ({
   const [buttonsCreated, setButtonsCreated] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const geojsonLayerRefs = useRef({});
+  const rasterLayerRefs = useRef({});
   const [mapInstance, setMapInstance] = useState(null);
+
+  useEffect(() => {
+      M.AutoInit();
+    }, []);
 
   useEffect(() => {
     leafletDefaultButtons({
@@ -71,6 +66,67 @@ export const MapComponent = ({
       setButtonsCreated: setButtonsCreated
     });
   }, [mapInstance, buttonsCreated, setButtonsCreated]);
+
+
+  // ############################################################################################################################################################
+  // TODO:
+  // Coloquei um esboço da ideia da função para fazer upload só para a memória, precisa finalizar
+  // Depois temos que mandar essa função para outro lugar e importar ela apenas
+
+  const uploadToMemory = (event) => {
+
+    const file = event.target.files[0];
+    event.target.value = null;
+
+    const reader = new FileReader();
+        reader.onload = (e) => {
+          const geojsonData = JSON.parse(e.target.result);
+
+          const featuresWithId = geojsonData.features.map(feature => {
+            return {
+              type: "Feature",
+              geometry: feature.geometry,
+              properties: {
+                ...feature.properties,
+                id: feature.properties?.id || Math.floor(Math.random() * 1000000000),
+                name: feature.properties?.name || 'Untitled'
+              }
+            };
+          });
+
+          const featureCollection = getCenterOfGeoJSON({
+            type: 'FeatureCollection',
+            features: featuresWithId,
+          });
+
+          if (mapInstance) {
+            mapInstance.flyTo(featureCollection, 15);
+          }
+
+          setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...featuresWithId]);
+        };
+        reader.readAsText(file);
+
+  }
+
+  const memoryButton = <>
+    <a onClick={uploadToMemory} className='btn-floating waves-effect waves-light  upload-geo-button'>
+      <i className="small material-icons">file_upload</i>
+      <input
+        type="file"
+        // TODO:
+        //solve this
+
+        // onChange={(event) => handleFileChange(event, getCenterOfGeoJSON, setGeoJSONs, mapInstance, isAuthenticated)}  
+        // ref={fileInputRef}
+        style={{ display: 'none' }}
+        accept=".geojson, application/geo+json"
+        />
+    </a>
+  </>
+
+  // ############################################################################################################################################################
+
 
   const MapItem = <>
     <MapContainer className='map-container'
@@ -92,7 +148,6 @@ export const MapComponent = ({
         
         const [xmin, ymin, xmax, ymax] = tileCoordinates;
         const bounds = [[ymin, xmin], [ymax, xmax]];
-        // console.log("AAAAAAA",raster.raster,bounds)
         return (
           // <LayersControl.Overlay checked name={raster.name} key={index}>
             <ImageOverlay
@@ -150,6 +205,7 @@ export const MapComponent = ({
   return (
     <>
       <ToggleLayersSelector
+        rasters={rasters}
         geojsons={geojsons}
         polygonStyles={polygonStyles}
         setPolygonStyles={setPolygonStyles}
@@ -164,14 +220,15 @@ export const MapComponent = ({
         tileLayersData={tileLayersData}
       />
 
-      {savetomemory}
-
-      <UpDelButttons
+      {savetomemory ? memoryButton:(
+        <UpDelButttons
         setGeoJSONs={setGeoJSONs}
         setRasters={setRasters}
         mapInstance={mapInstance}
         setVisibleGeoJSONs={setVisibleGeoJSONs}
       />
+      )}
+      
 
       <div className='home-button-map'>
         <a href="/" className="btn-floating waves-effect waves-light black">

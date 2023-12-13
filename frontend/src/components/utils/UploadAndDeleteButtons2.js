@@ -1,17 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     parseGeoJSON,
     ListItemWithStyleControls,
     getCenterOfGeoJSON
   } from './MapUtils';
-  
+import M from 'materialize-css';
 import {
     handleRaster,
     handleFileChange,
     // handleDeleteClick,
     // handleDeleteRasterClick
   } from './eventHandler';
+
+
 
 const UpDelButttons = ({
     setGeoJSONs,
@@ -45,25 +47,22 @@ return (
             {/* <li><a className="btn-floating waves-effect waves-light green tooltipped" data-position="bottom" data-tooltip="Delete all rasters" onClick={() => handleDeleteClick(setGeoJSONs)}><i className="material-icons">delete</i></a></li>
             <li><a className="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-tooltip="Delete all vectors" onClick={() => handleDeleteRasterClick(setRasters)}><i className="material-icons">delete</i></a></li> */}
             <li>
-            <div className="raster-upload-container">
-                <div>
-                <input
-                    type="file"
-                    onChange={handleRaster}
-                    ref={rasterInputRef}
-                    style={{ display: 'none' }}
-                // accept=".tif, application/geo+json"
-                />
-                <a
-                    className="btn-floating waves-effect waves-light green" data-position="bottom" data-tooltip="Upload raster"
-                    onClick={handleFileClickRaster}>
-                    <i className="material-icons">file_upload</i>
-                </a>
-                </div>
-                </div>
+                {/* <div className="raster-upload-container"> */}
+                        <input
+                            type="file"
+                            onChange={handleRaster}
+                            ref={rasterInputRef}
+                            style={{ display: 'none' }}
+                        // accept=".tif, application/geo+json"
+                        />
+                        <a
+                            className="btn-floating waves-effect waves-light green tooltipped" data-position="left" data-tooltip="Upload raster"
+                            onClick={handleFileClickRaster}>
+                            <i className="material-icons">file_upload</i>
+                        </a>
+                {/* </div> */}
             </li>
-            <li><div>
-            <div>
+            <li>
                 <input
                 type="file"
                 onChange={(event) => handleFileChange(event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance, isAuthenticated)}
@@ -72,12 +71,12 @@ return (
                 accept=".geojson, application/geo+json"
                 />
                 <a
-                className="btn-floating waves-effect waves-light blue" data-position="bottom" data-tooltip="Upload geojson"
+                className="btn-floating waves-effect waves-light blue tooltipped" data-position="left" data-tooltip="Upload geojson"
                 onClick={handleFileClick}>
                 <i className="material-icons">file_upload</i>
                 </a>
-            </div>
-            </div></li>
+
+            </li>
         </ul>
     </div>
         
