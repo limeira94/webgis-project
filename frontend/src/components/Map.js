@@ -10,9 +10,9 @@ function Map() {
   const [rasters, setRasters] = useState([]);
   const [geojsons, setGeoJSONs] = useState([]);
 
-  useEffect(() => {
-    M.AutoInit();
-  }, []);
+  // useEffect(() => {
+  //   M.AutoInit();
+  // }, []);
 
   const dispatch = useDispatch();
   useEffect(() => {
