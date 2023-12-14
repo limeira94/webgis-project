@@ -36,7 +36,7 @@ const Map = ({project}) => {
 
     return (
         <>
-            <MapComponent rasters={rasters} geojsons={geojsons} setRasters={setRasters} setGeoJSONs={setGeoJSONs}/>
+            <MapComponent rasters={rasters} geojsons={geojsons} setRasters={setRasters} setGeoJSONs={setGeoJSONs} savetomemory={false}/>
         </>
     )
 }
@@ -52,8 +52,6 @@ function Project() {
     const [inputValue, setInputValue] = useState(""); 
 
     const { project_id } = useParams();
-    console.log("PROJECTID",project_id)
-    console.log(project_id,project,projects)
 
     useEffect(() => {
         M.AutoInit();
@@ -64,12 +62,12 @@ function Project() {
     useEffect(() => {
         console.log(projects)
         if (project_id && projects && project===null) {
-            // console.log("#".repeat(50));
-            // console.log("EITA",projects,parseInt(project_id, 10))
-            // console.log("#".repeat(50));
             const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
             if (selectedProject) {
                 setProject(selectedProject);
+            }
+            else{
+                navigate(`/project`);
             }
         }
     }, [project_id,project]);
@@ -122,14 +120,6 @@ function Project() {
     const handleChooseOption = (id) => {
         const selectedProjectId = parseInt(id, 10);
         navigate(`/project/${selectedProjectId}`);
-
-        // if (selectedProjectId === parseInt(project_id, 10)) {
-        //     const selectedProject = projects.find(project => project.id === selectedProjectId);
-        //     setProject(selectedProject);
-        // } else {
-        //     navigate(`/project/${selectedProjectId}`);
-        // }
-
         const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
         modalInstance.close();
     }

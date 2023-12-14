@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { upload_geojson,upload_raster } from '../../features/data';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
@@ -26,6 +27,55 @@ export const handleRaster = async (event) => {
       console.error(error);
     }
 };
+
+export const handleGeojson = async (event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance,dispatch) => {
+  const file = event.target.files[0];
+  event.target.value = null;
+  try {
+    const formData = new FormData();
+    formData.append('geojson', file);
+
+    const response = dispatch(upload_geojson(formData));
+
+    console.log('A1',response)
+
+    if (response.status === 201) {
+      const newGeoJSON = response.data.savedGeoJsons.map(item => ({
+        type: "Feature",
+        geometry: item.geojson,
+        properties: {
+          id: item.id,
+          name: item.name
+        },
+      }));
+      console.log('A2')
+
+      const newCenter = getCenterOfGeoJSON({
+        type: 'FeatureCollection',
+        features: newGeoJSON,
+      });
+      console.log('A3')
+
+      if (mapInstance) {
+        mapInstance.flyTo(newCenter, 15);
+      }
+      console.log('A4')
+
+      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...newGeoJSON]);
+      console.log('A5')
+
+    } else {
+      console.log('A6',response.status)
+      console.error('File upload failed with status:', response.status);
+      alert('There was an error uploading the file. Please try again.');
+    }
+
+  } catch (error) {
+    console.log("A7",error)
+    console.error('Error during upload:', error);
+    alert('There was an error uploading the file. Please try again.');
+  }
+} 
 
 export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,mapInstance,isAuthenticated) => {
     const file = event.target.files[0];

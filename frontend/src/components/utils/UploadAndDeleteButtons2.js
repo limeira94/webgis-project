@@ -8,10 +8,11 @@ import {
 import M from 'materialize-css';
 import {
     handleRaster,
-    handleFileChange,
+    handleGeojson
+    // handleFileChange,
     // handleDeleteClick,
     // handleDeleteRasterClick
-  } from './eventHandler';
+  } from './eventHandler2';
 
 
 
@@ -25,7 +26,9 @@ const UpDelButttons = ({
     const rasterInputRef = useRef(null);
     const fileInputRef = useRef(null);
 
-    const { isAuthenticated } = useSelector(state => state.user);
+    const dispatch = useDispatch()
+
+    // const { isAuthenticated } = useSelector(state => state.user);
 
     const handleFileClick = () => {
         fileInputRef.current.click();
@@ -65,7 +68,8 @@ return (
             <li>
                 <input
                 type="file"
-                onChange={(event) => handleFileChange(event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance, isAuthenticated)}
+                onChange={(event) => handleGeojson(event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance,dispatch)}
+                
                 ref={fileInputRef}
                 style={{ display: 'none' }}
                 accept=".geojson, application/geo+json"

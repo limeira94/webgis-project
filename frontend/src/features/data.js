@@ -56,11 +56,10 @@ export const raster = createAsyncThunk(
 
 export const upload_geojson = createAsyncThunk(
     'geojson/upload',
-    async ({geojson,user},thunkAPI) => {
+    async (geojson,thunkAPI) => {
         
           const body = JSON.stringify({
             geojson,
-            user,
         });
 
         try{
@@ -70,24 +69,17 @@ export const upload_geojson = createAsyncThunk(
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
-                    Authorization: `Bearer ${Cookies.get('access_token')}`
+                    Authorization: `Bearer ${Cookies.get('access_token')}`,
                 },
                 body,
             });
-            
-
             const data = await res.json();
-
             if (res.status === 201) {
-
                 return data;   
             } else {
-
                 return thunkAPI.rejectWithValue(data);
             }
-
         } catch (err) {
-            
             return thunkAPI.rejectWithValue(err.response.data);
         }
     }
