@@ -4,7 +4,7 @@
     left: 0; */
     width: 100%;
     overflow: hidden;
-    
+
 }
 
 .custom-shape-divider-top-1701366195 svg {
@@ -18,9 +18,9 @@
     fill: #FFFFFF;
 }
 
-.card-section{
+/* .card-section{
     background-color: cadetblue;
-}
+} */
 
 /* .logo-img {
     max-width: 100px;
@@ -28,4 +28,38 @@
 
 .img-logo {
     max-width: 150px;
+}
+
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin-bottom: 0.75em;
+}
+
+p {
+    margin-bottom: 1em;
+
+}
+
+
+.note {
+    font-style: italic;
+    color: #555;
+}
+
+.custom-ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+h4 {
+    font-size: 1.5em;
+    margin-bottom: 0.75em;
 }
