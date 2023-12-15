@@ -92,25 +92,24 @@ export const upload_geojson = createAsyncThunk(
 
 export const upload_raster = createAsyncThunk(
     'rasters/upload',
-    async ({raster,user},thunkAPI) => {
+    async ({file,projectid},thunkAPI) => {
         
-        const name = raster.name
-        const body = JSON.stringify({
-            raster,
-            name,
-            user
-        });
+        const formData = new FormData();
+        formData.append("name",file.name)
+        formData.append('raster', file, file.name); 
+        formData.append('projectid',projectid)
 
         try{
             const res = await fetch(
-				`${process.env.REACT_APP_API_URL}api/main/raster/`
+				`${process.env.REACT_APP_API_URL}api/main/rasters/`
 			,{
                 method: 'POST',
                 headers: {
-                    Accept: 'application/json',
+                    // Accept: 'application/json',
                     Authorization: `Bearer ${Cookies.get('access_token')}`
                 },
-                body,
+                // body,
+                body:formData,
             });
 
             const data = await res.json();

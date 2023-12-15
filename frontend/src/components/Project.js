@@ -31,8 +31,11 @@ const Map = ({project}) => {
     useEffect(()=>{
         if (project) {
             setGeoJSONs(parseGeoJSON(project.geojson))
+            setRasters(project.raster)
         }
     },[])
+
+    console.log("RASTERS",rasters)
 
     return (
         <>

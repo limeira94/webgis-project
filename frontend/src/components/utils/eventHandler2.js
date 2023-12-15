@@ -1,34 +1,53 @@
 import axios from 'axios';
+import { getCenterOfGeoJSON } from './MapUtils';
 import { upload_geojson,upload_raster } from '../../features/data';
+import L from 'leaflet';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
-export const handleRaster = async (event) => {
-    const formData = new FormData();
+export const handleRaster = async (event,setRasters,mapInstance,dispatch,projectid) => {
+    // const formData = new FormData();
+    // const file = event.target.files[0];
+    // formData.append('raster', file);
+    // formData.append('name', file.name);
+    // formData.append('user', "1");
+    event.preventDefault();
     const file = event.target.files[0];
-    formData.append('raster', file);
-    formData.append('name', file.name);
-    formData.append('user', "1");
+    event.target.value = null;
   
     try {
-      const response = await axios.post(
-        `${API_URL}api/main/rasters/`,
-        formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-      console.log(response.data);
+      const response = await dispatch(upload_raster({file,projectid}));
 
-      // mapInstance.flyTo(newCenter, 12);
-      // mapInstance.flyTo([40.730610, -73.935242], 15)
+      console.log(response)
+      if (response.type === 'rasters/upload/fulfilled') {
+        const { payload } = response;
+
+        const { bounds, message, raster,lat,lon } = payload;
+        
+        // const newRaster = raster
+        // console.log(newRaster)
+        // const newCenter = getCenterOfGeoJSON({
+        //   type: 'FeatureCollection',
+        //   features: newRaster,
+        // });
+        var newCenter = L.latLng(lat, lon);
+
+        // setRasters(prevRasters => [...prevRasters, ...newRaster]);
+
+        setRasters(prevRasters => [...prevRasters, raster]);
+  
+        if (mapInstance) {
+          mapInstance.flyTo(newCenter, 15);
+        }
+      
+      }
     } catch (error) {
+      console.log(error)
       console.error(error);
     }
 };
 
-export const handleGeojson = async (event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance,dispatch,projectid) => {
+export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapInstance,dispatch,projectid) => {
   event.preventDefault();
   const file = event.target.files[0];
   event.target.value = null;

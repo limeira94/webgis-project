@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    parseGeoJSON,
-    ListItemWithStyleControls,
-    getCenterOfGeoJSON
-  } from './MapUtils';
-import M from 'materialize-css';
+// import {
+//     parseGeoJSON,
+//     ListItemWithStyleControls,
+//     getCenterOfGeoJSON
+//   } from './MapUtils';
+// import M from 'materialize-css';
 import {
     handleRaster,
     handleGeojson
@@ -53,7 +53,14 @@ return (
                 {/* <div className="raster-upload-container"> */}
                         <input
                             type="file"
-                            onChange={handleRaster}
+                            // onChange={handleRaster}
+                            onChange={(event)=>handleRaster(
+                                       event,
+                                       setRasters,
+                                       mapInstance,
+                                       dispatch,
+                                       projectid
+                                       )}
                             ref={rasterInputRef}
                             style={{ display: 'none' }}
                         // accept=".tif, application/geo+json"
@@ -68,7 +75,15 @@ return (
             <li>
                 <input
                 type="file"
-                onChange={(event) => handleGeojson(event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance,dispatch,projectid)}
+                onChange={(event) => handleGeojson(
+                           event, 
+                        //    getCenterOfGeoJSON, 
+                           setGeoJSONs, 
+                           setVisibleGeoJSONs, 
+                           mapInstance,
+                           dispatch,
+                           projectid
+                           )}
                 
                 ref={fileInputRef}
                 style={{ display: 'none' }}

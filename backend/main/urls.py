@@ -21,6 +21,7 @@ router.register('upload', views.GeoJSONFileUploadViewSet, basename='upload_geojs
 urlpatterns = [
     # Rotas da API
     path('api/main/', include(router.urls)),
+    # path('api/main/rasters/upload/', views.RasterPostView.as_view(), name='raster-upload'),
     
     # Rotas específicasda API
     path('api/main/geojson/<int:pk>/', views.GeoJSONDetailView.as_view(), name='get_geojson'),

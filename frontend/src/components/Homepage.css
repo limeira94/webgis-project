@@ -55,9 +55,9 @@ ul {
     list-style-type: disc; 
 }
 
-li {
+/* li {
     margin-left: 20px;
-}
+} */
 
 .note {
     font-style: italic;

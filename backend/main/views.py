@@ -34,6 +34,7 @@ from rest_framework_simplejwt.views import (
 from .models import GeoJSONFile, Project, RasterFile, Vector
 from .serializers import *
 
+from shapely.geometry import box
 
 class ProjectList(APIView):
 
@@ -265,20 +266,107 @@ class DjangoLoginView(LoginView):
 
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+    
+
+class RasterPostView(APIView):
+    # queryset = RasterFile.objects.all()
+    serializer_class = RasterFileSerializer
+
+    def options(self, request, *args, **kwargs):
+        return Response({"methods": ["POST"]}, status=status.HTTP_200_OK)
+
+    def post(self,request):
+        print("A")
+        print("AAAA",request.data)
+        # print(request.data['raster'])
+        raster_data = request.data['raster']
+        name = request.data["name"]
+        projectid = request.data['projectid']
+
+        raster_create = RasterFile(
+            name = name,raster=raster_data,user=request.user
+        )
+        # raster_create.save()
+        project = get_object_or_404(Project,pk=projectid)  
+
+        assert request.user == project.user
+        raster_create.save()
+        print("SAVED")
+        project.raster.add(raster_create.id)
+        project.save()
+        print("SAVED2")
+        # print("PROJECT SAVED",projectid)
+        # bounds.append(geometry.extent)
+
+        # save_instance.append(
+            
+        # )
+
+        raster = get_object_or_404(raster_create.pk)
+
+        return Response(
+            {
+                'message': 'Data saved successfully',
+                'bounds': raster_create.tiles,
+                'raster': RasterFileSerializer(raster),
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+
+
 
 
 class RasterViewSet(viewsets.ModelViewSet):
     queryset = RasterFile.objects.all()
     serializer_class = RasterFileSerializer
 
-    @action(
-        methods=['DELETE'],
-        detail=False,
-    )
-    def delete(self, request: Request):
-        delete_rasters = self.queryset.all()
-        delete_rasters.delete()
-        return Response(self.serializer_class(delete_rasters, many=True).data)
+    def create(self,request):
+        raster_data = request.data['raster']
+        name = request.data["name"]
+        projectid = request.data['projectid']
+
+        raster_create = RasterFile(
+            name = name,raster=raster_data,user=request.user
+        )
+        project = get_object_or_404(Project,pk=projectid)  
+
+        assert request.user == project.user
+        raster_create.save()
+        project.raster.add(raster_create.id)
+        project.save()
+
+
+        raster = get_object_or_404(RasterFile,pk = raster_create.pk)
+        bounds = raster.tiles
+        bounds = [float(i) for i in bounds.split(",")]
+        serial = RasterFileSerializer(raster)
+        polygon = box(*bounds)
+
+        print(polygon.centroid.x, polygon.centroid.y)
+        return Response(
+            {
+                'message': 'Data saved successfully',
+                'raster': serial.data,
+                "bounds":bounds,
+                "lon":polygon.centroid.x,
+                "lat":polygon.centroid.y
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    # @action(
+    #     methods=['DELETE'],
+    #     detail=False,
+    # )
+    # def delete(self, request: Request):
+    #     delete_rasters = self.queryset.all()
+    #     delete_rasters.delete()
+    #     return Response(self.serializer_class(delete_rasters, many=True).data)
+    
+
+
 
 
 class GeoJSONDetailView(APIView):
@@ -343,6 +431,8 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
                     name=name, user=request.user, geojson=geometry
                 )
                 project = get_object_or_404(Project,pk=projectid)  
+
+                assert request.user == project.user
                 geo_instance.save()
                 project.geojson.add(geo_instance.id)
                 project.save()
