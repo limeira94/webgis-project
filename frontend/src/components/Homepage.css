@@ -37,7 +37,7 @@ h1 {
 }
 
 h2 {
-    font-size: 1.5em;
+    font-size: 1.3em;
     margin-bottom: 0.75em;
 }
 
@@ -46,20 +46,29 @@ p {
 
 }
 
+h4 {
+    font-size: 1.3em;
+    margin-bottom: 0.75em;
+}
+
+ul {
+    list-style-type: disc; 
+}
+
+li {
+    margin-left: 20px;
+}
 
 .note {
     font-style: italic;
     color: #555;
 }
 
-.custom-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+.row {
+    display: flex;
+    flex-wrap: wrap;
 }
 
-h4 {
-    font-size: 1.5em;
-    margin-bottom: 0.75em;
+.card {
+    flex: 1 0 auto;
 }

@@ -54,35 +54,35 @@ const Homepage = () => {
             </div>
 
             <div className="container">
-                <h1>Bem-vindo ao WebGIS versão 1.0.0</h1>
-                <p>WebGIS é uma plataforma de código aberto para visualização e análise de dados geográficos.</p>
-                <h2>Acesso simplificado:</h2>
-
-                <p>Acesse a plataforma sem a necessidade de registro.</p>
-                <ul className='custom-ul'>
-                    <strong>Funcionalidades para Visitantes:</strong>
-                    <ul>
-                        <li>Adicione dados vetoriais (GeoJSON).</li>
-                        <li>Explore uma variedade de mapas base (Basemap Gallery).</li>
-                        <li>Personalize a visualização de dados geográficos: altere cores, opacidade e contornos; use o recurso 'zoom to Layer' para focar em dados específicos.</li>
-                        <li>Aproveite ferramentas como tela cheia, medição de área, impressão de mapas e controle de zoom.</li>
-                    </ul>
-
-                    <p className="note">Nota: Os dados são temporários e serão perdidos após atualizar a página.</p>
-                </ul>
-
-                <h2>Acesso completo:</h2>
-                <p>Desbloqueie recursos avançados a partir de um usuário registrado.</p>
-                <ul>
-                    <strong>Funcionalidades Avançadas:</strong>
-                
-                    <li>Adicione dados raster.</li>
-                    <li>Gerencie seus dados: exclua tanto dados raster quanto vetoriais.</li>
-                    <li>Crie e gerencie projetos: Organize seu trabalho/pesquisa através de projetos.</li>
-                
-
-                    <p className="note">Nota: Seus dados são salvos nosso banco de dados, evite adicionar informações sensíveis.</p>
-                </ul>
+                <div className="row">
+                    <div className="col s12">
+                        <div className="card">
+                            <div className="card-content">
+                                <span className="card-title">Bem-vindo ao WebGIS versão 1.0.0</span>
+                                <p>WebGIS é uma plataforma de código aberto para visualização e análise de dados geográficos.</p>
+                                <h2>Acesso simplificado:</h2>
+                                <p>Acesse a plataforma sem a necessidade de registro.</p>
+                                <ul>
+                                    <strong>Funcionalidades para Visitantes:</strong>
+                                    <li>• Adicione dados vetoriais (GeoJSON).</li>
+                                    <li>• Explore uma variedade de mapas base (Basemap Gallery).</li>
+                                    <li>• Personalize a visualização de dados geográficos: altere cores, opacidade e contornos; use o recurso 'zoom to Layer' para focar em dados específicos.</li>
+                                    <li>• Aproveite ferramentas como tela cheia, medição de área, impressão de mapas e controle de zoom.</li>
+                                </ul>
+                                <p className="note">Nota: Os dados são temporários e serão perdidos após atualizar a página.</p>
+                                <h2>Acesso completo:</h2>
+                                <p>Desbloqueie recursos avançados a partir de um usuário registrado.</p>
+                                <ul>
+                                    <strong>Funcionalidades Avançadas:</strong>
+                                    <li>• Adicione dados raster.</li>
+                                    <li>• Gerencie seus dados: exclua tanto dados raster quanto vetoriais.</li>
+                                    <li>• Crie e gerencie projetos: Organize seu trabalho/pesquisa através de projetos.</li>
+                                </ul>
+                                <p className="note">Nota: Seus dados são salvos no nosso banco de dados, evite adicionar informações sensíveis.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <section className='section'>
                 <div className='container'>
@@ -105,7 +105,7 @@ const Homepage = () => {
                                     <span class="material-icons">desktop_windows</span>
                                     </div>
                                     <span className='card-title'>Frontend</span>
-                                    <p>Para construção do frontend é possível utilizar a linguagem javascript com o React</p>
+                                    <p>Para construção do frontend é possível utilizar a linguagem javascript com o React e bibliotecas como o OpenLayer e o Leaflet</p>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +131,6 @@ const Homepage = () => {
                                 </div>
                             </div>
                         </div>
-                    {/* Repita as colunas para os outros serviços */}
                     </div>
                 </div>
             </section>
