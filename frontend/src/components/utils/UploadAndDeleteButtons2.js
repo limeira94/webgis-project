@@ -21,7 +21,7 @@ const UpDelButttons = ({
     setRasters,
     mapInstance,
     setVisibleGeoJSONs,
-
+    projectid  //TODO: Change the way to do this, maybe running two different routes
 }) => {
     const rasterInputRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -68,7 +68,7 @@ return (
             <li>
                 <input
                 type="file"
-                onChange={(event) => handleGeojson(event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance,dispatch)}
+                onChange={(event) => handleGeojson(event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance,dispatch,projectid)}
                 
                 ref={fileInputRef}
                 style={{ display: 'none' }}

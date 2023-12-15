@@ -28,19 +28,33 @@ export const handleRaster = async (event) => {
     }
 };
 
-export const handleGeojson = async (event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance,dispatch) => {
+export const handleGeojson = async (event, getCenterOfGeoJSON, setGeoJSONs, setVisibleGeoJSONs, mapInstance,dispatch,projectid) => {
+  event.preventDefault();
   const file = event.target.files[0];
   event.target.value = null;
+  
   try {
-    const formData = new FormData();
-    formData.append('geojson', file);
+    // const formData = new FormData();
+    // formData.append('geojson', file);
+    // console.log(formData)
 
-    const response = dispatch(upload_geojson(formData));
+    // const response = await dispatch(upload_geojson(formData));
 
+    const response = await dispatch(upload_geojson({file,projectid}));
     console.log('A1',response)
 
-    if (response.status === 201) {
-      const newGeoJSON = response.data.savedGeoJsons.map(item => ({
+    // if (response.status === 201) {
+    if (response.type === 'geojson/upload/fulfilled') {
+      const { payload } = response;
+      // Now you can access the properties from the payload
+      const { bounds, message, savedGeoJsons } = payload;
+      
+      // Use the properties as needed
+      console.log(bounds);
+      console.log(message);
+      console.log(savedGeoJsons);
+
+      const newGeoJSON = savedGeoJsons.map(item => ({
         type: "Feature",
         geometry: item.geojson,
         properties: {
@@ -65,7 +79,9 @@ export const handleGeojson = async (event, getCenterOfGeoJSON, setGeoJSONs, setV
       console.log('A5')
 
     } else {
-      console.log('A6',response.status)
+      // console.log()
+      console.error('File upload failed with status:', response.type);
+      // console.log('A6',response.status)
       console.error('File upload failed with status:', response.status);
       alert('There was an error uploading the file. Please try again.');
     }

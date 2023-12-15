@@ -91,7 +91,7 @@ const Homepage = () => {
                             <div className='card'>
                                 <div className='card-content'>
                                     <div className='card-image'>
-                                    <span class="material-icons">memory</span>
+                                    <span className="material-icons">memory</span>
                                     </div>
                                     <span className='card-title'>Backend</span>
                                     <p>Para desenvolvimento do backend é possível utilizar a linguagem python com os frameworks Django, Flask e FastAPI.</p>
@@ -102,7 +102,7 @@ const Homepage = () => {
                             <div className='card'>
                                 <div className='card-content'>
                                     <div className='card-image'>
-                                    <span class="material-icons">desktop_windows</span>
+                                    <span className="material-icons">desktop_windows</span>
                                     </div>
                                     <span className='card-title'>Frontend</span>
                                     <p>Para construção do frontend é possível utilizar a linguagem javascript com o React e bibliotecas como o OpenLayer e o Leaflet</p>

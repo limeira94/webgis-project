@@ -43,6 +43,7 @@ export const MapComponent = ({
   geojsons,
   setRasters,
   setGeoJSONs,
+  projectid=null,
   savetomemory=true
 }) => {
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
@@ -237,6 +238,7 @@ export const MapComponent = ({
         setRasters={setRasters}
         mapInstance={mapInstance}
         setVisibleGeoJSONs={setVisibleGeoJSONs}
+        projectid={projectid}
       />
       )}
       

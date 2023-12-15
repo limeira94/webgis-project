@@ -36,7 +36,14 @@ const Map = ({project}) => {
 
     return (
         <>
-            <MapComponent rasters={rasters} geojsons={geojsons} setRasters={setRasters} setGeoJSONs={setGeoJSONs} savetomemory={false}/>
+            <MapComponent 
+                rasters={rasters} 
+                geojsons={geojsons} 
+                setRasters={setRasters} 
+                setGeoJSONs={setGeoJSONs} 
+                projectid={project.id}
+                savetomemory={false}
+                />
         </>
     )
 }

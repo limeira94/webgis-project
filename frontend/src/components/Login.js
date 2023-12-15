@@ -100,7 +100,7 @@ const Login = () => {
               </div>
           </form>
           <div className="row">
-            <a href="/" class="col s12 btn btn-large waves-effect home-button ">Homepage</a>
+            <a href="/" className="col s12 btn btn-large waves-effect home-button ">Homepage</a>
           </div>
         </div>
       </div>

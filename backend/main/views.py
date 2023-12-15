@@ -329,6 +329,7 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
     def create(self, request):
         try:
             geojson_data = json.loads(request.data['geojson'].read())
+            projectid = request.data['projectid']
 
             if not isinstance(geojson_data.get('features'), list):
                 raise ValueError('Invalid GeoJSON format')
@@ -338,21 +339,14 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
             for feature in geojson_data['features']:
                 geometry = GEOSGeometry(json.dumps(feature['geometry']))
                 name = feature.get('properties', {}).get('name', 'Unnamed')
-                # name = request.data.get('name', 'Unnamed')
-                # TODO:
-                # Here Im providing a default user but later we will need to check authentication
-                user = request.data.get('user', '4')
-                # TODO:
-                # Verificar se o usuário existe, coloquei esse except só para não dar erro
-                try:
-                    user = User.objects.get(pk=user)
-                except User.DoesNotExist:
-                    user = None
                 geo_instance = GeoJSONFile(
-                    name=name, user=user, geojson=geometry
+                    name=name, user=request.user, geojson=geometry
                 )
+                project = get_object_or_404(Project,pk=projectid)  
                 geo_instance.save()
-
+                project.geojson.add(geo_instance.id)
+                project.save()
+                # print("PROJECT SAVED",projectid)
                 bounds.append(geometry.extent)
 
                 save_instance.append(
@@ -372,6 +366,7 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
             )
 
         except Exception as e:
+            print(e)
             return Response(
                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
             )

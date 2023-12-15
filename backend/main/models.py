@@ -284,7 +284,7 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.name + f"_id={self.pk}"
 
     def get_create_at(self):
         return naturaltime(self.created_at)
