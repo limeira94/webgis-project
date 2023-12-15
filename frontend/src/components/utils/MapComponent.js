@@ -54,6 +54,7 @@ export const MapComponent = ({
   const geojsonLayerRefs = useRef({});
   const rasterLayerRefs = useRef({});
   const [mapInstance, setMapInstance] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
       M.AutoInit();
@@ -94,6 +95,15 @@ export const MapComponent = ({
             };
           });
 
+          const newGeoJSONIds = featuresWithId.map(feature => feature.properties.id);
+          setVisibleGeoJSONs(prevVisible => {
+            const updatedVisibility = { ...prevVisible };
+            newGeoJSONIds.forEach(id => {
+              updatedVisibility[id] = true;
+            });
+            return updatedVisibility;
+          });
+
           const featureCollection = getCenterOfGeoJSON({
             type: 'FeatureCollection',
             features: featuresWithId,
@@ -109,16 +119,17 @@ export const MapComponent = ({
 
   }
 
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
   const memoryButton = <>
-    <a onClick={uploadToMemory} className='btn-floating waves-effect waves-light  upload-geo-button'>
+    <a onClick={handleButtonClick} className='btn-floating waves-effect waves-light  upload-geo-button'>
       <i className="small material-icons">file_upload</i>
       <input
         type="file"
-        // TODO:
-        //solve this
-
-        // onChange={(event) => handleFileChange(event, getCenterOfGeoJSON, setGeoJSONs, mapInstance, isAuthenticated)}  
-        // ref={fileInputRef}
+        onChange={uploadToMemory}
+        ref={fileInputRef}
         style={{ display: 'none' }}
         accept=".geojson, application/geo+json"
         />
