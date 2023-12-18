@@ -64,10 +64,10 @@ ul {
     color: #555;
 }
 
-.row {
+/* .row {
     display: flex;
     flex-wrap: wrap;
-}
+} */
 
 .card {
     flex: 1 0 auto;

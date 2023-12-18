@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 // import {
 //     parseGeoJSON,
 //     ListItemWithStyleControls,
@@ -14,6 +14,7 @@ import {
     // handleDeleteRasterClick
   } from './eventHandler2';
 
+import M from 'materialize-css';
 
 
 const UpDelButttons = ({
@@ -26,6 +27,13 @@ const UpDelButttons = ({
     const rasterInputRef = useRef(null);
     const fileInputRef = useRef(null);
 
+    useEffect(() => {
+        var elems = document.querySelectorAll('.fixed-action-btn');
+        var instances = M.FloatingActionButton.init(elems, {
+            hoverEnabled: false
+        });
+    }, []);
+
     const dispatch = useDispatch()
 
     // const { isAuthenticated } = useSelector(state => state.user);
@@ -36,6 +44,8 @@ const UpDelButttons = ({
     const handleFileClickRaster = () => {
         rasterInputRef.current.click();
     };
+
+    
 
 
 return (
@@ -66,7 +76,7 @@ return (
                         // accept=".tif, application/geo+json"
                         />
                         <a
-                            className="btn-floating waves-effect waves-light green tooltipped" data-position="left" data-tooltip="Upload raster"
+                            className="btn-floating waves-effect waves-light green" data-tooltip="Upload raster"
                             onClick={handleFileClickRaster}>
                             <i className="material-icons">file_upload</i>
                         </a>
@@ -90,7 +100,7 @@ return (
                 accept=".geojson, application/geo+json"
                 />
                 <a
-                className="btn-floating waves-effect waves-light blue tooltipped" data-position="left" data-tooltip="Upload geojson"
+                className="btn-floating waves-effect waves-light blue" data-tooltip="Upload geojson"
                 onClick={handleFileClick}>
                 <i className="material-icons">file_upload</i>
                 </a>
