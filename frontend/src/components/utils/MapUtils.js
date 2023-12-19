@@ -222,19 +222,24 @@ export const ListItemWithStyleControls = (
   const handleToggleClick = () => {
     setShowStyleControls(!showStyleControls);
   };
+
+  const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
   
   return (
     <ListItem key={geojson.properties.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <button className="dropdown-button" onClick={handleToggleClick}>
+        <button 
+          className="dropdown-button" 
+          onClick={handleToggleClick}
+          style={{ visibility: isPoint ? 'hidden' : 'visible' }}>
           { showStyleControls ? (
             <span className="material-icons">keyboard_arrow_down</span>
           ) :(
             <span className="material-icons">keyboard_arrow_right</span>
           )
           }
-
         </button>
+       
         <Checkbox
           className='checkbox-button'
           checked={visibleGeoJSONs[geojson.properties.id] ?? true}
@@ -246,7 +251,7 @@ export const ListItemWithStyleControls = (
         </button>
         <a className="right"  href="#" onClick={() => handleDeleteGeojson(geojson.properties.id,dispatch)}><i className='material-icons'>delete</i></a>
       </div>
-      {showStyleControls && (
+      {showStyleControls &&(
         <div style={{ marginTop: '10px' }}>
           <StyleControls
             geojson={geojson}
