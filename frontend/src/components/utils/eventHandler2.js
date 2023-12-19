@@ -60,7 +60,6 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
     // const response = await dispatch(upload_geojson(formData));
 
     const response = await dispatch(upload_geojson({file,projectid}));
-    console.log('A1',response)
 
     // if (response.status === 201) {
     if (response.type === 'geojson/upload/fulfilled') {

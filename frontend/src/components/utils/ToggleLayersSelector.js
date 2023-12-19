@@ -71,6 +71,7 @@ const ToggleLayersSelector = (
         <List>
           {rasters.map((raster) => (
             <ListItemWithStyleControlsRaster
+            key={raster.id}
             raster={raster}
             // visibleRasters={visibleRasters}
             // setVisibleRasters={setVisibleRasters}

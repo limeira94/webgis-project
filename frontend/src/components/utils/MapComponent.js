@@ -136,6 +136,8 @@ export const MapComponent = ({
         />
     </a>
   </>
+  var url = process.env.REACT_APP_API_URL
+  console.log("URL",url)
 
   // ############################################################################################################################################################
 
@@ -157,18 +159,20 @@ export const MapComponent = ({
 
       {rasters.map((raster, index) => {
         const tileCoordinates = raster.tiles.split(',').map(Number);
+        // console.log(raster.raster)
         
         const [xmin, ymin, xmax, ymax] = tileCoordinates;
         const bounds = [[ymin, xmin], [ymax, xmax]];
         return (
-          // <LayersControl.Overlay checked name={raster.name} key={index}>
+        // <LayersControl.Overlay checked name={raster.name} key={index}>
             <ImageOverlay
-              url={raster.raster}
+              url={url + raster.raster} 
               bounds={bounds}
               opacity={1}
-              zIndex={10}
+              zIndex={1000}
+              key={index}
             />
-          // </LayersControl.Overlay>
+        // </LayersControl.Overlay>
         );
       })}
       
