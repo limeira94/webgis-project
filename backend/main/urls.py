@@ -55,4 +55,5 @@ urlpatterns = [
     path('register/', TemplateView.as_view(template_name='index.html'), name='register'),
     path('dashboard/', TemplateView.as_view(template_name='index.html'), name='dashboard'),
     path('reset/', TemplateView.as_view(template_name='index.html'), name='reset'),
+    path('project/', TemplateView.as_view(template_name='index.html'), name='project'),
 ]
