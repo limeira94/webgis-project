@@ -1,0 +1,25 @@
+.icon-data{
+    max-width: 15px;
+    max-height: 15px;
+    /* padding-left: 2px;
+    padding-right: 2px; */
+}
+
+.style-raster-class{
+    display:flex;
+    flex-direction: column;
+    width:100%;
+    padding-left: 40px; 
+}
+
+.style-raster-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.style-span{
+    text-align: left;
+    flex-grow: 1;
+}

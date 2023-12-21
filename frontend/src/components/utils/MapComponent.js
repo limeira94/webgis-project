@@ -50,6 +50,7 @@ export const MapComponent = ({
   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
   const [visibleRasters, setVisibleRasters] = useState({});
   const [polygonStyles, setPolygonStyles] = useState({});
+  const [rasterStyles, setRasterStyles] = useState({});
   const [selectedPolygon, setSelectedPolygon] = useState(null);
   const [buttonsCreated, setButtonsCreated] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -57,6 +58,8 @@ export const MapComponent = ({
   const rasterLayerRefs = useRef({});
   const [mapInstance, setMapInstance] = useState(null);
   const fileInputRef = useRef(null);
+
+  const defaultOpacity = 1
 
   useEffect(() => {
       M.AutoInit();
@@ -165,7 +168,8 @@ export const MapComponent = ({
             <ImageOverlay
               url={url + raster.raster} 
               bounds={bounds}
-              opacity={1}
+              opacity={(feature) => rasterStyles[feature.id] || defaultOpacity}
+              // opacity={1}
               zIndex={1000}
               key={index}
             />
@@ -218,9 +222,12 @@ export const MapComponent = ({
     <>
       <ToggleLayersSelector
         rasters={rasters}
+        setRasters={setRasters}
         geojsons={geojsons}
         polygonStyles={polygonStyles}
         setPolygonStyles={setPolygonStyles}
+        rasterStyles={rasterStyles}
+        setRasterStyles={setRasterStyles}
         visibleGeoJSONs={visibleGeoJSONs}
         setVisibleGeoJSONs={setVisibleGeoJSONs}
         visibleRasters={visibleRasters}

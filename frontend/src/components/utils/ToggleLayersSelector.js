@@ -8,10 +8,13 @@ import { ListItemWithStyleControls, ListItemWithStyleControlsRaster } from './Ma
 const ToggleLayersSelector = (
   {
     rasters,
+    setRasters,
     geojsons,
     polygonStyles,
     setPolygonStyles,
     visibleGeoJSONs,
+    rasterStyles,
+    setRasterStyles, //Criar meio para atualizar opacidade do raster
     setVisibleGeoJSONs,
     visibleRasters,
     setVisibleRasters,
@@ -29,6 +32,16 @@ const ToggleLayersSelector = (
       }
     }));
   };
+
+  // const updateRasterStyle = (rasterId, styleKey, value) => {
+  //   setRasterStyles(prevStyles => ({
+  //     ...prevStyles,
+  //     [polygonId]: {
+  //       ...prevStyles[polygonId],
+  //       [styleKey]: value
+  //     }
+  //   }));
+  // };
 
   const toggleDrawer = (open) => () => {
     setIsDrawerOpen(open);
@@ -67,7 +80,6 @@ const ToggleLayersSelector = (
       >
         {/* <div className="sidebar-title">Select your vector dataset:</div> */}
         <div className="sidebar-title">Your dataset:</div>
-        <p className='container'>Vector</p>
         <List>
           {geojsons.map((geojson) => (
             <ListItemWithStyleControls
@@ -81,10 +93,11 @@ const ToggleLayersSelector = (
             />
           ))}
         </List>
-        <p className='container'>Raster</p>
         <List>
           {rasters.map((raster) => (
             <ListItemWithStyleControlsRaster
+            setRasters={setRasters}
+            rasters={rasters}
             key={raster.id}
             raster={raster}
             visibleRasters={visibleRasters}
