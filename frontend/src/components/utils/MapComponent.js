@@ -48,6 +48,7 @@ export const MapComponent = ({
 }) => {
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
+  const [visibleRasters, setVisibleRasters] = useState({});
   const [polygonStyles, setPolygonStyles] = useState({});
   const [selectedPolygon, setSelectedPolygon] = useState(null);
   const [buttonsCreated, setButtonsCreated] = useState(false);
@@ -136,12 +137,9 @@ export const MapComponent = ({
         />
     </a>
   </>
-  var url = process.env.REACT_APP_API_URL
-  console.log("URL",url)
-
   // ############################################################################################################################################################
 
-
+  var url = process.env.REACT_APP_API_URL
   const MapItem = <>
     <MapContainer className='map-container'
       ref={(map) => {
@@ -158,13 +156,12 @@ export const MapComponent = ({
       <TileLayer url={selectedTileLayer} />
 
       {rasters.map((raster, index) => {
+        const isVisible = visibleRasters[raster.id];
         const tileCoordinates = raster.tiles.split(',').map(Number);
-        // console.log(raster.raster)
         
         const [xmin, ymin, xmax, ymax] = tileCoordinates;
         const bounds = [[ymin, xmin], [ymax, xmax]];
-        return (
-        // <LayersControl.Overlay checked name={raster.name} key={index}>
+        return isVisible && (
             <ImageOverlay
               url={url + raster.raster} 
               bounds={bounds}
@@ -172,7 +169,6 @@ export const MapComponent = ({
               zIndex={1000}
               key={index}
             />
-        // </LayersControl.Overlay>
         );
       })}
       
@@ -227,6 +223,8 @@ export const MapComponent = ({
         setPolygonStyles={setPolygonStyles}
         visibleGeoJSONs={visibleGeoJSONs}
         setVisibleGeoJSONs={setVisibleGeoJSONs}
+        visibleRasters={visibleRasters}
+        setVisibleRasters={setVisibleRasters}
         geojsonLayerRefs={geojsonLayerRefs}
         mapInstance={mapInstance}
       />

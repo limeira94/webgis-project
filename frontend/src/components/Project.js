@@ -35,8 +35,6 @@ const Map = ({project}) => {
         }
     },[])
 
-    console.log("RASTERS",rasters)
-
     return (
         <>
             <MapComponent 

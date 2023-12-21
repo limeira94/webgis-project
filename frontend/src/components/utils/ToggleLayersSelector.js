@@ -2,6 +2,7 @@
 import React, { useState, useRef } from 'react';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
+import L from 'leaflet';
 import { ListItemWithStyleControls, ListItemWithStyleControlsRaster } from './MapUtils';
 
 const ToggleLayersSelector = (
@@ -12,6 +13,8 @@ const ToggleLayersSelector = (
     setPolygonStyles,
     visibleGeoJSONs,
     setVisibleGeoJSONs,
+    visibleRasters,
+    setVisibleRasters,
     geojsonLayerRefs,
     mapInstance,
   }) => {
@@ -40,7 +43,16 @@ const ToggleLayersSelector = (
   };
 
   const zoomToLayerRaster = (id) => {
-    const raster = rasters[id]
+    const raster = rasters.find(rasterItem => rasterItem.id === id);
+    const boundingBox = raster.tiles
+    const [minLongitude, minLatitude, maxLongitude, maxLatitude] = boundingBox.split(',').map(Number);
+    const centroidLongitude = (minLongitude + maxLongitude) / 2;
+    const centroidLatitude = (minLatitude + maxLatitude) / 2;
+
+    var newCenter = L.latLng(centroidLatitude, centroidLongitude);
+    if (mapInstance) {
+      mapInstance.flyTo(newCenter, 15);
+    }
 
 
   }
@@ -55,6 +67,7 @@ const ToggleLayersSelector = (
       >
         {/* <div className="sidebar-title">Select your vector dataset:</div> */}
         <div className="sidebar-title">Your dataset:</div>
+        <p className='container'>Vector</p>
         <List>
           {geojsons.map((geojson) => (
             <ListItemWithStyleControls
@@ -68,14 +81,15 @@ const ToggleLayersSelector = (
             />
           ))}
         </List>
+        <p className='container'>Raster</p>
         <List>
           {rasters.map((raster) => (
             <ListItemWithStyleControlsRaster
             key={raster.id}
             raster={raster}
-            // visibleRasters={visibleRasters}
-            // setVisibleRasters={setVisibleRasters}
-            // zoomToLayerRaster={zoomToLayerRaster}
+            visibleRasters={visibleRasters}
+            setVisibleRasters={setVisibleRasters}
+            zoomToLayerRaster={zoomToLayerRaster}
             />
           ))}
         </List>

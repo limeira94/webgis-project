@@ -14,24 +14,24 @@ function Map() {
   //   M.AutoInit();
   // }, []);
 
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(geojson());
-    dispatch(raster());
-  }, [dispatch]);
+  // const dispatch = useDispatch();
+  // useEffect(() => {
+  //   dispatch(geojson());
+  //   dispatch(raster());
+  // }, [dispatch]);
 
-  const geojsons_data = useSelector(state => state.data.geojson);
-  const rasters_data = useSelector(state => state.data.raster);
+  // const geojsons_data = useSelector(state => state.data.geojson);
+  // const rasters_data = useSelector(state => state.data.raster);
   
-  useEffect(()=>{
-    if (geojsons_data) {
-      setGeoJSONs(parseGeoJSON(geojsons_data))
-    }
-    if (rasters_data){
-      console.log(rasters_data)
-      setRasters(rasters_data)
-    }
-  },[geojsons_data])
+  // useEffect(()=>{
+  //   if (geojsons_data) {
+  //     setGeoJSONs(parseGeoJSON(geojsons_data))
+  //   }
+  //   if (rasters_data){
+  //     console.log(rasters_data)
+  //     setRasters(rasters_data)
+  //   }
+  // },[geojsons_data])
   
   return (
     <>

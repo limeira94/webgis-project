@@ -166,16 +166,16 @@ export const StyleControls = ({ geojson, updateStyle, polygonStyles }) => {
 
 export const ListItemWithStyleControlsRaster = ({
   raster,
-  // visibleRasters,
-  // setVisibleRasters,
+  visibleRasters,
+  setVisibleRasters,
   zoomToLayerRaster
 }) => {
 
   const dispatch = useDispatch();
 
-  // const handleVisibilityChange = (id, isVisible) => {
-  //   setVisibleRasters(prev => ({ ...prev, [id]: isVisible }));
-  // };
+  const handleVisibilityChange = (id, isVisible) => {
+    setVisibleRasters(prev => ({ ...prev, [id]: isVisible }));
+  };
 
   return (
     <ListItem key={raster.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -184,17 +184,14 @@ export const ListItemWithStyleControlsRaster = ({
           <span className="material-icons">zoom_in_map</span>
         </button> */}
         <Checkbox
-          checked={false} //{visibleRasters[raster.id] ?? false}
-        //   onClick={() => handleVisibilityChange(
-        //     raster.id, 
-        //     false  //  !(visibleRasters[raster.id] ?? false)
-        //   )
-        // }
-        
-
-          
+          className='checkbox-button'
+          checked={visibleRasters[raster.id] ?? true}
+          onClick={() => handleVisibilityChange(raster.id, !(visibleRasters[raster.id] ?? false))}
         />
         <ListItemText primary={`${raster.name}`} />
+        <button className='zoom-button' onClick={() => zoomToLayerRaster(raster.id)}>
+          <span className="material-icons">zoom_in_map</span>
+        </button>
         <a href="#" onClick={() => handleDeleteRaster(raster.id,dispatch)}><i className='material-icons'>delete</i></a>
       </div>
     </ListItem>

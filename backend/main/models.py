@@ -78,6 +78,8 @@ class RasterFile(models.Model):
                 site = 'http://127.0.0.1:8000'
             file = site + self.raster.url
 
+            print(file)
+
             bounds = get_bounds(file)
 
             resp = requests.get(file)
