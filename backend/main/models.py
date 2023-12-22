@@ -76,10 +76,14 @@ class RasterFile(models.Model):
             site = 'https://webgis.site'
             if os.environ.get('LOCAL') == 'True':
                 site = 'http://127.0.0.1:8000'
+            
+            # site = 'http://127.0.0.1:8000'
+            # windows = 'C:/Users/limei/Documents/05_VSCode/webgis-project/backend/' + self.raster.url
+            
             file = site + self.raster.url
-
+            
             bounds = get_bounds(file)
-
+            
             resp = requests.get(file)
             img = tiff.imread(io.BytesIO(resp.content))
 
