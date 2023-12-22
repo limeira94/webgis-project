@@ -1,0 +1,24 @@
+.card-image {
+    width: 250px;  /* ou qualquer outro tamanho */
+    height: auto;
+}
+
+.card-flat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: none !important;
+    border: none !important;
+    text-align: left;
+    margin-right: 200px;
+    background-color: transparent !important;
+}
+
+.center-title {
+    text-align: center;
+    margin-bottom: 100px;
+}
+
+
