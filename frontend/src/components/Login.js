@@ -53,9 +53,8 @@ const Login = () => {
 
     return (
     <>
-      
-      <div className="center overlay room-login ">
-        <div className="row login-position centered-element back-color"  >
+      <div className="center overlay room-login  ">
+        <div className="row login-position centered-element back-color rounded-card-login"  >
         <div className='center'>
               <a href="/" className="brand-logo">
                 <img className="img-logo" src={url + "/logo.png"} alt="Web GIS Logo" height={100} />
@@ -76,7 +75,6 @@ const Login = () => {
             </div>
 
             <div className='row'>
-            {/* <label htmlFor='email'>Username</label> */}
               <div className='input-field col s12'>
                 <input className='validate' type='text' name='username' id='username' onChange={onChange}/>
                 <label htmlFor='email'>Type your username</label>
@@ -84,13 +82,12 @@ const Login = () => {
             </div>
 
             <div className='row'>
-            {/* <label htmlFor='password'>Password</label> */}
               <div className='input-field col s12'>
                 <input className='validate' type='password' name='password' id='password' onChange={onChange}/>
                 <label htmlFor='password'>Type your password</label>
               </div>
         <label className="label-forgot">
-          <a className='pink-text' href='/reset'><b>Forgot Password?</b></a>
+          <a className='blue-text' href='/reset'><b>Forgot Password?</b></a>
         </label>
         <p><a className='white-text left' href='/register'>Don't have an account? <b>Register</b> now!</a></p>
             </div>
@@ -99,9 +96,9 @@ const Login = () => {
                 <button type='submit' className='col s12 btn btn-large waves-effect login-button'>Login</button>
               </div>
           </form>
-          <div className="row">
+          {/* <div className="row">
             <a href="/" className="col s12 btn btn-large waves-effect home-button ">Homepage</a>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

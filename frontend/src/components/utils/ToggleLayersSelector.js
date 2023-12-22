@@ -2,16 +2,22 @@
 import React, { useState, useRef } from 'react';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
+import L from 'leaflet';
 import { ListItemWithStyleControls, ListItemWithStyleControlsRaster } from './MapUtils';
 
 const ToggleLayersSelector = (
   {
     rasters,
+    setRasters,
     geojsons,
     polygonStyles,
     setPolygonStyles,
     visibleGeoJSONs,
+    rasterStyles,
+    setRasterStyles, //Criar meio para atualizar opacidade do raster
     setVisibleGeoJSONs,
+    visibleRasters,
+    setVisibleRasters,
     geojsonLayerRefs,
     mapInstance,
   }) => {
@@ -27,6 +33,16 @@ const ToggleLayersSelector = (
     }));
   };
 
+  // const updateRasterStyle = (rasterId, styleKey, value) => {
+  //   setRasterStyles(prevStyles => ({
+  //     ...prevStyles,
+  //     [polygonId]: {
+  //       ...prevStyles[polygonId],
+  //       [styleKey]: value
+  //     }
+  //   }));
+  // };
+
   const toggleDrawer = (open) => () => {
     setIsDrawerOpen(open);
   };
@@ -40,7 +56,16 @@ const ToggleLayersSelector = (
   };
 
   const zoomToLayerRaster = (id) => {
-    const raster = rasters[id]
+    const raster = rasters.find(rasterItem => rasterItem.id === id);
+    const boundingBox = raster.tiles
+    const [minLongitude, minLatitude, maxLongitude, maxLatitude] = boundingBox.split(',').map(Number);
+    const centroidLongitude = (minLongitude + maxLongitude) / 2;
+    const centroidLatitude = (minLatitude + maxLatitude) / 2;
+
+    var newCenter = L.latLng(centroidLatitude, centroidLongitude);
+    if (mapInstance) {
+      mapInstance.flyTo(newCenter, 15);
+    }
 
 
   }
@@ -71,11 +96,13 @@ const ToggleLayersSelector = (
         <List>
           {rasters.map((raster) => (
             <ListItemWithStyleControlsRaster
+            setRasters={setRasters}
+            rasters={rasters}
             key={raster.id}
             raster={raster}
-            // visibleRasters={visibleRasters}
-            // setVisibleRasters={setVisibleRasters}
-            // zoomToLayerRaster={zoomToLayerRaster}
+            visibleRasters={visibleRasters}
+            setVisibleRasters={setVisibleRasters}
+            zoomToLayerRaster={zoomToLayerRaster}
             />
           ))}
         </List>

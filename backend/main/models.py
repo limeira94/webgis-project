@@ -81,7 +81,9 @@ class RasterFile(models.Model):
             # windows = 'C:/Users/limei/Documents/05_VSCode/webgis-project/backend/' + self.raster.url
             
             file = site + self.raster.url
-            
+
+            print(file)
+
             bounds = get_bounds(file)
             
             resp = requests.get(file)

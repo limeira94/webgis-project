@@ -1,3 +1,12 @@
+.overlay-register{
+    background-color: #d2dde4 !important;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:1000;
+}
 
 .room-register{
     /* background-color:darkblue; */
@@ -10,3 +19,8 @@
     border-radius : 10px;
     box-shadow: 5px 5px 5px 5px ;
   }
+
+.register-position{
+    display: inline-block; 
+    padding: 100px 100px 0px 0px; 
+}

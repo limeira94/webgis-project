@@ -47,7 +47,9 @@ export const MapComponent = ({
 }) => {
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
+  const [visibleRasters, setVisibleRasters] = useState({});
   const [polygonStyles, setPolygonStyles] = useState({});
+  const [rasterStyles, setRasterStyles] = useState({});
   const [selectedPolygon, setSelectedPolygon] = useState(null);
   const [buttonsCreated, setButtonsCreated] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -55,6 +57,8 @@ export const MapComponent = ({
   const rasterLayerRefs = useRef({});
   const [mapInstance, setMapInstance] = useState(null);
   const fileInputRef = useRef(null);
+
+  const defaultOpacity = 1
 
   useEffect(() => {
       M.AutoInit();
@@ -135,12 +139,9 @@ export const MapComponent = ({
         />
     </a>
   </>
-  var url = process.env.REACT_APP_API_URL
-  console.log("URL",url)
-
   // ############################################################################################################################################################
 
-
+  var url = process.env.REACT_APP_API_URL
   const MapItem = <>
     <MapContainer className='map-container'
       ref={(map) => {
@@ -157,21 +158,20 @@ export const MapComponent = ({
       <TileLayer url={selectedTileLayer} />
 
       {rasters.map((raster, index) => {
+        const isVisible = visibleRasters[raster.id];
         const tileCoordinates = raster.tiles.split(',').map(Number);
-        // console.log(raster.raster)
         
         const [xmin, ymin, xmax, ymax] = tileCoordinates;
         const bounds = [[ymin, xmin], [ymax, xmax]];
-        return (
-        // <LayersControl.Overlay checked name={raster.name} key={index}>
+        return isVisible && (
             <ImageOverlay
               url={url + raster.raster} 
               bounds={bounds}
-              opacity={1}
+              opacity={(feature) => rasterStyles[feature.id] || defaultOpacity}
+              // opacity={1}
               zIndex={1000}
               key={index}
             />
-        // </LayersControl.Overlay>
         );
       })}
       
@@ -221,11 +221,16 @@ export const MapComponent = ({
     <>
       <ToggleLayersSelector
         rasters={rasters}
+        setRasters={setRasters}
         geojsons={geojsons}
         polygonStyles={polygonStyles}
         setPolygonStyles={setPolygonStyles}
+        rasterStyles={rasterStyles}
+        setRasterStyles={setRasterStyles}
         visibleGeoJSONs={visibleGeoJSONs}
         setVisibleGeoJSONs={setVisibleGeoJSONs}
+        visibleRasters={visibleRasters}
+        setVisibleRasters={setVisibleRasters}
         geojsonLayerRefs={geojsonLayerRefs}
         mapInstance={mapInstance}
       />
