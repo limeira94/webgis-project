@@ -25,6 +25,8 @@ import { FullscreenControl } from 'react-leaflet-fullscreen';
 import 'leaflet.browser.print/dist/leaflet.browser.print.min.js';
 import 'leaflet-measure/dist/leaflet-measure.css';
 import 'leaflet-measure/dist/leaflet-measure.js';
+import bbox from '@turf/bbox';
+import { featureCollection } from '@turf/helpers';
 
 import { getCenterOfGeoJSON } from './MapUtils';
 
@@ -101,6 +103,11 @@ export const MapComponent = ({
             };
           });
 
+          const featuresCollection = featureCollection(featuresWithId);
+          const calculatedBounds = bbox(featuresCollection);
+
+          console.log(calculatedBounds);
+          
           const newGeoJSONIds = featuresWithId.map(feature => feature.properties.id);
           setVisibleGeoJSONs(prevVisible => {
             const updatedVisibility = { ...prevVisible };
@@ -110,13 +117,17 @@ export const MapComponent = ({
             return updatedVisibility;
           });
 
-          const featureCollection = getCenterOfGeoJSON({
-            type: 'FeatureCollection',
-            features: featuresWithId,
-          });
+          // const featureCollection = getCenterOfGeoJSON({
+          //   type: 'FeatureCollection',
+          //   features: featuresWithId,
+          // });
 
-          if (mapInstance) {
-            mapInstance.flyTo(featureCollection, 15);
+          if (mapInstance && calculatedBounds) {
+            const boundsLatLng = L.latLngBounds(
+              [calculatedBounds[1], calculatedBounds[0]],
+              [calculatedBounds[3], calculatedBounds[2]]
+            );
+            mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
           }
 
           setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...featuresWithId]);
