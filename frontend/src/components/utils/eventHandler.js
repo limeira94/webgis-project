@@ -87,6 +87,8 @@ export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,setV
         }
       } else {
 
+        const fileName = file.name.split('.')[0];
+
         const reader = new FileReader();
         reader.onload = (e) => {
           const geojsonData = JSON.parse(e.target.result);
@@ -98,7 +100,7 @@ export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,setV
               properties: {
                 ...feature.properties,
                 id: feature.properties?.id || Math.floor(Math.random() * 1000000000),
-                name: feature.properties?.name || 'Untitled'
+                name: feature.properties?.name || fileName
               }
             };
           });

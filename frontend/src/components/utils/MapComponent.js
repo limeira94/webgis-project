@@ -83,6 +83,8 @@ export const MapComponent = ({
     const file = event.target.files[0];
     event.target.value = null;
 
+    const fileName = file.name.split('.')[0];
+
     const reader = new FileReader();
         reader.onload = (e) => {
           const geojsonData = JSON.parse(e.target.result);
@@ -94,7 +96,7 @@ export const MapComponent = ({
               properties: {
                 ...feature.properties,
                 id: feature.properties?.id || Math.floor(Math.random() * 1000000000),
-                name: feature.properties?.name || 'Untitled'
+                name: feature.properties?.name || fileName
               }
             };
           });

@@ -422,11 +422,17 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
             if not isinstance(geojson_data.get('features'), list):
                 raise ValueError('Invalid GeoJSON format')
 
+            geojson_file = request.FILES.get('geojson')
+            if geojson_file:
+                filename = geojson_file.name
+                base_name = filename.split('.')[0]
+            
             save_instance = []
             bounds = []
             for feature in geojson_data['features']:
                 geometry = GEOSGeometry(json.dumps(feature['geometry']))
-                name = feature.get('properties', {}).get('name', 'Unnamed')
+                # name = feature.get('properties', {}).get('name', 'Unnamed')
+                name = base_name
                 geo_instance = GeoJSONFile(
                     name=name, user=request.user, geojson=geometry
                 )
