@@ -2,6 +2,8 @@ import axios from 'axios';
 import { getCenterOfGeoJSON } from './MapUtils';
 import { upload_geojson,upload_raster } from '../../features/data';
 import L from 'leaflet';
+import bbox from '@turf/bbox';
+import { featureCollection } from '@turf/helpers';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
@@ -81,6 +83,10 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
         },
       }));
       console.log('A2')
+      const featuresCollection = featureCollection(newGeoJSON);
+      const calculatedBounds = bbox(featuresCollection);
+
+      console.log(calculatedBounds);
 
       const newCenter = getCenterOfGeoJSON({
         type: 'FeatureCollection',
@@ -88,8 +94,12 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
       });
       console.log('A3')
 
-      if (mapInstance) {
-        mapInstance.flyTo(newCenter, 15);
+      if (mapInstance && calculatedBounds) {
+        const boundsLatLng = L.latLngBounds(
+          [calculatedBounds[1], calculatedBounds[0]],
+          [calculatedBounds[3], calculatedBounds[2]]
+        );
+        mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
       }
       console.log('A4')
 
