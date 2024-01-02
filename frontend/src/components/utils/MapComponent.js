@@ -28,8 +28,6 @@ import 'leaflet-measure/dist/leaflet-measure.js';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
 
-import { getCenterOfGeoJSON } from './MapUtils';
-
 delete L.Icon.Default.prototype._getIconUrl;
 
 
@@ -54,9 +52,7 @@ export const MapComponent = ({
   const [rasterStyles, setRasterStyles] = useState({});
   const [selectedPolygon, setSelectedPolygon] = useState(null);
   const [buttonsCreated, setButtonsCreated] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const geojsonLayerRefs = useRef({});
-  const rasterLayerRefs = useRef({});
   const [mapInstance, setMapInstance] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -105,8 +101,6 @@ export const MapComponent = ({
 
           const featuresCollection = featureCollection(featuresWithId);
           const calculatedBounds = bbox(featuresCollection);
-
-          console.log(calculatedBounds);
           
           const newGeoJSONIds = featuresWithId.map(feature => feature.properties.id);
           setVisibleGeoJSONs(prevVisible => {
@@ -116,11 +110,6 @@ export const MapComponent = ({
             });
             return updatedVisibility;
           });
-
-          // const featureCollection = getCenterOfGeoJSON({
-          //   type: 'FeatureCollection',
-          //   features: featuresWithId,
-          // });
 
           if (mapInstance && calculatedBounds) {
             const boundsLatLng = L.latLngBounds(

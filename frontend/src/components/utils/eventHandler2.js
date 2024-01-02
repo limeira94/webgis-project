@@ -55,24 +55,14 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
   event.target.value = null;
   
   try {
-    // const formData = new FormData();
-    // formData.append('geojson', file);
-    // console.log(formData)
-
-    // const response = await dispatch(upload_geojson(formData));
 
     const response = await dispatch(upload_geojson({file,projectid}));
 
-    // if (response.status === 201) {
+
     if (response.type === 'geojson/upload/fulfilled') {
       const { payload } = response;
-      // Now you can access the properties from the payload
+
       const { bounds, message, savedGeoJsons } = payload;
-      
-      // Use the properties as needed
-      console.log(bounds);
-      console.log(message);
-      console.log(savedGeoJsons);
 
       const newGeoJSON = savedGeoJsons.map(item => ({
         type: "Feature",
@@ -86,12 +76,15 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
       const featuresCollection = featureCollection(newGeoJSON);
       const calculatedBounds = bbox(featuresCollection);
 
-      console.log(calculatedBounds);
-
-      const newCenter = getCenterOfGeoJSON({
-        type: 'FeatureCollection',
-        features: newGeoJSON,
+      const newGeoJSONIds = newGeoJSON.map(feature => feature.properties.id);
+      setVisibleGeoJSONs(prevVisible => {
+        const updatedVisibility = { ...prevVisible };
+        newGeoJSONIds.forEach(id => {
+          updatedVisibility[id] = true;
+        });
+        return updatedVisibility;
       });
+
       console.log('A3')
 
       if (mapInstance && calculatedBounds) {
