@@ -1,15 +1,13 @@
 footer {
     background-color:bisque; 
     color: black;
-    flex: 1 0 auto;
     margin-top: auto;
-    max-height: 200px;
-    
+    padding: 20px 0;
   }
 
 li.inline {
   display: inline-block;
-  margin-right: 10px; /* adjust this value to increase or decrease the space between the icons */
+  margin-right: 10px; 
 }
 
 
