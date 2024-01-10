@@ -422,45 +422,40 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
             if not isinstance(geojson_data.get('features'), list):
                 raise ValueError('Invalid GeoJSON format')
 
+            project = get_object_or_404(Project, pk=projectid)
+            assert request.user == project.user
+            
             geojson_file = request.FILES.get('geojson')
             if geojson_file:
                 filename = geojson_file.name
                 base_name = filename.split('.')[0]
             
-            save_instance = []
-            bounds = []
-            for feature in geojson_data['features']:
-                geometry = GEOSGeometry(json.dumps(feature['geometry']))
-                # name = feature.get('properties', {}).get('name', 'Unnamed')
-                name = base_name
-                geo_instance = GeoJSONFile(
-                    name=name, user=request.user, geojson=geometry
+            
+            aggregated_geometry = {
+                "type": "GeometryCollection",
+                "geometries": [feature['geometry'] for feature in geojson_data['features']]
+            }
+            
+            geo_instance = GeoJSONFile(
+                    name=filename, user=request.user, geojson=GEOSGeometry(json.dumps(aggregated_geometry))
                 )
-                project = get_object_or_404(Project,pk=projectid)  
-
-                assert request.user == project.user
-                geo_instance.save()
-                project.geojson.add(geo_instance.id)
-                project.save()
-                # print("PROJECT SAVED",projectid)
-                bounds.append(geometry.extent)
-
-                save_instance.append(
-                    {
+            
+            geo_instance.save()
+            project.geojson.add(geo_instance.id)
+            project.save()
+            
+            return Response(
+                {
+                    'message': 'Data saved sucessfully',
+                    'savedGeoJson': {
                         'id': geo_instance.id,
                         'name': geo_instance.name,
                         'geojson': json.loads(geo_instance.geojson.geojson),
-                    }
-                )
-            return Response(
-                {
-                    'message': 'Data saved successfully',
-                    'bounds': bounds,
-                    'savedGeoJsons': save_instance,
+                    },
                 },
                 status=status.HTTP_201_CREATED,
             )
-
+        
         except Exception as e:
             print(e)
             return Response(

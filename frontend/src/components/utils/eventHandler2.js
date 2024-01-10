@@ -61,31 +61,25 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
 
     if (response.type === 'geojson/upload/fulfilled') {
       const { payload } = response;
+      const { message, savedGeoJson } = payload;
 
-      const { bounds, message, savedGeoJsons } = payload;
-
-      const newGeoJSON = savedGeoJsons.map(item => ({
+      const featuresCollection = featureCollection([{
         type: "Feature",
-        geometry: item.geojson,
+        geometry: savedGeoJson.geojson,
         properties: {
-          id: item.id,
-          name: item.name
+          id: savedGeoJson.id,
+          name: savedGeoJson.name
         },
-      }));
-      console.log('A2')
-      const featuresCollection = featureCollection(newGeoJSON);
+      }]);
+
       const calculatedBounds = bbox(featuresCollection);
 
-      const newGeoJSONIds = newGeoJSON.map(feature => feature.properties.id);
-      setVisibleGeoJSONs(prevVisible => {
-        const updatedVisibility = { ...prevVisible };
-        newGeoJSONIds.forEach(id => {
-          updatedVisibility[id] = true;
-        });
-        return updatedVisibility;
-      });
+      const newGeoJSONId = savedGeoJson.id;
 
-      console.log('A3')
+      setVisibleGeoJSONs(prevVisible => ({
+        ...prevVisible,
+        [newGeoJSONId]: true
+      }));
 
       if (mapInstance && calculatedBounds) {
         const boundsLatLng = L.latLngBounds(
@@ -94,21 +88,15 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
         );
         mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
       }
-      console.log('A4')
 
-      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...newGeoJSON]);
-      console.log('A5')
+      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, featuresCollection.features[0]]);
 
     } else {
-      // console.log()
       console.error('File upload failed with status:', response.type);
-      // console.log('A6',response.status)
-      console.error('File upload failed with status:', response.status);
       alert('There was an error uploading the file. Please try again.');
     }
 
   } catch (error) {
-    console.log("A7",error)
     console.error('Error during upload:', error);
     alert('There was an error uploading the file. Please try again.');
   }
