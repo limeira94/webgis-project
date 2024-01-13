@@ -1,8 +1,8 @@
 // import React, { useState } from 'react';
 import React, { useState, useRef } from 'react';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
 import L from 'leaflet';
+import M from 'materialize-css';
+import { useEffect } from 'react';
 import { ListItemWithStyleControls, ListItemWithStyleControlsRaster } from './MapUtils';
 
 const ToggleLayersSelector = (
@@ -43,8 +43,24 @@ const ToggleLayersSelector = (
   //   }));
   // };
 
+  useEffect(()=>{
+    var options = {}
+    var elems = document.querySelectorAll('.sidenav');
+    M.Sidenav.init(elems, options);
+},[])
+  
+
   const toggleDrawer = (open) => () => {
-    setIsDrawerOpen(open);
+    var elems = document.querySelectorAll('.sidenav');
+    var instance = M.Sidenav.getInstance(elems[0]);
+
+    if (open){
+      instance.close();
+    }
+    else{
+      instance.open();
+    }
+    setIsDrawerOpen(!open);
   };
 
   const zoomToLayer = (geojsonId) => {  
@@ -72,49 +88,43 @@ const ToggleLayersSelector = (
 
   return (
     <>
-      <Drawer
-        anchor={'left'}
-        open={isDrawerOpen}
-        onClose={toggleDrawer(false)}
-        PaperProps={{ className: "drawer-side-bar" }}
-      >
-        {/* <div className="sidebar-title">Select your vector dataset:</div> */}
+      <ul id="slide-out" className="sidenav">
         <div className="sidebar-title">Your dataset:</div>
-        <List>
-          {geojsons.map((geojson) => (
-            <ListItemWithStyleControls
-              key={geojson.properties.id}
-              geojson={geojson}
-              updateStyle={updateStyle}
-              polygonStyles={polygonStyles}
-              visibleGeoJSONs={visibleGeoJSONs}
-              setVisibleGeoJSONs={setVisibleGeoJSONs}
-              zoomToLayer={zoomToLayer}
-            />
-          ))}
-        </List>
-        <List>
-          {rasters.map((raster) => (
-            <ListItemWithStyleControlsRaster
-            setRasters={setRasters}
-            rasters={rasters}
-            key={raster.id}
-            raster={raster}
-            visibleRasters={visibleRasters}
-            setVisibleRasters={setVisibleRasters}
-            zoomToLayerRaster={zoomToLayerRaster}
-            />
-          ))}
-        </List>
-      </Drawer>
+        {geojsons.map((geojson) => (
+                <ListItemWithStyleControls
+                  key={geojson.properties.id}
+                  geojson={geojson}
+                  updateStyle={updateStyle}
+                  polygonStyles={polygonStyles}
+                  visibleGeoJSONs={visibleGeoJSONs}
+                  setVisibleGeoJSONs={setVisibleGeoJSONs}
+                  zoomToLayer={zoomToLayer}
+                />
+            ))}
+        {rasters.map((raster) => (
+              <ListItemWithStyleControlsRaster
+              setRasters={setRasters}
+              rasters={rasters}
+              key={raster.id}
+              raster={raster}
+              visibleRasters={visibleRasters}
+              setVisibleRasters={setVisibleRasters}
+              zoomToLayerRaster={zoomToLayerRaster}
+              />
+            ))}
+      </ul>
       <div className='btn-menu'>
-        <a
+        <a 
+          href="#" 
+          data-target="slide-out"
+          //TODO: Create way to avoid the problem when clicking outside the sidenav, without this button.
+          // className="sidenav-trigger btn-floating waves-effect waves-light black"
           className="btn-floating waves-effect waves-light black"
-          // data-position="left" data-tooltip="enable sidebar"
-          onClick={toggleDrawer(true)}>
-          <i className="material-icons">menu</i>
+          onClick={toggleDrawer(isDrawerOpen)}
+          >
+            <i className="material-icons">menu</i>
         </a>
-      </div>
+      </div> 
     </>
   );
 };

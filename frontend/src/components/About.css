@@ -1,7 +1,7 @@
-.card-image {
-    width: 250px;  /* ou qualquer outro tamanho */
+/* .card-image {
+    width: 250px;
     height: auto;
-}
+} */
 
 .card-flat {
     display: flex;

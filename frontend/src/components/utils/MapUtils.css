@@ -23,3 +23,25 @@
     text-align: left;
     flex-grow: 1;
 }
+
+
+.input-color-style{
+    width: 30px; 
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+
+.side-nav-item-dropdown-style{
+    background-color: rgb(167, 179, 167);
+    /* width: 220px; */
+}
+
+
+.alnright{
+    text-align: right;
+}
+
+.sidenav-range-style{
+    width: 40px;
+}

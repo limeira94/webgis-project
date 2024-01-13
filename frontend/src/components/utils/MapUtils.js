@@ -1,8 +1,6 @@
 
 import parse from 'wellknown';
 import React, { useState, useEffect, useRef } from 'react';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import { useDispatch,useSelector } from 'react-redux';
 import { delete_geojson,delete_raster } from '../../features/data';
@@ -13,7 +11,6 @@ const handleDeleteRaster = (rasterId,dispatch,rasters,setRasters)=> {
           .then((action) => {
             
             if (action.meta.requestStatus === 'fulfilled') {
-              // window.location.reload();
               const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
               setRasters(newRasters);
             } else {
@@ -131,67 +128,78 @@ export const styleRasterControls = ({
   )
 }
 
+const get_item_table = (title, inputType, value,name, geojson,updateStyle) => {
+
+  const onChange = e => updateStyle(geojson.properties.id, name, e.target.value)
+  const isRange = inputType === 'range';
+
+  let min, max, step;
+  let classname
+
+  if (name === 'weight') {
+    min = 0;max = 10;step = 1;
+  } else if (name === 'fillOpacity') {
+    min = 0;max = 1;step = 0.1;
+  }
+  else{
+    min=undefined;max=undefined;step=undefined;
+  }
+
+
+  if (isRange) {
+    classname=`sidenav-range-style`
+  }
+  else{
+    classname=`input-color-style`
+  }
+  
+
+  return(
+  <tr>
+    <td><span>{title}</span></td>
+    <td className='alnright'>
+        <input
+          className={classname}
+          type={inputType}
+          value={value}
+          onChange={onChange}
+          min={min}
+          max={max}
+          step={step}
+        />
+    </td>
+  </tr>
+  )
+}
+
 export const StyleControls = ({ geojson, updateStyle, polygonStyles,zoomanddelete }) => {
   const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
   const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
 
+  
+  const colorValue = polygonStyles[geojson.properties.id]?.fillColor || "#ff0000"
+  const colorRow = get_item_table("Color", "color", colorValue, "fillColor" ,geojson,updateStyle);
+  
+  const lineColorValue = polygonStyles[geojson.properties.id]?.color || "#ff0000"
+  const lineColorRow = get_item_table("Line Color", "color", lineColorValue,"color",geojson,updateStyle);
+
+  const widthValue = polygonStyles[geojson.properties.id]?.weight || 3
+  const widthRow = get_item_table("Line Size", "range", widthValue,"weight", geojson,updateStyle);
+
+  const opacityValue = polygonStyles[geojson.properties.id]?.fillOpacity || 0.65
+  const opacityRow = get_item_table("Opacity", "range", opacityValue, "fillOpacity",geojson,updateStyle);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', paddingLeft: '40px' }}>
-      {zoomanddelete}
-      {!isPoint && !isLine && (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ textAlign: 'left', flexGrow: 1 }}>Fill Color</span>
-            <input
-              type="color"
-              value={polygonStyles[geojson.properties.id]?.fillColor || "#ff0000"}
-              onChange={e => updateStyle(geojson.properties.id, "fillColor", e.target.value)}
-              style={{ width: '30px', height: '30px', border: '1px solid #ddd', borderRadius: '4px' }}
-            />
-          </div>
-        </>
-      )}
-      {!isPoint && (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
-            <span style={{ textAlign: 'left', flexGrow: 1 }}>Line Color</span>
-            <input
-              type="color"
-              value={polygonStyles[geojson.properties.id]?.color || "#ff0000"}
-              onChange={e => updateStyle(geojson.properties.id, "color", e.target.value)}
-              style={{ width: '30px', height: '30px', border: '1px solid #ddd', borderRadius: '4px' }}
-            />
-          </div>
-        </>
-      )}
-      {!isPoint && !isLine &&(
-        <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ textAlign: 'left', flexGrow: 1, marginRight: '15px' }}>Fill Opacity</span>
-            <input
-              type="range"
-              min="0" max="1" step="0.1"
-              value={polygonStyles[geojson.properties.id]?.fillOpacity || 0.65}
-              onChange={e => updateStyle(geojson.properties.id, "fillOpacity", e.target.value)}
-              style={{ width: '80px', height: '30px'}}
-            />
-          </div>
-        </>
-      )}
-      {!isPoint && (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ textAlign: 'left', flexGrow: 1 }}>Line Size</span>
-            <input
-              type="range"
-              min="0" max="10" step="1"
-              value={polygonStyles[geojson.properties.id]?.weight || 3}
-              onChange={e => updateStyle(geojson.properties.id, "weight", e.target.value)}
-              style={{ width: '80px', height: '30px'}}
-            />
-          </div>
-        </>
-      )}
+    <div className='side-nav-item-dropdown-style z-depth-5'>
+      <table>
+        <tbody>
+          {zoomanddelete}
+          {!isPoint && !isLine && colorRow}
+          {!isPoint && lineColorRow}
+          {!isPoint && !isLine && opacityRow}
+          {!isPoint && widthRow}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -218,8 +226,11 @@ export const ListItemWithStyleControlsRaster = ({
   };
   var url = process.env.PUBLIC_URL
   return (
-    <ListItem key={raster.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+    <li key={raster.id} >
+      
+      <div 
+        style={{ display: 'flex', alignItems: 'center' }}
+      >
          <button 
           className="dropdown-button" 
           onClick={handleToggleClick}
@@ -238,7 +249,7 @@ export const ListItemWithStyleControlsRaster = ({
           onClick={() => handleVisibilityChange(raster.id, !(visibleRasters[raster.id] ?? false))}
         />
         <img className="icon-data" src={url + "/raster.png"} alt="raster-item" />
-        <ListItemText primary={`${raster.name}`} />
+        <p>{raster.name}</p>
         <button className='zoom-button' onClick={() => zoomToLayerRaster(raster.id)}>
           <span className="material-icons">zoom_in_map</span>
         </button>
@@ -255,7 +266,7 @@ export const ListItemWithStyleControlsRaster = ({
         </div>
         )}
       </div>
-    </ListItem>
+    </li>
   );
 }
 
@@ -284,18 +295,28 @@ export const ListItemWithStyleControls = (
   const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
   var url = process.env.PUBLIC_URL
   const zoomanddelete = <>
-        <div>
-          <button className='zoom-button' onClick={() => zoomToLayer(geojson.properties.id)}>
-            <span className="material-icons">zoom_in_map</span>
-          </button>
-          <a href="#" onClick={() => handleDeleteGeojson(geojson.properties.id,dispatch)}><i className='material-icons'>delete</i></a>
-        </div>
+        <tr>
+          <td>Zoom to</td>
+          <td className='alnright'>
+            <button className='zoom-button' onClick={() => zoomToLayer(geojson.properties.id)}>
+              <span className="material-icons">zoom_in_map</span>
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>Delete</td>
+          <td className='alnright'>
+            <a href="#" onClick={() => handleDeleteGeojson(geojson.properties.id,dispatch)}><i className='material-icons'>delete</i></a>
+          </td>
+        </tr>
         
   </>
   return (
-    <ListItem key={geojson.properties.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+    <li key={geojson.properties.id} >
       
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div 
+      style={{ display: 'flex', alignItems: 'center' }}
+      >
         <button 
           className="dropdown-button" 
           onClick={handleToggleClick}
@@ -313,13 +334,7 @@ export const ListItemWithStyleControls = (
           onClick={() => handleVisibilityChange(geojson.properties.id, !(visibleGeoJSONs[geojson.properties.id] ?? false))}
         />
         <img className="icon-data" src={url + "/vector.png"} alt="geojson-item" />
-       
-        
-        <ListItemText primary={`${geojson.properties.name}`} />
-        {/* <button className='zoom-button' onClick={() => zoomToLayer(geojson.properties.id)}>
-          <span className="material-icons">zoom_in_map</span>
-        </button>
-        <a className="right"  href="#" onClick={() => handleDeleteGeojson(geojson.properties.id,dispatch)}><i className='material-icons'>delete</i></a> */}
+        <p>{geojson.properties.name}</p>
       </div>
       {showStyleControls &&(
         <div>
@@ -331,6 +346,6 @@ export const ListItemWithStyleControls = (
           />
         </div>
       )}
-    </ListItem>
+    </li>
   );
 };
