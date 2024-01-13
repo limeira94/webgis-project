@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import L from 'leaflet';
 import M from 'materialize-css';
 import { useEffect } from 'react';
-import { ListItemWithStyleControls, ListItemWithStyleControlsRaster } from './MapUtils';
+import { ListItemWithStyleAll, ListItemWithStyleControls, ListItemWithStyleControlsRaster } from './MapUtils';
 
 const ToggleLayersSelector = (
   {
@@ -91,6 +91,33 @@ const ToggleLayersSelector = (
       <ul id="slide-out" className="sidenav">
         <div className="sidebar-title">Your dataset:</div>
         {geojsons.map((geojson) => (
+          <ListItemWithStyleAll
+          // key={geojson.properties.id}
+          key={`$geojson-item-${geojson.properties.id}`}
+          datasets={geojsons}
+          polygonStyles={polygonStyles}
+          dataset={geojson}
+          visibleDatasets={visibleGeoJSONs}
+          setVisibleDatasets={setVisibleGeoJSONs}
+          datatype={"geojson"}
+          zoomToLayer={zoomToLayer}
+          updateStyle={updateStyle}
+          />
+        ))}
+        {rasters.map((raster) => (
+              <ListItemWithStyleAll
+              // key={raster.id}
+              key={`$raster-item-${raster.id}`}
+              datasets={rasters}
+              setDatasets={setRasters}
+              dataset={raster}
+              visibleDatasets={visibleRasters}
+              setVisibleDatasets={setVisibleRasters}
+              datatype={"raster"}
+              zoomToLayer={zoomToLayerRaster}
+              />
+          ))}
+        {/* {geojsons.map((geojson) => (
                 <ListItemWithStyleControls
                   key={geojson.properties.id}
                   geojson={geojson}
@@ -111,7 +138,7 @@ const ToggleLayersSelector = (
               setVisibleRasters={setVisibleRasters}
               zoomToLayerRaster={zoomToLayerRaster}
               />
-            ))}
+            ))} */}
       </ul>
       <div className='btn-menu'>
         <a 
