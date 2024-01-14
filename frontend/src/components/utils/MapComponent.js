@@ -42,8 +42,8 @@ export const MapComponent = ({
   geojsons,
   setRasters,
   setGeoJSONs,
-  projectid=null,
-  savetomemory=true
+  projectid = null,
+  savetomemory = true
 }) => {
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
@@ -59,8 +59,8 @@ export const MapComponent = ({
   const defaultOpacity = 1
 
   useEffect(() => {
-      M.AutoInit();
-    }, []);
+    M.AutoInit();
+  }, []);
 
   useEffect(() => {
     leafletDefaultButtons({
@@ -76,54 +76,118 @@ export const MapComponent = ({
   // Coloquei um esboço da ideia da função para fazer upload só para a memória, precisa finalizar
   // Depois temos que mandar essa função para outro lugar e importar ela apenas
 
-  const uploadToMemory = (event) => {
+  const combineFeaturesByType = (features) => {
+    const combinedFeatures = {};
 
+    features.forEach(feature => {
+      const geometryType = feature.geometry.type;
+      if (geometryType === 'Point' || geometryType === 'LineString' || geometryType === 'Polygon') {
+        const multiType = `Multi${geometryType}`;
+        if (!combinedFeatures[multiType]) {
+          combinedFeatures[multiType] = {
+            type: 'Feature',
+            geometry: { type: multiType, coordinates: [] },
+            properties: {}
+          };
+        }
+        combinedFeatures[multiType].geometry.coordinates.push(feature.geometry.coordinates);
+      } else {
+        // Para MultiPoint, MultiLineString, MultiPolygon, mantenha como estão
+        combinedFeatures[geometryType] = feature;
+      }
+    });
+
+    return Object.values(combinedFeatures);
+  };
+
+  const uploadToMemory = (event) => {
     const file = event.target.files[0];
     event.target.value = null;
 
     const fileName = file.name.split('.')[0];
 
     const reader = new FileReader();
-        reader.onload = (e) => {
-          const geojsonData = JSON.parse(e.target.result);
+    reader.onload = (e) => {
+      const geojsonData = JSON.parse(e.target.result);
 
-          const featuresWithId = geojsonData.features.map(feature => {
-            return {
-              type: "Feature",
-              geometry: feature.geometry,
-              properties: {
-                ...feature.properties,
-                id: feature.properties?.id || Math.floor(Math.random() * 1000000000),
-                name: feature.properties?.name || fileName
-              }
-            };
-          });
+      let combinedFeature;
+      const polygonFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'Polygon');
+      const pointFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'Point');
+      const lineFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'Line');
 
-          const featuresCollection = featureCollection(featuresWithId);
-          const calculatedBounds = bbox(featuresCollection);
-          
-          const newGeoJSONIds = featuresWithId.map(feature => feature.properties.id);
-          setVisibleGeoJSONs(prevVisible => {
-            const updatedVisibility = { ...prevVisible };
-            newGeoJSONIds.forEach(id => {
-              updatedVisibility[id] = true;
-            });
-            return updatedVisibility;
-          });
-
-          if (mapInstance && calculatedBounds) {
-            const boundsLatLng = L.latLngBounds(
-              [calculatedBounds[1], calculatedBounds[0]],
-              [calculatedBounds[3], calculatedBounds[2]]
-            );
-            mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
+      if (polygonFeatures.length > 0) {
+        // Extrai todas as coordenadas dos polígonos e cria um MultiPolygon
+        const allPolygons = polygonFeatures.map(feature => feature.geometry.coordinates);
+        combinedFeature = {
+          type: "Feature",
+          geometry: {
+            type: "MultiPolygon",
+            coordinates: allPolygons
+          },
+          properties: {
+            id: Math.floor(Math.random() * 1000000000),
+            name: fileName
           }
-
-          setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...featuresWithId]);
         };
-        reader.readAsText(file);
 
-  }
+      } else if (pointFeatures.length > 0) {
+        const allPoints = pointFeatures.map(feature => feature.geometry.coordinates);
+        combinedFeature = {
+          type: "Feature",
+          geometry: {
+            type: "MultiPoint",
+            coordinates: allPoints
+          },
+          properties: {
+            id: Math.floor(Math.random() * 1000000000),
+            name: fileName
+          }
+        };
+      } else if (lineFeatures.length > 0) {
+        const allLines = lineFeatures.map(feature => feature.geometry.coordinates);
+        combinedFeature = {
+          type: "Feature",
+          geometry: {
+            type: "MultiLine",
+            coordinates: allLines
+          },
+          properties: {
+            id: Math.floor(Math.random() * 1000000000),
+            name: fileName
+          }
+        };
+      } else {
+        // Se não houver Polígonos, mantenha a primeira feature da coleção original
+        combinedFeature = geojsonData.features[0];
+      }
+
+      const featuresCollection = {
+        type: "FeatureCollection",
+        features: [combinedFeature]
+      };
+
+      const calculatedBounds = bbox(featuresCollection);
+
+      // Atualiza a visibilidade para o novo GeoJSON
+      setVisibleGeoJSONs(prevVisible => ({
+        ...prevVisible,
+        [combinedFeature.properties.id]: true
+      }));
+
+      // Ajusta a visualização do mapa para os limites da nova FeatureCollection
+      if (mapInstance && calculatedBounds) {
+        const boundsLatLng = L.latLngBounds(
+          [calculatedBounds[1], calculatedBounds[0]],
+          [calculatedBounds[3], calculatedBounds[2]]
+        );
+        mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
+      }
+
+      // Adiciona a nova FeatureCollection combinada ao estado
+      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, combinedFeature]);
+    };
+    reader.readAsText(file);
+  };
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
@@ -138,7 +202,7 @@ export const MapComponent = ({
         ref={fileInputRef}
         style={{ display: 'none' }}
         accept=".geojson, application/geo+json"
-        />
+      />
     </a>
   </>
   // ############################################################################################################################################################
@@ -162,21 +226,21 @@ export const MapComponent = ({
       {rasters.map((raster, index) => {
         const isVisible = visibleRasters[raster.id];
         const tileCoordinates = raster.tiles.split(',').map(Number);
-        
+
         const [xmin, ymin, xmax, ymax] = tileCoordinates;
         const bounds = [[ymin, xmin], [ymax, xmax]];
         return isVisible && (
-            <ImageOverlay
-              url={url + raster.raster} 
-              bounds={bounds}
-              opacity={(feature) => rasterStyles[feature.id] || defaultOpacity}
-              // opacity={1}
-              zIndex={1000}
-              key={index}
-            />
+          <ImageOverlay
+            url={url + raster.raster}
+            bounds={bounds}
+            opacity={(feature) => rasterStyles[feature.id] || defaultOpacity}
+            // opacity={1}
+            zIndex={1000}
+            key={index}
+          />
         );
       })}
-      
+
       {/* in memory raster */}
       {/* <ImageOverlay
               url={'file:///media/felipe/3dbf30eb-9bce-46d8-a833-ec990ba72625/Documentos/projetos_pessoais/webgis-project/backend/tests/data/rasters/SAR/ICEYE_X12_QUICKLOOK_SLH_2155354_20230513T171831_modified5.tif'}
@@ -242,16 +306,16 @@ export const MapComponent = ({
         tileLayersData={tileLayersData}
       />
 
-      {savetomemory ? memoryButton:(
+      {savetomemory ? memoryButton : (
         <UpDelButttons
-        setGeoJSONs={setGeoJSONs}
-        setRasters={setRasters}
-        mapInstance={mapInstance}
-        setVisibleGeoJSONs={setVisibleGeoJSONs}
-        projectid={projectid}
-      />
+          setGeoJSONs={setGeoJSONs}
+          setRasters={setRasters}
+          mapInstance={mapInstance}
+          setVisibleGeoJSONs={setVisibleGeoJSONs}
+          projectid={projectid}
+        />
       )}
-      
+
 
       <div className='home-button-map'>
         <a href="/" className="btn-floating waves-effect waves-light black">
