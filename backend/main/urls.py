@@ -41,12 +41,8 @@ urlpatterns = [
     path('api/users/update/', views.UserUpdateView.as_view()),
     path('api/users/delete/<int:pk>/', views.UserDeleteView.as_view(), name='user-delete'),
     path('api/users/reset-password/', views.ResetPasswordView.as_view(), name='reset-password'),
-    path('api/users/password-reset-confirm/<uidb64>/<token>/', 
-        auth_views.PasswordResetConfirmView.as_view(template_name='password_reset_confirm.html'),
-        name='password_reset_confirm'),
-    path('api/users/password-reset-complete/', 
-        auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'),
-        name='password_reset_complete'),
+    path('api/users/password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='password_reset_confirm.html'),name='password_reset_confirm'),
+    path('api/users/password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'),name='password_reset_complete'),
     
     # Rotas de Páginas Estáticas
     path('', TemplateView.as_view(template_name='index.html')),
