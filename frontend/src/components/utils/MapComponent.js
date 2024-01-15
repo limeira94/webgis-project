@@ -229,9 +229,11 @@ export const MapComponent = ({
 
         const [xmin, ymin, xmax, ymax] = tileCoordinates;
         const bounds = [[ymin, xmin], [ymax, xmax]];
+        // console.log(raster.raster)
         return isVisible && (
           <ImageOverlay
-            url={url + raster.raster}
+            // url={url + raster.raster}
+            url={raster.raster}
             bounds={bounds}
             opacity={(feature) => rasterStyles[feature.id] || defaultOpacity}
             // opacity={1}

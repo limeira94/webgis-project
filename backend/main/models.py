@@ -13,7 +13,7 @@ from django.core.files import File
 from PIL import Image
 
 from .geoserver import upload_file
-from .utils import generate_upload_path, normalize_ar, validate_file_extension, get_bounds
+from .utils import *#generate_upload_path, normalize_ar, validate_file_extension, get_bounds
 
 
 class Shapefile(models.Model):
@@ -42,7 +42,9 @@ class GeoserverData(models.Model):
 class RasterFile(models.Model):
     name = models.CharField(max_length=100)
     raster = models.FileField(
-        upload_to='rasters/', validators=[validate_file_extension]
+        # upload_to='rasters/', 
+        upload_to=generate_upload_path_raster,
+        validators=[validate_file_extension]
     )
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True
@@ -61,6 +63,7 @@ class RasterFile(models.Model):
     # Convert to PNG
     # Other....
     def save(self, *args, **kwargs):
+        NAME = self.raster.name
         super().save(*args, **kwargs)
 
         # # To create zoom levels
@@ -80,7 +83,10 @@ class RasterFile(models.Model):
             # site = 'http://127.0.0.1:8000'
             # windows = 'C:/Users/limei/Documents/05_VSCode/webgis-project/backend/' + self.raster.url
             
-            file = site + self.raster.url
+            if self.raster.url.find("s3")!=-1:
+                file = self.raster.url
+            else:
+                file = site + self.raster.url
 
             print(file)
 
@@ -106,7 +112,9 @@ class RasterFile(models.Model):
                 im1.save(buffer, format='PNG')
                 image_data = buffer.getvalue()
 
-            filename = self.raster.url.replace('.tif', '.png')[1:]
+            # filename = self.raster.url.replace('.tif', '.png')[1:]
+            filename = NAME.replace('.tif', '.png')[1:]
+            # filename = 'raster/%s/%s' % (self.user.username, filename)
 
             self.tiles = ','.join([str(i) for i in bounds])
             self.raster.save(filename, File(io.BytesIO(image_data)))
@@ -179,7 +187,7 @@ ogr2ogr -f "PostgreSQL" PG:"dbname=mydatabase user=myuser password=mypassword ho
 class Vector(models.Model):
     filename = models.CharField(max_length=100, null=True, blank=True)
     format_name = models.CharField(max_length=10, null=True, blank=True)
-    file = models.FileField(upload_to=generate_upload_path)  # "vectors/")
+    file = models.FileField(upload_to=generate_upload_path_vector)  # "vectors/")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     dbname = models.CharField(
         max_length=100, unique=True, null=True, blank=True
