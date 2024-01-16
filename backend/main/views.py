@@ -212,12 +212,14 @@ class UserUpdateView(APIView):
 
 class RegisterView(APIView):
     def post(self, request):
+        print("A")
         serializer = RegisterSerializer(data=request.data)
         # TODO:
         ### Colocar um jeito de verificar erro
         ### Verificar questão de senha e email atualmente não aceitar email com . e senha curtas
 
         if not serializer.is_valid():
+            print("ERROR",serializer.errors)
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )

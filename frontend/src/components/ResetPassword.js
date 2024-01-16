@@ -4,7 +4,7 @@ import NavbarComponent from './include/Navbar';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { 
-  // Navigate,
+  Navigate,
   useNavigate 
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -49,7 +49,11 @@ function ResetPassword() {
         navigate("/");
 
         } catch (error) {
-        console.error(error);
+          M.toast({html: error.response.data.error, 
+        classes: 'red rounded',
+        displayLength:5000});
+          
+        // console.error(error); 
         }
 };
 

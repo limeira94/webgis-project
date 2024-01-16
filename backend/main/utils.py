@@ -8,8 +8,11 @@ from shapely.ops import transform
 import pyproj
 
 
-def generate_upload_path(instance, filename):
+def generate_upload_path_vector(instance, filename):
     return 'vector/%s/%s' % (instance.user.username, filename)
+
+def generate_upload_path_raster(instance, filename):
+    return 'raster/%s/%s' % (instance.user.username, filename)
 
 
 def validate_file_extension(value):

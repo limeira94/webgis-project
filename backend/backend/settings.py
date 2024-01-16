@@ -7,11 +7,9 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='mydefaultsecretkey')
-
-DEBUG = True   # config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 GDAL_LIBRARY_PATH = config('GDAL_LIBRARY_PATH', default='')
-
 GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH', default='')
 
 SETTINGS_MODULE = 'backend.settings'
@@ -33,9 +31,7 @@ if DEBUG:
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
     'http://localhost:8080',
-    'http://ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
     'https://webgis.site',
 ]
 
@@ -44,10 +40,6 @@ if DEBUG:
     # CORS_ORIGIN_ALLOW_ALL = True
 
 CSRF_TRUSTED_ORIGINS = [
-    # 'https://webgis.felipemp.com'
-    #'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
-    'http://ec2-54-94-125-171.sa-east-1.compute.amazonaws.com',
-    'http://ec2-3-144-137-244.us-east-2.compute.amazonaws.com',
     'https://webgis.site',
 ]
 
@@ -62,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django_extensions',
+    "storages",
     'rest_framework',
     'rest_framework_simplejwt',
     'main',
@@ -145,7 +138,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+###########################################################################33333
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 LANGUAGE_CODE = 'en-us'
@@ -154,15 +147,9 @@ USE_I18N = True
 # USE_L10N = True
 USE_TZ = True
 
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'build/static'),
-# ]
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-  #os.path.join(BASE_DIR, "build/static"),
-]
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+
+##########################################################################
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -220,3 +207,54 @@ EMAIL_HOST_PASSWORD = os.environ.get(
 EMAIL_PORT = 587
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+
+#AWS:
+##############################    AWS    ##############################
+##########################################################################
+STORAGES = {
+    "default": {
+        "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
+    },
+    "staticfiles": {
+        "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
+    },
+}
+
+# # STATIC_URL = '/static/'
+# # STATICFILES_DIRS = [
+# #     os.path.join(BASE_DIR, 'build/static'),
+# # ]
+# STATIC_URL = '/static/'
+# STATICFILES_DIRS = [
+#   #os.path.join(BASE_DIR, "build/static"),
+# ]
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+USE_S3 = config('USE_S3') == 'True'
+if USE_S3:
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+
+    # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+    AWS_S3_FILE_OVERWRITE = False
+
+    AWS_S3_REGION_NAME = "us-east-2"
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
+
+    AWS_LOCATION = 'static'
+    S3_URL = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    STATIC_URL = f'https://{S3_URL}/{AWS_LOCATION}/'
+
+    # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_S3_ENDPOINT_URL = "https://s3.us-east-2.amazonaws.com"
+    
+else:
+    STATIC_URL = '/staticfiles/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    print("NOT USING AWS")
+
+# #TODO:
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
