@@ -99,6 +99,10 @@ export const MapComponent = ({
 
     return Object.values(combinedFeatures);
   };
+  const uploadToMemoryRaster = (event) => {
+    const file = event.target.files[0];
+    event.target.value = null;
+  }
 
   const uploadToMemory = (event) => {
     const file = event.target.files[0];

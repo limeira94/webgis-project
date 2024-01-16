@@ -14,7 +14,7 @@
 }
 
 .rounded-card-login{
-  border: 1px solid #000;
+  /* border: 1px solid #000; */
   border-radius: 15px;
 }
 
@@ -29,12 +29,13 @@
 }
 
 .centered-element {
-    margin: 0;
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translateY(-50%);
-    transform: translateX(-50%);
+    /* margin: 0; */
+    /* position: absolute; */
+    top: 10%;
+    left: 0%;
+
+    /* transform: translateY(50%);
+    transform: translateX(50%); */
   }
 
   .back-color {
@@ -47,10 +48,7 @@
     
 }
 
-.login-button{
-    /* background: linear-gradient(90deg, rgb(136, 5, 125), rgb(255, 0, 106)); */
-    background: linear-gradient(90deg, rgb(10, 0, 9), rgb(0, 81, 255));
-}
+
 .home-button{
   background: linear-gradient(90deg, rgb(10, 0, 9), rgb(0, 81, 255));
     /* background: linear-gradient(90deg, rgb(5, 7, 136), rgb(255, 0, 234)); */
@@ -115,3 +113,40 @@
     transform: translateY(-3px);
     font-size: 14px; 
   }
+
+
+
+  /* .login-button{
+    background: linear-gradient(90deg, rgb(136, 5, 125), rgb(255, 0, 106));
+} */
+  .login-button {
+    background-color: #04AA6D;
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    border-radius: 8px;
+    background-color:#19346e;
+    /* background: linear-gradient(90deg, rgb(10, 0, 9), rgb(0, 81, 255)); */
+  }
+
+
+
+  .card-login{
+    background-color: white;
+  }
+
+
+  /* .card-login{
+    background-color: white;
+    position:fixed;
+    width:40%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:1000;
+} */
