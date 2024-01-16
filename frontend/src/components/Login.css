@@ -86,6 +86,9 @@
     color: #fff;
     box-sizing: border-box;
   }
+  .input-register{
+    width: 90% !important;
+  }
   
   .input-field label {
     position: absolute;
