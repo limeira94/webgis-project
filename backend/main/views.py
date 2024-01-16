@@ -1,4 +1,8 @@
 import json
+import tempfile
+import os
+import zipfile
+import geopandas as gpd
 
 from django.contrib import messages
 from django.contrib.auth import authenticate
@@ -17,9 +21,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from rest_framework import generics, permissions, status, viewsets
+from rest_framework import generics, permissions, status, viewsets, views
 from rest_framework.decorators import action
-from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -493,3 +497,84 @@ class LoginAPIView(APIView):
         return Response(
             {'access_token': access_token}, status=status.HTTP_200_OK
         )
+
+
+class GeoJSONUploadView(APIView):
+    #TODO: verificar se o sistema de coordenada está impactando a visualização
+    #TODO: fazer a implementação do usuário.
+    parser_classes = (MultiPartParser, JSONParser)
+    
+    def post(self, request, *args, **kwargs):
+        
+        geojson_file = request.FILES.get('file')
+        if not geojson_file:
+            return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            geojson_data = json.load(geojson_file)
+            features = geojson_data.get('features', [])
+        except json.JSONDecodeError:
+            return Response({'error': 'Invalid GeoJSON file'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        for feature in features:
+            geometry = feature.get('geometry')
+            properties = feature.get('properties', {})
+            
+            spatial_serializer = SpatialDataSerializer(data={'geom': geometry})
+            if spatial_serializer.is_valid():
+                spatial_obj = spatial_serializer.save()
+                
+                attribute_data = {
+                    'spatial_data': spatial_obj.id,
+                    'properties': properties
+                }
+                attribute_serializer = AttributesDataSerializer(data=attribute_data)
+                if attribute_serializer.is_valid():
+                    attribute_serializer.save()
+                else:
+                    spatial_obj.delete()  # Remove o objeto espacial se a validação do atributo falhar
+                    return Response(attribute_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(spatial_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({'message': 'Geojson data uploaded successfully'}, status=status.HTTP_201_CREATED)
+    
+
+class ShapefileUploadView(APIView):
+    #TODO: verificar se o sistema de coordenada está impactando a vizualização
+    #TODO: fazer a implementação do usuário.
+    parser_classe = (MultiPartParser, JSONParser)
+    
+    def post(self, request, *args, **kwargs):
+        zip_file = request.FILES.get('file')
+        if not zip_file:
+            return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            try:
+                with zipfile.ZipFile(zip_file, 'r') as zip_file:
+                    zip_file.extractall(tmpdirname)
+                
+                shp_files = [f for f in os.listdir(tmpdirname) if f.endswith('.shp')]
+                if not shp_files:
+                    return Response({'error': 'Invalid shapefile'}, status=status.HTTP_400_BAD_REQUEST)
+                
+                shp_path = os.path.join(tmpdirname, shp_files[0])
+                gdf = gpd.read_file(shp_path)
+
+                for _, row in gdf.iterrows():
+                    
+                    geos_geometry = GEOSGeometry(row['geometry'].wkt)
+                    
+                    spatial_data_obj = SpatialDataT(geom=geos_geometry)
+                    spatial_data_obj.save()
+                    
+                    properties = row.drop('geometry').to_dict()
+                    attribute_data_obj = AttributeDataT(spatial_data=spatial_data_obj, properties=properties)
+                    attribute_data_obj.save()
+                    
+            except zipfile.BadZipFile:
+                return Response({'error': 'Invalid zip file'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({'message': 'Shapefile processed successfully'}, status=status.HTTP_201_CREATED)
+    

@@ -1,10 +1,12 @@
+import json
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.gis.geos import GEOSGeometry
 
-from .models import GeoJSONFile, Project, RasterFile, Vector
+from .models import AttributeDataT, GeoJSONFile, Project, RasterFile, SpatialDataT, Vector
 
 
 class VectorSerializer(serializers.ModelSerializer):
@@ -181,3 +183,27 @@ class UserRegister(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class SpatialDataSerializer(serializers.ModelSerializer):
+    geom = serializers.JSONField()  # Use JSONField para a geometria
+
+    class Meta:
+        model = SpatialDataT
+        fields = '__all__'
+
+    def create(self, validated_data):
+        # Converta a geometria JSON em um objeto de geometria
+        geom_json = validated_data.pop('geom')
+        geom_str = json.dumps(geom_json)
+        geom = GEOSGeometry(geom_str)
+        
+        spatial_data = SpatialDataT(geom=geom, **validated_data)
+        spatial_data.save()
+        return spatial_data
+
+class AttributesDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AttributeDataT
+        fields = '__all__'
+        

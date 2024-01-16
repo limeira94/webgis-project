@@ -29,6 +29,8 @@ urlpatterns = [
     path('api/main/vector/', views.VectorList.as_view(), name='get_vector'),
     path('api/main/vector/geojson', views.ExportGeoJSON.as_view(), name='get_vector_geojson'),
     path('api/main/projects/', views.ProjectList.as_view(), name='get_projects'),
+    path('upload_geojson/', views.GeoJSONUploadView.as_view(), name='upload-geojson'),
+    path('upload_shapefile/', views.ShapefileUploadView.as_view(), name='upload-shapefile'),
     
     # Rotas de autenticação
     path('api/main/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
