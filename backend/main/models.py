@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.files import File
+from djongo import models as modelsdb
 
 from PIL import Image
 
@@ -305,3 +306,13 @@ class Project(models.Model):
 
     def get_updated_at(self):
         return naturaltime(self.updated_at)
+
+
+class SpatialDataT(models.Model):
+    geom = models.GeometryField()
+    
+    
+class AttributeDataT(modelsdb.Model):
+    spatial_data = models.ForeignKey(SpatialDataT, on_delete=modelsdb.CASCADE)
+    properties = models.JSONField()
+    

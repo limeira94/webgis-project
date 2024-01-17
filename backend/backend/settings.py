@@ -111,7 +111,13 @@ DATABASES = {
         #'HOST': 'host.docker.internal', --> conexão docker local
         'PORT': '5432',
     },
+    # 'mongodb': {
+    #     'ENGINE': 'djongo',
+    #     'NAME': 'demodatabase',
+    # },
 }
+
+# DATABASE_ROUTERS = ['main.database_router.MongoRouter']
 
 
 # Password validation
