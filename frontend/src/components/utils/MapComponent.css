@@ -192,6 +192,18 @@
   background-color: #01579b 
 }
 
+.upload-geo-button-raster{
+  position:fixed;
+  top:120px;
+  right: 20px;
+  /* bottom:20px; */
+  /* right: 55%; */
+  /* right: 450px; */
+  /* left: 50px; */
+  z-index: 1000;
+  background-color: #019b34 
+}
+
 
 .map-style-selector {
   position: fixed;

@@ -26,6 +26,8 @@ import 'leaflet.browser.print/dist/leaflet.browser.print.min.js';
 import 'leaflet-measure/dist/leaflet-measure.css';
 import 'leaflet-measure/dist/leaflet-measure.js';
 import bbox from '@turf/bbox';
+import GeoTIFF from 'geotiff';
+import { fromArrayBuffer } from 'geotiff';
 import { featureCollection } from '@turf/helpers';
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -99,10 +101,35 @@ export const MapComponent = ({
 
     return Object.values(combinedFeatures);
   };
-  const uploadToMemoryRaster = (event) => {
+
+  const uploadToMemoryRaster = async (event) => {
     const file = event.target.files[0];
     event.target.value = null;
-  }
+  
+    console.log(file);
+  
+    if (file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const tiff = await fromArrayBuffer(arrayBuffer);
+      const image = await tiff.getImage();
+      // const tileCoordinates = image.getTileCoordinates();
+      const tileCoordinates = image.getBoundingBox();
+      const [xmin, ymin, xmax, ymax] = tileCoordinates;
+      const bounds = [[ymin, xmin], [ymax, xmax]];
+      console.log(bounds)
+  
+      // setRasters((prevRasters) => [
+      //   ...prevRasters,
+      //   {
+      //     id: prevRasters.length, // Adjust as needed
+      //     raster: URL.createObjectURL(file),
+      //     bounds,
+      //   },
+      // ]);
+  
+      // console.log(rasters);
+    }
+  };
 
   const uploadToMemory = (event) => {
     const file = event.target.files[0];
@@ -206,6 +233,16 @@ export const MapComponent = ({
         ref={fileInputRef}
         style={{ display: 'none' }}
         accept=".geojson, application/geo+json"
+      />
+    </a>
+    <a onClick={handleButtonClick} className='btn-floating waves-effect waves-light upload-geo-button-raster'>
+      <i className="small material-icons">file_upload</i>
+      <input
+        type="file"
+        onChange={uploadToMemoryRaster}
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        accept=".tif"
       />
     </a>
   </>
