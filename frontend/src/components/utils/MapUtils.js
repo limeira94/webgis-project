@@ -42,7 +42,8 @@ export const parseGeoJSON = (data) => {
           geometry: parse(item.geojson.split(';')[1]),
           properties: {
             id: item.id,
-            name: item.name
+            name: item.name,
+            attributes: item.attributes,
           },
         }));       
 };

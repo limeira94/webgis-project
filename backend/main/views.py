@@ -372,9 +372,6 @@ class RasterViewSet(viewsets.ModelViewSet):
     #     return Response(self.serializer_class(delete_rasters, many=True).data)
     
 
-
-
-
 class GeoJSONDetailView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
@@ -430,34 +427,38 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
 
             project = get_object_or_404(Project, pk=projectid)
             assert request.user == project.user
-            
+
             geojson_file = request.FILES.get('geojson')
-            if geojson_file:
-                filename = geojson_file.name
-                base_name = filename.split('.')[0]
-            
-            
-            aggregated_geometry = {
-                "type": "GeometryCollection",
-                "geometries": [feature['geometry'] for feature in geojson_data['features']]
-            }
-            
-            geo_instance = GeoJSONFile(
-                    name=filename, user=request.user, geojson=GEOSGeometry(json.dumps(aggregated_geometry))
+            filename = geojson_file.name if geojson_file else 'Uploaded_File'
+
+            saved_features = []
+            for feature in geojson_data['features']:
+                geometry = feature.get('geometry')
+                properties = feature.get('properties', {})
+                
+                # Crie uma nova instância do modelo GeoJSONFile para cada feature
+                geo_instance = GeoJSONFile(
+                    name=filename, 
+                    user=request.user, 
+                    geojson=GEOSGeometry(json.dumps(geometry)),  # Salvando a geometria
+                    attributes=properties  # Salvando os atributos
                 )
-            
-            geo_instance.save()
-            project.geojson.add(geo_instance.id)
-            project.save()
-            
+                geo_instance.save()
+                project.geojson.add(geo_instance.id)
+                project.save()
+
+                # Adicione informações sobre a feature salva
+                saved_features.append({
+                    'id': geo_instance.id,
+                    'name': geo_instance.name,
+                    'geojson': json.loads(geo_instance.geojson.geojson),
+                    'attributes': properties,
+                })
+
             return Response(
                 {
-                    'message': 'Data saved sucessfully',
-                    'savedGeoJson': {
-                        'id': geo_instance.id,
-                        'name': geo_instance.name,
-                        'geojson': json.loads(geo_instance.geojson.geojson),
-                    },
+                    'message': 'Data saved successfully',
+                    'savedGeoJson': saved_features,
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -506,12 +507,14 @@ class GeoJSONUploadView(APIView):
     #TODO: fazer a implementação do usuário.
     parser_classes = (MultiPartParser, JSONParser)
     
-    def post(self, request, *args, **kwargs):
+    def post(self, request, ):
         
         geojson_file = request.FILES.get('file')
         if not geojson_file:
             return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
         
+        file_name = geojson_file.name.split('.')[0]
+        print(file_name)
         try:
             geojson_data = json.load(geojson_file)
             features = geojson_data.get('features', [])
@@ -522,7 +525,7 @@ class GeoJSONUploadView(APIView):
             geometry = feature.get('geometry')
             properties = feature.get('properties', {})
             
-            spatial_serializer = SpatialDataSerializer(data={'geom': geometry})
+            spatial_serializer = SpatialDataSerializer(data={'geom': geometry, 'file_name': file_name})
             if spatial_serializer.is_valid():
                 spatial_obj = spatial_serializer.save()
                 

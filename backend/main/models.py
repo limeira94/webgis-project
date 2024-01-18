@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.files import File
+from django.db.models import JSONField
 from djongo import models as modelsdb
 
 from PIL import Image
@@ -28,7 +29,7 @@ class GeoJSONFile(models.Model):
         User, on_delete=models.CASCADE, blank=True, null=True
     )
     geojson = models.GeometryField()
-
+    attributes = JSONField(blank=True, null=True)
     # TODO:
     # Banco de dados unico para cada usuário.
 
@@ -309,6 +310,7 @@ class Project(models.Model):
 
 
 class SpatialDataT(models.Model):
+    file_name = models.CharField(max_length=255, null=True, blank=True)
     geom = models.GeometryField()
     
     

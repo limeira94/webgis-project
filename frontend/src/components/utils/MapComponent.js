@@ -105,9 +105,9 @@ export const MapComponent = ({
   const uploadToMemoryRaster = async (event) => {
     const file = event.target.files[0];
     event.target.value = null;
-  
+
     console.log(file);
-  
+
     if (file) {
       const arrayBuffer = await file.arrayBuffer();
       const tiff = await fromArrayBuffer(arrayBuffer);
@@ -117,7 +117,7 @@ export const MapComponent = ({
       const [xmin, ymin, xmax, ymax] = tileCoordinates;
       const bounds = [[ymin, xmin], [ymax, xmax]];
       console.log(bounds)
-  
+
       // setRasters((prevRasters) => [
       //   ...prevRasters,
       //   {
@@ -126,7 +126,7 @@ export const MapComponent = ({
       //     bounds,
       //   },
       // ]);
-  
+
       // console.log(rasters);
     }
   };
@@ -293,6 +293,7 @@ export const MapComponent = ({
             /> */}
 
       {geojsons.map((geojson, index) => {
+        console.log('geojsons', geojson)
         const isVisible = visibleGeoJSONs[geojson.properties.id];
         return isVisible && (
           <GeoJSON
@@ -309,11 +310,22 @@ export const MapComponent = ({
             style={(feature) => polygonStyles[feature.properties.id] || defaultStyle}
 
             onEachFeature={(feature, layer) => {
+              console.log(feature);
               if (feature.geometry.type !== 'Point') {
                 layer.on('click', () => {
                   setSelectedPolygon(layer);
                 });
-                layer.bindPopup(String(feature.properties.id));
+
+                if (feature.properties.attributes) {
+                  const attributesContent = Object.entries(feature.properties.attributes)
+                    .map(([key, value]) => `<strong>${key}</strong>: ${value}`)
+                    .join('<br>');
+
+                  layer.bindPopup(attributesContent);
+                } else {
+                  layer.bindPopup('No attributes available');
+                }
+
               }
             }}
           />

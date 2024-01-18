@@ -49,37 +49,42 @@ export const handleRaster = async (event,setRasters,mapInstance,dispatch,project
     }
 };
 
-export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapInstance,dispatch,projectid) => {
+export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapInstance, dispatch, projectid) => {
   event.preventDefault();
   const file = event.target.files[0];
   event.target.value = null;
-  
+
   try {
-
-    const response = await dispatch(upload_geojson({file,projectid}));
-
+    const response = await dispatch(upload_geojson({file, projectid}));
 
     if (response.type === 'geojson/upload/fulfilled') {
       const { payload } = response;
-      const { message, savedGeoJson } = payload;
+      const { savedGeoJson } = payload;
 
-      const featuresCollection = featureCollection([{
+      // Certifique-se de que savedGeoJson é um array
+      const features = Array.isArray(savedGeoJson) ? savedGeoJson : [savedGeoJson];
+
+      // Criar uma FeatureCollection com todas as features
+      const featuresCollection = featureCollection(features.map(feature => ({
         type: "Feature",
-        geometry: savedGeoJson.geojson,
+        geometry: feature.geojson,
         properties: {
-          id: savedGeoJson.id,
-          name: savedGeoJson.name
+          id: feature.id,
+          name: feature.name,
+          attributes: feature.attributes,
         },
-      }]);
+      })));
 
       const calculatedBounds = bbox(featuresCollection);
 
-      const newGeoJSONId = savedGeoJson.id;
+      features.forEach(feature => {
+        const newGeoJSONId = feature.id;
 
-      setVisibleGeoJSONs(prevVisible => ({
-        ...prevVisible,
-        [newGeoJSONId]: true
-      }));
+        setVisibleGeoJSONs(prevVisible => ({
+          ...prevVisible,
+          [newGeoJSONId]: true
+        }));
+      });
 
       if (mapInstance && calculatedBounds) {
         const boundsLatLng = L.latLngBounds(
@@ -89,102 +94,17 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
         mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
       }
 
-      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, featuresCollection.features[0]]);
+      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...featuresCollection.features]);
 
     } else {
       console.error('File upload failed with status:', response.type);
       alert('There was an error uploading the file. Please try again.');
     }
-
   } catch (error) {
     console.error('Error during upload:', error);
     alert('There was an error uploading the file. Please try again.');
   }
-} 
-
-export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,mapInstance,isAuthenticated) => {
-    const file = event.target.files[0];
-    event.target.value = null;
-    if (file) {
-      if (isAuthenticated) {
-        try {
-          const formData = new FormData();
-          formData.append('geojson', file);
-          formData.append('user', "1");
-
-          const response = await axios.post(
-            `${API_URL}api/main/upload/`
-            , formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-
-          if (response.status === 201) {
-            const newGeoJSON = response.data.savedGeoJsons.map(item => ({
-              type: "Feature",
-              geometry: item.geojson,
-              properties: {
-                id: item.id,
-                name: item.name
-              },
-            }));
-
-            const newCenter = getCenterOfGeoJSON({
-              type: 'FeatureCollection',
-              features: newGeoJSON,
-            });
-
-            if (mapInstance) {
-              mapInstance.flyTo(newCenter, 15);
-            }
-
-            setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...newGeoJSON]);
-
-          } else {
-            console.error('File upload failed with status:', response.status);
-            alert('There was an error uploading the file. Please try again.');
-          }
-
-        } catch (error) {
-          console.error('Error during upload:', error);
-          alert('There was an error uploading the file. Please try again.');
-        }
-      } else {
-
-        const fileName = file.name.split('.')[0];
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const geojsonData = JSON.parse(e.target.result);
-
-          const featuresWithId = geojsonData.features.map(feature => {
-            return {
-              type: "Feature",
-              geometry: feature.geometry,
-              properties: {
-                ...feature.properties,
-                id: feature.properties?.id || Math.floor(Math.random() * 1000000000),
-                name: feature.properties?.name || fileName
-              }
-            };
-          });
-
-          const featureCollection = getCenterOfGeoJSON({
-            type: 'FeatureCollection',
-            features: featuresWithId,
-          });
-
-          if (mapInstance) {
-            mapInstance.flyTo(featureCollection, 15);
-          }
-
-          setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...featuresWithId]);
-        };
-        reader.readAsText(file);
-      }
-    }
-  };
+};
 
 
 export const handleDeleteClick = (setGeoJSONs) => {

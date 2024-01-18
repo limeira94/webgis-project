@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='vector',
             name='file',
-            field=models.FileField(upload_to=main.utils.generate_upload_path),
+            field=models.FileField(upload_to=main.utils.generate_upload_path_vector),
         ),
         migrations.CreateModel(
             name='AttributeDataT',
