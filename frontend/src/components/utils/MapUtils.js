@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch,useSelector } from 'react-redux';
 import data, { delete_geojson,delete_raster } from '../../features/data';
 import './MapUtils.css'
+import M from 'materialize-css';
 
 const handleDeleteRaster = (rasterId,dispatch,rasters,setRasters)=> {
   dispatch(delete_raster(rasterId))
@@ -300,11 +301,22 @@ export const ListItemWithStyleAll = ({
   setVisibleDatasets,
   datatype,
   zoomToLayer,
-  updateStyle
+  updateStyle,
+  selectedFeatureAttributes
 }) => {
 
   const dispatch = useDispatch();
   const [showStyleControls, setShowStyleControls] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAttributes, setSelectedAttributes] = useState({});
+  const modalRef = useRef(null);
+
+
+  useEffect(() => {
+    if (modalRef.current) {
+      M.Modal.init(modalRef.current);
+    }
+  }, []);
 
   const handleVisibilityChange = (id, isVisible) => {
     setVisibleDatasets(prev => ({ ...prev, [id]: isVisible }));
@@ -312,6 +324,18 @@ export const ListItemWithStyleAll = ({
 
   const handleToggleClick = () => {
     setShowStyleControls(!showStyleControls);
+  };
+
+  const handleOpenModal = () => {
+    setSelectedAttributes(selectedFeatureAttributes);
+    console.log(selectedFeatureAttributes);
+    const instance = M.Modal.getInstance(modalRef.current);
+    instance.open();
+  };
+
+  const handleCloseModal = () => {
+    const instance = M.Modal.getInstance(modalRef.current);
+    instance.close();
   };
 
   var url = process.env.PUBLIC_URL
@@ -395,6 +419,7 @@ export const ListItemWithStyleAll = ({
           )
           }
         </button>
+        
 
         <p>
           <label className="checkbox-label">
@@ -417,9 +442,28 @@ export const ListItemWithStyleAll = ({
       {showStyleControls &&(
         <div>
           {styleControlItem}
+          <button onClick={handleOpenModal}>
+            Ver Atributos
+          </button>
         </div>
       )}
+      {/* Estrutura do Modal */}
+      {isModalOpen && (
+        <div ref={modalRef} className="modal bottom-sheet">
+          <div className="modal-content">
+            <h4>Atributos do Dataset</h4>
+            {Object.entries(selectedAttributes).map(([key, value]) => (
+              <p key={key}><strong>{key}</strong>: {value}</p>
+            ))}
+          </div>
+          <div className="modal-footer">
+            <button className="modal-close btn-flat" onClick={() => setIsModalOpen(false)}>Fechar</button>
+          </div>
+        </div>
+      )}
+
     </li>
+    
   )
 }
 

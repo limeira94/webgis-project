@@ -12,6 +12,7 @@ import ResetPassword from './components/ResetPassword';
 import Project from './components/Project';
 import NewProject from './components/NewProject';
 import About from './components/About';
+
 // import Upload from './components/Upload'
 
 import { checkAuth } from './features/user';

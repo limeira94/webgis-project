@@ -120,7 +120,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class GeoJsonFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeoJSONFile
-        fields = ('id', 'name', 'geojson')
+        fields = ('id', 'name', 'geojson', 'attributes')
 
 
 class RasterFileSerializer(serializers.ModelSerializer):
@@ -165,7 +165,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         user = validated_data['user']
 
         project = Project.objects.create(name=name, user=user)
-
         return project
 
 

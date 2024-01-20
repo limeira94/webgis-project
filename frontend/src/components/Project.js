@@ -123,6 +123,7 @@ function Project() {
             });
 
             setProjects(response.data)
+            console.log("DADOS GETPROJECT", response.data)
         } catch (error) {
             console.error('Error fetching GeoJSON data:', error);
         }

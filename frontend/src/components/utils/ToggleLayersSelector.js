@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import L from 'leaflet';
 import M from 'materialize-css';
 import { useEffect } from 'react';
-import { ListItemWithStyleAll, ListItemWithStyleControls, ListItemWithStyleControlsRaster } from './MapUtils';
+import { ListItemWithStyleAll } from './MapUtils';
 
 const ToggleLayersSelector = (
   {
@@ -20,6 +20,7 @@ const ToggleLayersSelector = (
     setVisibleRasters,
     geojsonLayerRefs,
     mapInstance,
+    selectedFeatureAttributes,
   }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -102,6 +103,7 @@ const ToggleLayersSelector = (
           datatype={"geojson"}
           zoomToLayer={zoomToLayer}
           updateStyle={updateStyle}
+          selectedFeatureAttributes={selectedFeatureAttributes}
           />
         ))}
         {rasters.map((raster) => (

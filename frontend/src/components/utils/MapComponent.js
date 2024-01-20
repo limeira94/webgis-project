@@ -56,12 +56,20 @@ export const MapComponent = ({
   const [buttonsCreated, setButtonsCreated] = useState(false);
   const geojsonLayerRefs = useRef({});
   const [mapInstance, setMapInstance] = useState(null);
-  const fileInputRef = useRef(null);
+  const [selectedFeatureAttributes, setSelectedFeatureAttributes] = useState(null);
+  const [modalData, setModalData] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const fileInputRef = useRef(null);
   const defaultOpacity = 1
 
   useEffect(() => {
     M.AutoInit();
+  }, []);
+
+  useEffect(() => {
+    const elems = document.querySelectorAll('.modal');
+    M.Modal.init(elems);
   }, []);
 
   useEffect(() => {
@@ -71,36 +79,6 @@ export const MapComponent = ({
       setButtonsCreated: setButtonsCreated
     });
   }, [mapInstance, buttonsCreated, setButtonsCreated]);
-
-
-  // ############################################################################################################################################################
-  // TODO:
-  // Coloquei um esboço da ideia da função para fazer upload só para a memória, precisa finalizar
-  // Depois temos que mandar essa função para outro lugar e importar ela apenas
-
-  const combineFeaturesByType = (features) => {
-    const combinedFeatures = {};
-
-    features.forEach(feature => {
-      const geometryType = feature.geometry.type;
-      if (geometryType === 'Point' || geometryType === 'LineString' || geometryType === 'Polygon') {
-        const multiType = `Multi${geometryType}`;
-        if (!combinedFeatures[multiType]) {
-          combinedFeatures[multiType] = {
-            type: 'Feature',
-            geometry: { type: multiType, coordinates: [] },
-            properties: {}
-          };
-        }
-        combinedFeatures[multiType].geometry.coordinates.push(feature.geometry.coordinates);
-      } else {
-        // Para MultiPoint, MultiLineString, MultiPolygon, mantenha como estão
-        combinedFeatures[geometryType] = feature;
-      }
-    });
-
-    return Object.values(combinedFeatures);
-  };
 
   const uploadToMemoryRaster = async (event) => {
     const file = event.target.files[0];
@@ -246,7 +224,6 @@ export const MapComponent = ({
       />
     </a>
   </>
-  // ############################################################################################################################################################
 
   var url = process.env.REACT_APP_API_URL
   const MapItem = <>
@@ -310,21 +287,27 @@ export const MapComponent = ({
             style={(feature) => polygonStyles[feature.properties.id] || defaultStyle}
 
             onEachFeature={(feature, layer) => {
-              console.log(feature);
               if (feature.geometry.type !== 'Point') {
                 layer.on('click', () => {
-                  setSelectedPolygon(layer);
+                  const attributes = feature.properties.attributes;
+                  if (attributes) {
+                    setSelectedFeatureAttributes(attributes);
+                    setModalData(attributes);
+                    setIsModalOpen(true);
+                    const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
+                    modalInstance.open();
+                  }
                 });
 
-                if (feature.properties.attributes) {
-                  const attributesContent = Object.entries(feature.properties.attributes)
-                    .map(([key, value]) => `<strong>${key}</strong>: ${value}`)
-                    .join('<br>');
+                // if (feature.properties.attributes) {
+                //   const attributesContent = Object.entries(feature.properties.attributes)
+                //     .map(([key, value]) => `<strong>${key}</strong>: ${value}`)
+                //     .join('<br>');
 
-                  layer.bindPopup(attributesContent);
-                } else {
-                  layer.bindPopup('No attributes available');
-                }
+                //   layer.bindPopup(attributesContent);
+                // } else {
+                //   layer.bindPopup('No attributes available');
+                // }
 
               }
             }}
@@ -354,6 +337,7 @@ export const MapComponent = ({
         setVisibleRasters={setVisibleRasters}
         geojsonLayerRefs={geojsonLayerRefs}
         mapInstance={mapInstance}
+        selectedFeatureAttributes={selectedFeatureAttributes}
       />
 
       <BasemapSelector
@@ -376,6 +360,31 @@ export const MapComponent = ({
         <a href="/" className="btn-floating waves-effect waves-light black">
           <i className="material-icons tiny">home</i>
         </a>
+      </div>
+
+      <div id="attributesModal" className="modal">
+        <div className="modal-content">
+          <h4>Detalhes do Polígono</h4>
+          <table className="striped">
+            <thead>
+              <tr>
+                <th>Atributo</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(modalData).map(([key, value]) => (
+                <tr key={key}>
+                  <td>{key}</td>
+                  <td>{value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="modal-footer">
+          <a href="#!" className="modal-close waves-effect waves-green btn-flat">Fechar</a>
+        </div>
       </div>
 
       {MapItem}
