@@ -298,17 +298,6 @@ export const MapComponent = ({
                     modalInstance.open();
                   }
                 });
-
-                // if (feature.properties.attributes) {
-                //   const attributesContent = Object.entries(feature.properties.attributes)
-                //     .map(([key, value]) => `<strong>${key}</strong>: ${value}`)
-                //     .join('<br>');
-
-                //   layer.bindPopup(attributesContent);
-                // } else {
-                //   layer.bindPopup('No attributes available');
-                // }
-
               }
             }}
           />
@@ -364,21 +353,21 @@ export const MapComponent = ({
 
       <div id="attributesModal" className="modal">
         <div className="modal-content">
-          <h4>Detalhes do Polígono</h4>
+          <h4>Tabela de Atributos</h4>
           <table className="striped">
             <thead>
               <tr>
-                <th>Atributo</th>
-                <th>Valor</th>
+                {Object.keys(modalData).map((key) => (
+                  <th key={key}>{key}</th>
+                ))}    
               </tr>
             </thead>
             <tbody>
-              {Object.entries(modalData).map(([key, value]) => (
-                <tr key={key}>
-                  <td>{key}</td>
-                  <td>{value}</td>
-                </tr>
-              ))}
+              <tr>
+                {Object.values(modalData).map((value, index) => (
+                  <td key={index}>{value}</td>
+                ))}
+              </tr>
             </tbody>
           </table>
         </div>

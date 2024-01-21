@@ -311,12 +311,11 @@ export const ListItemWithStyleAll = ({
   const [selectedAttributes, setSelectedAttributes] = useState({});
   const modalRef = useRef(null);
 
-
   useEffect(() => {
-    if (modalRef.current) {
-      M.Modal.init(modalRef.current);
-    }
+    const options = {}; // Defina opções para o modal se necessário
+    M.Modal.init(document.querySelector('.modal'), options);
   }, []);
+
 
   const handleVisibilityChange = (id, isVisible) => {
     setVisibleDatasets(prev => ({ ...prev, [id]: isVisible }));
@@ -327,10 +326,13 @@ export const ListItemWithStyleAll = ({
   };
 
   const handleOpenModal = () => {
-    setSelectedAttributes(selectedFeatureAttributes);
-    console.log(selectedFeatureAttributes);
-    const instance = M.Modal.getInstance(modalRef.current);
-    instance.open();
+    if (modalRef.current) {
+      setSelectedAttributes(selectedFeatureAttributes);
+      console.log(selectedFeatureAttributes);
+      setIsModalOpen(true);
+      const instance = M.Modal.getInstance(modalRef.current);
+      instance.open();
+    }
   };
 
   const handleCloseModal = () => {
@@ -447,17 +449,31 @@ export const ListItemWithStyleAll = ({
           </button>
         </div>
       )}
-      {/* Estrutura do Modal */}
-      {isModalOpen && (
-        <div ref={modalRef} className="modal bottom-sheet">
+
+      {isModalOpen &&  (
+        <div ref={modalRef} className="modal">
           <div className="modal-content">
-            <h4>Atributos do Dataset</h4>
-            {Object.entries(selectedAttributes).map(([key, value]) => (
-              <p key={key}><strong>{key}</strong>: {value}</p>
-            ))}
+            <h4>Tabela de Atributos</h4>
+            <table className="striped">
+              <thead>
+                <tr>
+                  
+                  {selectedAttributes && Object.keys(selectedAttributes).map((key) => (
+                    <th key={key}>{key}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {selectedAttributes && Object.values(selectedAttributes).map((value, index) => (
+                    <td key={index}>{value}</td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div className="modal-footer">
-            <button className="modal-close btn-flat" onClick={() => setIsModalOpen(false)}>Fechar</button>
+            <button className="modal-close btn-flat">Fechar</button>
           </div>
         </div>
       )}
