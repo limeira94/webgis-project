@@ -27,6 +27,7 @@ import 'leaflet-measure/dist/leaflet-measure.css';
 import 'leaflet-measure/dist/leaflet-measure.js';
 import bbox from '@turf/bbox';
 import GeoTIFF from 'geotiff';
+import proj4 from 'proj4';
 import { fromArrayBuffer } from 'geotiff';
 import { featureCollection } from '@turf/helpers';
 
@@ -38,6 +39,35 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
+
+const getBoundsIn4326 = (image) => {
+  try {
+    const geoAsciiParams = image.getFileDirectory().GeoAsciiParams;
+    const sourceCRS = extractProj4String(geoAsciiParams);
+    return convertToEPSG4326(image.getBoundingBox(), sourceCRS);
+  } catch (error) {
+    // console.error("Error getting CRS from GeoASCIIParams:", error);
+    console.log(error)
+    return image.getBoundingBox();
+  }
+};
+
+const extractProj4String = (geoAsciiParams) => {
+  const lines = geoAsciiParams.split('|');
+  const proj4Line = lines.find(line => line.includes('/ UTM') || line.includes('/ WGS'));
+  const proj4String = proj4Line ? proj4Line.split('|')[0].trim() : '';
+  return proj4String;
+};
+
+const convertToEPSG4326 = (tileCoordinates, sourceCRS) => {
+  const dest = new proj4.Proj('EPSG:4326'); // WGS 84
+  const source = proj4.Proj(sourceCRS);
+
+  const sw = proj4.transform(source, dest, proj4.toPoint([tileCoordinates[0], tileCoordinates[1]]));
+  const ne = proj4.transform(source, dest, proj4.toPoint([tileCoordinates[2], tileCoordinates[3]]));
+
+  return [[sw.y, sw.x], [ne.y, ne.x]];
+};
 
 export const MapComponent = ({
   rasters,
@@ -95,7 +125,7 @@ export const MapComponent = ({
       const [xmin, ymin, xmax, ymax] = tileCoordinates;
       const bounds = [[ymin, xmin], [ymax, xmax]];
       console.log(bounds)
-
+  
       // setRasters((prevRasters) => [
       //   ...prevRasters,
       //   {
