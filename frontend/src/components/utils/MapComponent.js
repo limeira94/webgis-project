@@ -87,7 +87,7 @@ export const MapComponent = ({
   const geojsonLayerRefs = useRef({});
   const [mapInstance, setMapInstance] = useState(null);
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] = useState(null);
-  const [modalData, setModalData] = useState({});
+  const [modalData, setModalData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fileInputRef = useRef(null);
@@ -255,7 +255,11 @@ export const MapComponent = ({
     </a>
   </>
 
-  var url = process.env.REACT_APP_API_URL
+  const flattenedData = modalData.flat();
+
+  // Identificar todas as chaves únicas
+  const uniqueKeys = Array.from(new Set(flattenedData.flatMap(Object.keys)));
+
   const MapItem = <>
     <MapContainer className='map-container'
       ref={(map) => {
@@ -322,7 +326,7 @@ export const MapComponent = ({
                   const attributes = feature.properties.attributes;
                   if (attributes) {
                     setSelectedFeatureAttributes(attributes);
-                    setModalData(attributes);
+                    setModalData([attributes]);
                     setIsModalOpen(true);
                     const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
                     modalInstance.open();
@@ -387,19 +391,22 @@ export const MapComponent = ({
           <table className="striped">
             <thead>
               <tr>
-                {Object.keys(modalData).map((key) => (
+                {uniqueKeys.map(key => (
                   <th key={key}>{key}</th>
-                ))}    
+                ))}
               </tr>
             </thead>
             <tbody>
-              <tr>
-                {Object.values(modalData).map((value, index) => (
-                  <td key={index}>{value}</td>
-                ))}
-              </tr>
+              {flattenedData.map((item, index) => (
+                <tr key={index}>
+                  {uniqueKeys.map(key => (
+                    <td key={key}>{item[key] || '—'}</td> // Exibe um traço se a chave não estiver presente no objeto
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
+
         </div>
         <div className="modal-footer">
           <a href="#!" className="modal-close waves-effect waves-green btn-flat">Fechar</a>

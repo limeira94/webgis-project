@@ -10,7 +10,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.views import LoginView
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.db import connection
@@ -40,8 +40,8 @@ from .serializers import *
 
 from shapely.geometry import box
 
-class ProjectList(APIView):
 
+class ProjectList(APIView):
 
     def post(self, request):
 
@@ -431,44 +431,52 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
             geojson_file = request.FILES.get('geojson')
             filename = geojson_file.name if geojson_file else 'Uploaded_File'
 
-            saved_features = []
+            all_geometries = []
+            all_attributes = []
+
             for feature in geojson_data['features']:
                 geometry = feature.get('geometry')
                 properties = feature.get('properties', {})
                 
-                # Crie uma nova instância do modelo GeoJSONFile para cada feature
-                geo_instance = GeoJSONFile(
-                    name=filename, 
-                    user=request.user, 
-                    geojson=GEOSGeometry(json.dumps(geometry)),  # Salvando a geometria
-                    attributes=properties  # Salvando os atributos
-                )
-                geo_instance.save()
-                project.geojson.add(geo_instance.id)
-                project.save()
+                # Adicione a geometria à lista de todas as geometrias
+                all_geometries.append(GEOSGeometry(json.dumps(geometry)))
 
-                # Adicione informações sobre a feature salva
-                saved_features.append({
-                    'id': geo_instance.id,
-                    'name': geo_instance.name,
-                    'geojson': json.loads(geo_instance.geojson.geojson),
-                    'attributes': properties,
-                })
+                # Adicione os atributos à lista de todos os atributos
+                all_attributes.append(properties)
+
+            # Crie uma GeometryCollection com todas as geometrias
+            combined_geometry = GeometryCollection(all_geometries)
+
+            # Crie e salve a nova instância do modelo GeoJSONFile com a geometria e atributos
+            geo_instance = GeoJSONFile(
+                name=filename, 
+                user=request.user, 
+                geojson=combined_geometry,  # Salvando a GeometryCollection
+                attributes=all_attributes  # Salvando a lista de atributos
+            )
+            geo_instance.save()
+            project.geojson.add(geo_instance.id)
+            project.save()
 
             return Response(
                 {
                     'message': 'Data saved successfully',
-                    'savedGeoJson': saved_features,
+                    'savedGeoJson': {
+                        'id': geo_instance.id,
+                        'name': geo_instance.name,
+                        'geojson': json.loads(geo_instance.geojson.geojson),
+                        'attributes': all_attributes,
+                    }
                 },
                 status=status.HTTP_201_CREATED,
             )
-        
+
         except Exception as e:
             print(e)
             return Response(
                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
-            
+
 
 class UserRegistrarionView(generics.CreateAPIView):
     queryset = User.objects.all()
