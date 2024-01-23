@@ -15,7 +15,7 @@ from django.db.models import JSONField
 from PIL import Image
 
 from .geoserver import upload_file
-from .utils import *#generate_upload_path, normalize_ar, validate_file_extension, get_bounds
+from .utils import *
 
 
 class Shapefile(models.Model):
@@ -30,8 +30,7 @@ class GeoJSONFile(models.Model):
     )
     geojson = models.GeometryField()
     attributes = JSONField(blank=True, null=True)
-    # TODO:
-    # Banco de dados unico para cada usuário.
+    # TODO: Banco de dados unico para cada usuário.
 
 
 class GeoserverData(models.Model):
