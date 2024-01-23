@@ -17,8 +17,8 @@ SETTINGS_MODULE = 'backend.settings'
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 # MEDIA_URL = '/build/' # para windowns
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'build')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'build')
 
 ALLOWED_HOSTS = [
     'webgis.site'
@@ -28,20 +28,17 @@ if DEBUG:
     ALLOWED_HOSTS.append('127.0.0.1')
     ALLOWED_HOSTS.append('localhost')
     ALLOWED_HOSTS.append('localhost:8000')
+    ALLOWED_HOSTS.append('localhost:3000')
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:8080',
     'https://webgis.site',
 ]
 
 if DEBUG:
+    CORS_ALLOWED_ORIGINS.append('http://127.0.0.1:3000')
     CORS_ALLOWED_ORIGINS.append('http://localhost:3000')
-    # CORS_ORIGIN_ALLOW_ALL = True
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://webgis.site',
-]
+    CORS_ALLOWED_ORIGINS.append('http://localhost:8000')
+    CORS_ORIGIN_ALLOW_ALL = True
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
