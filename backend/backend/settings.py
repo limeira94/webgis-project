@@ -240,17 +240,5 @@ if USE_S3:
 else:
     STATIC_URL = '/staticfiles/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    print("NOT USING AWS")
 
-# #TODO:
-
-    
-# # STATIC_URL = '/static/'
-# # STATICFILES_DIRS = [
-# #     os.path.join(BASE_DIR, 'build/static'),
-# # ]
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [
-#   #os.path.join(BASE_DIR, "build/static"),
-# ]
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 102400

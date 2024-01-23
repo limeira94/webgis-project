@@ -248,7 +248,7 @@ export const MapComponent = ({
         accept=".geojson, application/geo+json"
       />
     </a>
-    <a onClick={handleButtonRasterClick} className='btn-floating waves-effect waves-light upload-geo-button-raster'>
+    {/* <a onClick={handleButtonRasterClick} className='btn-floating waves-effect waves-light upload-geo-button-raster'>
       <i className="small material-icons">file_upload</i>
       <input
         type="file"
@@ -257,7 +257,7 @@ export const MapComponent = ({
         style={{ display: 'none' }}
         accept=".tif"
       />
-    </a>
+    </a> */}
   </>
 
   var url = process.env.REACT_APP_API_URL
@@ -305,7 +305,7 @@ export const MapComponent = ({
             /> */}
 
       {geojsons.map((geojson, index) => {
-        console.log('geojsons', geojson)
+        // console.log('geojsons', geojson)
         const isVisible = visibleGeoJSONs[geojson.properties.id];
         return isVisible && (
           <GeoJSON

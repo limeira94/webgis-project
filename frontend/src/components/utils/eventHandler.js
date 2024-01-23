@@ -35,8 +35,8 @@ export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,setV
       if (isAuthenticated) {
         try {
           const formData = new FormData();
-          formData.append('geojson', file);
-          formData.append('user', "1");
+          // formData.append('geojson', file);
+          // formData.append('user', "1");
 
           const response = await axios.post(
             `${API_URL}api/main/upload/`
