@@ -86,6 +86,22 @@ function Project() {
         }
     }, [project_id, project]);
 
+    const handleDeleteProject = async (projectId) => {
+        try {
+            const accessToken = Cookies.get('access_token');
+            await axios.delete(`${API_URL}api/main/projects/${projectId}/`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+    
+            // Optionally, you can update your projects list or navigate to a different page.
+            await getProjects();
+        } catch (error) {
+            console.error('Error deleting project:', error);
+        }
+    };
+
     const handleNewProject = async () => {
         try {
             const accessToken = Cookies.get('access_token');
@@ -139,6 +155,21 @@ function Project() {
         modalInstance.close();
     }
 
+    const handleDeleteOption = (id) => {
+        const selectedProjectId = parseInt(id, 10);
+      
+        const confirmDelete = window.confirm("Are you sure you want to delete this project? You will lost all your data.");
+      
+        if (confirmDelete) {
+          handleDeleteProject(selectedProjectId);
+          M.toast({
+            html: "Project deleted sucessfully",
+            classes: 'green rounded',
+            displayLength: 5000
+          });
+        }
+      };
+
     if (!isAuthenticated && !loading && user === null)
         return <Navigate to='/login' />;
 
@@ -171,6 +202,9 @@ function Project() {
                                                 // onClick={() => handleChooseOption(index)}
                                                 onClick={() => handleChooseOption(project.id)}
                                                 className="btn-floating halfway-fab waves-effect waves-light red"><i className="material-icons">open_in_browser</i></a>
+                                            <a
+                                                onClick={() => handleDeleteOption(project.id)}
+                                                className="btn-floating halfway-fab waves-effect waves-light red left"><i className="material-icons">delete</i></a>
                                         </div>
                                         <div className="card-content">
                                             <p><b>Last time updated:</b></p>
@@ -181,9 +215,6 @@ function Project() {
                             ))}
                         </div>
                     </div>
-
-
-
                 </div>
                 <div className="modal-footer">
                     {projectTextInput ? (

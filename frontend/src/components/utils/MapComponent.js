@@ -91,6 +91,7 @@ export const MapComponent = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fileInputRef = useRef(null);
+  const fileInputRasterRef = useRef(null);
   const defaultOpacity = 1
 
   useEffect(() => {
@@ -232,6 +233,10 @@ export const MapComponent = ({
     fileInputRef.current.click();
   };
 
+  const handleButtonRasterClick = () => {
+    fileInputRasterRef.current.click();
+  };
+
   const memoryButton = <>
     <a onClick={handleButtonClick} className='btn-floating waves-effect waves-light  upload-geo-button'>
       <i className="small material-icons">file_upload</i>
@@ -243,12 +248,12 @@ export const MapComponent = ({
         accept=".geojson, application/geo+json"
       />
     </a>
-    <a onClick={handleButtonClick} className='btn-floating waves-effect waves-light upload-geo-button-raster'>
+    <a onClick={handleButtonRasterClick} className='btn-floating waves-effect waves-light upload-geo-button-raster'>
       <i className="small material-icons">file_upload</i>
       <input
         type="file"
         onChange={uploadToMemoryRaster}
-        ref={fileInputRef}
+        ref={fileInputRasterRef}
         style={{ display: 'none' }}
         accept=".tif"
       />
