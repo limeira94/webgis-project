@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.gis.geos import GEOSGeometry
 
-from .models import AttributeDataT, GeoJSONFile, Project, RasterFile, SpatialDataT, Vector
+from .models import *#AttributeDataT, GeoJSONFile, Project, RasterFile, SpatialDataT, Vector
 
 
 class VectorSerializer(serializers.ModelSerializer):
@@ -201,8 +201,8 @@ class SpatialDataSerializer(serializers.ModelSerializer):
         spatial_data.save()
         return spatial_data
 
-class AttributesDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AttributeDataT
-        fields = '__all__'
+# class AttributesDataSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = AttributeDataT
+#         fields = '__all__'
         

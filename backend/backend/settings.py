@@ -28,20 +28,17 @@ if DEBUG:
     ALLOWED_HOSTS.append('127.0.0.1')
     ALLOWED_HOSTS.append('localhost')
     ALLOWED_HOSTS.append('localhost:8000')
+    ALLOWED_HOSTS.append('localhost:3000')
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:8080',
     'https://webgis.site',
 ]
 
 if DEBUG:
+    CORS_ALLOWED_ORIGINS.append('http://127.0.0.1:3000')
     CORS_ALLOWED_ORIGINS.append('http://localhost:3000')
-    # CORS_ORIGIN_ALLOW_ALL = True
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://webgis.site',
-]
+    CORS_ALLOWED_ORIGINS.append('http://localhost:8000')
+    CORS_ORIGIN_ALLOW_ALL = True
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
@@ -212,32 +209,20 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 #AWS:
 ##############################    AWS    ##############################
 ##########################################################################
-STORAGES = {
-    "default": {
-        "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
-    },
-    "staticfiles": {
-        "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
-    },
-}
-
-# # STATIC_URL = '/static/'
-# # STATICFILES_DIRS = [
-# #     os.path.join(BASE_DIR, 'build/static'),
-# # ]
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [
-#   #os.path.join(BASE_DIR, "build/static"),
-# ]
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# STORAGES = {
+#     "default": {
+#         "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
+#     },
+#     "staticfiles": {
+#         "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
+#     },
+# }
 
 USE_S3 = config('USE_S3') == 'True'
 if USE_S3:
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-
-    # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
     AWS_S3_FILE_OVERWRITE = False
 
@@ -248,8 +233,9 @@ if USE_S3:
     S3_URL = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
     STATIC_URL = f'https://{S3_URL}/{AWS_LOCATION}/'
 
-    # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     AWS_S3_ENDPOINT_URL = "https://s3.us-east-2.amazonaws.com"
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     
 else:
     STATIC_URL = '/staticfiles/'
@@ -257,4 +243,14 @@ else:
     print("NOT USING AWS")
 
 # #TODO:
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+    
+# # STATIC_URL = '/static/'
+# # STATICFILES_DIRS = [
+# #     os.path.join(BASE_DIR, 'build/static'),
+# # ]
+# STATIC_URL = '/static/'
+# STATICFILES_DIRS = [
+#   #os.path.join(BASE_DIR, "build/static"),
+# ]
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")

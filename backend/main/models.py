@@ -10,7 +10,7 @@ from django.contrib.gis.db import models
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.files import File
 from django.db.models import JSONField
-from djongo import models as modelsdb
+# from djongo import models as modelsdb
 
 from PIL import Image
 
@@ -313,7 +313,7 @@ class SpatialDataT(models.Model):
     geom = models.GeometryField()
     
     
-class AttributeDataT(modelsdb.Model):
-    spatial_data = models.ForeignKey(SpatialDataT, on_delete=modelsdb.CASCADE)
-    properties = models.JSONField()
+# class AttributeDataT(modelsdb.Model):
+#     spatial_data = models.ForeignKey(SpatialDataT, on_delete=modelsdb.CASCADE)
+#     properties = models.JSONField()
     

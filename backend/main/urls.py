@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/main/vector/', views.VectorList.as_view(), name='get_vector'),
     path('api/main/vector/geojson', views.ExportGeoJSON.as_view(), name='get_vector_geojson'),
     path('api/main/projects/', views.ProjectList.as_view(), name='get_projects'),
+    path('api/main/projects/<int:pk>/', views.ProjectList.as_view(), name='delete-project'),
     path('upload_geojson/', views.GeoJSONUploadView.as_view(), name='upload-geojson'),
     path('upload_shapefile/', views.ShapefileUploadView.as_view(), name='upload-shapefile'),
     

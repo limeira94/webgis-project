@@ -40,11 +40,8 @@ from .serializers import *
 
 from shapely.geometry import box
 
-
 class ProjectList(APIView):
-
     def post(self, request):
-
         if request.user.is_authenticated:
             data = request.data
             data["user"] = request.user.pk
@@ -64,6 +61,19 @@ class ProjectList(APIView):
 
         project_serializer = ProjectSerializer(projects, many=True)
         return Response(project_serializer.data, status=status.HTTP_200_OK)
+    
+    def delete(self, request, pk):
+        try:
+            project = Project.objects.get(pk=pk)
+            if request.user == project.user:
+                project.delete()
+                return Response({'detail': 'Project deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({'detail': 'Permission denied.'}, status=status.HTTP_403_FORBIDDEN)
+
+        except Project.DoesNotExist:
+            return Response({'detail': 'Project not found.'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class VectorList(APIView):
