@@ -10,6 +10,7 @@ const ToggleLayersSelector = (
     rasters,
     setRasters,
     geojsons,
+    setGeojsons,
     polygonStyles,
     setPolygonStyles,
     visibleGeoJSONs,
@@ -21,6 +22,7 @@ const ToggleLayersSelector = (
     geojsonLayerRefs,
     mapInstance,
     selectedFeatureAttributes,
+    inmemory=false
   }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -96,6 +98,7 @@ const ToggleLayersSelector = (
           // key={geojson.properties.id}
           key={`$geojson-item-${geojson.properties.id}`}
           datasets={geojsons}
+          setDatasets={setGeojsons}
           polygonStyles={polygonStyles}
           dataset={geojson}
           visibleDatasets={visibleGeoJSONs}
@@ -104,6 +107,7 @@ const ToggleLayersSelector = (
           zoomToLayer={zoomToLayer}
           updateStyle={updateStyle}
           selectedFeatureAttributes={selectedFeatureAttributes}
+          inmemory={inmemory}
           />
         ))}
         {rasters.map((raster) => (
@@ -117,6 +121,7 @@ const ToggleLayersSelector = (
               setVisibleDatasets={setVisibleRasters}
               datatype={"raster"}
               zoomToLayer={zoomToLayerRaster}
+              inmemory={inmemory}
               />
           ))}
         {/* {geojsons.map((geojson) => (

@@ -6,7 +6,46 @@ import data, { delete_geojson,delete_raster } from '../../features/data';
 import './MapUtils.css'
 import M from 'materialize-css';
 
-const handleDeleteRaster = (rasterId,dispatch,rasters,setRasters)=> {
+const removeItemFromList = (datasets,setDatasets,fileId,datatype) => {
+  if (datatype=="raster") {
+    const newDatasets = datasets.filter(datasetItem => datasetItem.id !== fileId);  
+    setDatasets(newDatasets);
+  } else {
+    const newDatasets = datasets.filter(datasetItem => datasetItem.properties.id !== fileId);
+    setDatasets(newDatasets);
+  }
+}
+
+const handleDeleteFiles = (fileId,dispatch,datasets,setDatasets,functionDelete,inmemory=false,datatype="raster") => {
+  if (inmemory) {
+    // const newDatasets = datasets.filter(datasetItem => datasetItem.id !== fileId);
+    // setDatasets(newDatasets);
+    removeItemFromList(datasets,setDatasets,fileId,datatype)
+  }
+  else{
+  dispatch(functionDelete(fileId))
+          .then((action) => {
+            
+            if (action.meta.requestStatus === 'fulfilled') {
+              // const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
+              // setRasters(newRasters);
+              removeItemFromList(datasets,setDatasets,fileId,datatype)
+            } else {
+              console.error(`Failed to delete ${datatype}`);
+            }
+          })
+          .catch((error) => {
+            console.error('Error occurred while deleting request:', error);
+          });
+  }
+}
+
+const handleDeleteRaster = (rasterId,dispatch,rasters,setRasters,inmemory=false)=> {
+  if (inmemory) {
+    const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
+    setRasters(newRasters);
+  }
+  else{
   dispatch(delete_raster(rasterId))
           .then((action) => {
             
@@ -21,13 +60,20 @@ const handleDeleteRaster = (rasterId,dispatch,rasters,setRasters)=> {
             console.error('Error occurred while deleting request:', error);
           });
 }
+}
 
-const handleDeleteGeojson = (geojsonId,dispatch)=> {
+const handleDeleteGeojson = (geojsonId,dispatch,geojsons,setGeojsons,inmemory=false)=> {
+  if (inmemory){
+
+  }
+  else{
   dispatch(delete_geojson(geojsonId))
           .then((action) => {
             
             if (action.meta.requestStatus === 'fulfilled') {
-              window.location.reload();
+              // window.location.reload();
+              const newGeoJSONs = geojsons.filter(geojsonItem => geojsonItem.id !== geojsonId);
+              setGeojsons(newGeoJSONs);
             } else {
               console.error('Failed to delete geojson');
             }
@@ -35,6 +81,7 @@ const handleDeleteGeojson = (geojsonId,dispatch)=> {
           .catch((error) => {
             console.error('Error occurred while deleting request:', error);
           });
+  }
 }
 
 export const parseGeoJSON = (data) => {
@@ -213,84 +260,84 @@ export const StyleControls = ({ geojson, updateStyle, polygonStyles,zoomanddelet
   );
 };
 
-export const ListItemWithStyleControlsRaster = ({
-  rasters,
-  setRasters,
-  raster,
-  visibleRasters,
-  setVisibleRasters,
-  zoomToLayerRaster
-}) => {
-  const dispatch = useDispatch();
-  const [showStyleControls, setShowStyleControls] = useState(false);
+// export const ListItemWithStyleControlsRaster = ({
+//   rasters,
+//   setRasters,
+//   raster,
+//   visibleRasters,
+//   setVisibleRasters,
+//   zoomToLayerRaster
+// }) => {
+//   const dispatch = useDispatch();
+//   const [showStyleControls, setShowStyleControls] = useState(false);
 
-  const handleToggleClick = () => {
-    setShowStyleControls(!showStyleControls);
-  };
+//   const handleToggleClick = () => {
+//     setShowStyleControls(!showStyleControls);
+//   };
 
-  const handleVisibilityChange = (id, isVisible) => {
-    setVisibleRasters(prev => ({ ...prev, [id]: isVisible }));
-  };
-  var url = process.env.PUBLIC_URL
+//   const handleVisibilityChange = (id, isVisible) => {
+//     setVisibleRasters(prev => ({ ...prev, [id]: isVisible }));
+//   };
+//   var url = process.env.PUBLIC_URL
   
-  return (
-    <li 
-      key={`raster-${raster.id}`}
-      className='list-dataset'
-      >
+//   return (
+//     <li 
+//       key={`raster-${raster.id}`}
+//       className='list-dataset'
+//       >
       
-      <div 
-      className='list-div-dataset'
-      >
-         <button 
-          className="dropdown-button" 
-          onClick={handleToggleClick}
-          style={{ visibility: 'visible' }}
-          >
-          { showStyleControls ? (
-            <span className="material-icons">keyboard_arrow_down</span>
-          ) :(
-            <span className="material-icons">keyboard_arrow_right</span>
-          )
-          }
-        </button>
-        <p>
-          <label >
-            <input 
-              type="checkbox" 
-              className="filled-in" 
-              checked={visibleRasters[raster.id] ?? false}
-              onClick={() => handleVisibilityChange(raster.id, !(visibleRasters[raster.id] ?? false))}
-            />
-            <span className='tooltipped' data-position="bottom" data-tooltip={raster.name}>
-              <img className="icon-data" src={url + "/raster.png"} alt="raster-item" />
-              {raster.name.length > maxCharacters ? raster.name.slice(0, maxCharacters) + '...' : raster.name}
-            </span>
-          </label>
-        </p>
+//       <div 
+//       className='list-div-dataset'
+//       >
+//          <button 
+//           className="dropdown-button" 
+//           onClick={handleToggleClick}
+//           style={{ visibility: 'visible' }}
+//           >
+//           { showStyleControls ? (
+//             <span className="material-icons">keyboard_arrow_down</span>
+//           ) :(
+//             <span className="material-icons">keyboard_arrow_right</span>
+//           )
+//           }
+//         </button>
+//         <p>
+//           <label >
+//             <input 
+//               type="checkbox" 
+//               className="filled-in" 
+//               checked={visibleRasters[raster.id] ?? false}
+//               onClick={() => handleVisibilityChange(raster.id, !(visibleRasters[raster.id] ?? false))}
+//             />
+//             <span className='tooltipped' data-position="bottom" data-tooltip={raster.name}>
+//               <img className="icon-data" src={url + "/raster.png"} alt="raster-item" />
+//               {raster.name.length > maxCharacters ? raster.name.slice(0, maxCharacters) + '...' : raster.name}
+//             </span>
+//           </label>
+//         </p>
 
-        <button className='zoom-button' onClick={() => zoomToLayerRaster(raster.id)}>
-          <span className="material-icons">zoom_in_map</span>
-        </button>
-        <a href="#" onClick={() => handleDeleteRaster(raster.id,dispatch,rasters,setRasters)}><i className='material-icons'>delete</i></a>
-        {showStyleControls && (
-        <div style={{ marginTop: '10px' }}>
-          <StyleRasterControls
-          rasters={rasters}
-          setRasters={setRasters}
-          raster={raster}
-          dispatch={dispatch}
-          zoomToLayerRaster={zoomToLayerRaster}
-          />
-        </div>
-        )}
-      </div>
-    </li>
-  );
-}
+//         <button className='zoom-button' onClick={() => zoomToLayerRaster(raster.id)}>
+//           <span className="material-icons">zoom_in_map</span>
+//         </button>
+//         <a href="#" onClick={() => handleDeleteRaster(raster.id,dispatch,rasters,setRasters)}><i className='material-icons'>delete</i></a>
+//         {showStyleControls && (
+//         <div style={{ marginTop: '10px' }}>
+//           <StyleRasterControls
+//           rasters={rasters}
+//           setRasters={setRasters}
+//           raster={raster}
+//           dispatch={dispatch}
+//           zoomToLayerRaster={zoomToLayerRaster}
+//           />
+//         </div>
+//         )}
+//       </div>
+//     </li>
+//   );
+// }
 
-//TODO:
-// Aqui to gerando dessa forma para unificar os "ListItem" de vetor e de raster. Simplificando código.
+// //TODO:
+// // Aqui to gerando dessa forma para unificar os "ListItem" de vetor e de raster. Simplificando código.
 
 export const ListItemWithStyleAll = ({
   datasets,
@@ -302,7 +349,8 @@ export const ListItemWithStyleAll = ({
   datatype,
   zoomToLayer,
   updateStyle,
-  selectedFeatureAttributes
+  selectedFeatureAttributes,
+  inmemory=false
 }) => {
 
   const dispatch = useDispatch();
@@ -343,11 +391,14 @@ export const ListItemWithStyleAll = ({
   var url = process.env.PUBLIC_URL
 
   let handleDelete,dataset_id,isPoint,dataset_name,img_icon,styleControlItem
-  if (datatype==="raster"){
-    handleDelete = () => handleDeleteRaster(dataset.id,dispatch,datasets,setDatasets)
+  if (datatype==="raster"){ 
+    // handleDelete = () => handleDeleteRaster(dataset.id,dispatch,datasets,setDatasets,inmemory)
+      handleDelete = () => handleDeleteFiles( dataset.id,dispatch,datasets,setDatasets,delete_raster,inmemory=inmemory,datatype=datatype)
+      // handleDelete = () => handleDeleteFiles( fileId,dispatch,datasets,setDatasets,functionDelete,inmemory=false,type="raster")
   }
   else{
-      handleDelete = () => handleDeleteGeojson(dataset.properties.id,dispatch)
+      handleDelete = () => handleDeleteFiles(  dataset.properties.id,dispatch,datasets,setDatasets,delete_geojson,inmemory=inmemory,datatype=datatype)
+      // handleDelete = () => handleDeleteGeojson(dataset.properties.id,dispatch,datasets,setDatasets,inmemory)
   }
   const zoomanddelete = <>
         <tr>
@@ -388,6 +439,7 @@ export const ListItemWithStyleAll = ({
     />
   }
   else{
+    // console.log("DATASET AAA",dataset)
     // handleDelete = () => handleDeleteGeojson(dataset.id,dispatch)
     dataset_id = dataset.properties.id
     isPoint = dataset.geometry.type === "Point" || dataset.geometry.type === "MultiPoint";
@@ -400,6 +452,7 @@ export const ListItemWithStyleAll = ({
     zoomanddelete={zoomanddelete}
   />
   }
+  // console.log(datatype,dataset_name)
 
   return (
     <li
@@ -484,98 +537,98 @@ export const ListItemWithStyleAll = ({
 }
 
 
-export const ListItemWithStyleControls = (
-  { 
-    geojson, 
-    updateStyle, 
-    polygonStyles, 
-    visibleGeoJSONs, 
-    setVisibleGeoJSONs, 
-    zoomToLayer 
-  }
-  ) => {
-  const dispatch = useDispatch();
-  const [showStyleControls, setShowStyleControls] = useState(false);
+// export const ListItemWithStyleControls = (
+//   { 
+//     geojson, 
+//     updateStyle, 
+//     polygonStyles, 
+//     visibleGeoJSONs, 
+//     setVisibleGeoJSONs, 
+//     zoomToLayer 
+//   }
+//   ) => {
+//   const dispatch = useDispatch();
+//   const [showStyleControls, setShowStyleControls] = useState(false);
 
-  const handleVisibilityChange = (id, isVisible) => {
-    setVisibleGeoJSONs(prev => ({ ...prev, [id]: isVisible }));
-  };
+//   const handleVisibilityChange = (id, isVisible) => {
+//     setVisibleGeoJSONs(prev => ({ ...prev, [id]: isVisible }));
+//   };
 
-  const handleToggleClick = () => {
-    setShowStyleControls(!showStyleControls);
-  };
+//   const handleToggleClick = () => {
+//     setShowStyleControls(!showStyleControls);
+//   };
 
-  var url = process.env.PUBLIC_URL
+//   var url = process.env.PUBLIC_URL
 
-  const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
-  const zoomanddelete = <>
-        <tr>
-          <td>Zoom to</td>
-          <td className='alnright'>
-            <button className='zoom-button' onClick={() => zoomToLayer(geojson.properties.id)}>
-              <span className="material-icons">zoom_in_map</span>
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td>Delete</td>
-          <td className='alnright'>
-            <a href="#" onClick={() => handleDeleteGeojson(geojson.properties.id,dispatch)}><i className='material-icons'>delete</i></a>
-          </td>
-        </tr>
+//   const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
+//   const zoomanddelete = <>
+//         <tr>
+//           <td>Zoom to</td>
+//           <td className='alnright'>
+//             <button className='zoom-button' onClick={() => zoomToLayer(geojson.properties.id)}>
+//               <span className="material-icons">zoom_in_map</span>
+//             </button>
+//           </td>
+//         </tr>
+//         <tr>
+//           <td>Delete</td>
+//           <td className='alnright'>
+//             <a href="#" onClick={() => handleDeleteGeojson(geojson.properties.id,dispatch)}><i className='material-icons'>delete</i></a>
+//           </td>
+//         </tr>
         
-  </>
-  return (
-    <li 
-    key={`geojson-${geojson.properties.id}`}
-    className='list-dataset'
-    >
+//   </>
+//   return (
+//     <li 
+//     key={`geojson-${geojson.properties.id}`}
+//     className='list-dataset'
+//     >
       
-      <div 
-      className='list-div-dataset'
-      >
-        <button 
-          className="dropdown-button" 
-          onClick={handleToggleClick}
-          style={{ visibility: isPoint ? 'hidden' : 'visible' }}>
-          { showStyleControls ? (
-            <span className="material-icons">keyboard_arrow_down</span>
-          ) :(
-            <span className="material-icons">keyboard_arrow_right</span>
-          )
-          }
-        </button>
+//       <div 
+//       className='list-div-dataset'
+//       >
+//         <button 
+//           className="dropdown-button" 
+//           onClick={handleToggleClick}
+//           style={{ visibility: isPoint ? 'hidden' : 'visible' }}>
+//           { showStyleControls ? (
+//             <span className="material-icons">keyboard_arrow_down</span>
+//           ) :(
+//             <span className="material-icons">keyboard_arrow_right</span>
+//           )
+//           }
+//         </button>
         
-        <p>
-          <label className="checkbox-label">
-            <input 
-              type="checkbox" 
-              className="filled-in" 
-              checked={visibleGeoJSONs[geojson.properties.id] ?? false}
-              onClick={() => handleVisibilityChange(geojson.properties.id, !(visibleGeoJSONs[geojson.properties.id] ?? false))}
-            />
-            <span className='tooltipped flex-container' data-position="bottom" data-tooltip={geojson.properties.name}>
-              <img className="icon-data" src={url + "/vector.png"} alt="geojson-item" />
-              <span className='text-container'>
-              {geojson.properties.name.length > maxCharacters ? geojson.properties.name.slice(0, maxCharacters) + '...' : geojson.properties.name}
-              </span>
-            </span>
-          </label>
-        </p>
+//         <p>
+//           <label className="checkbox-label">
+//             <input 
+//               type="checkbox" 
+//               className="filled-in" 
+//               checked={visibleGeoJSONs[geojson.properties.id] ?? false}
+//               onClick={() => handleVisibilityChange(geojson.properties.id, !(visibleGeoJSONs[geojson.properties.id] ?? false))}
+//             />
+//             <span className='tooltipped flex-container' data-position="bottom" data-tooltip={geojson.properties.name}>
+//               <img className="icon-data" src={url + "/vector.png"} alt="geojson-item" />
+//               <span className='text-container'>
+//               {geojson.properties.name.length > maxCharacters ? geojson.properties.name.slice(0, maxCharacters) + '...' : geojson.properties.name}
+//               </span>
+//             </span>
+//           </label>
+//         </p>
 
         
-      </div>
-      {showStyleControls &&(
-        <div>
-          <StyleControls
-            geojson={geojson}
-            updateStyle={updateStyle}
-            polygonStyles={polygonStyles}
-            zoomanddelete={zoomanddelete}
-          />
-        </div>
-      )}
+//       </div>
+//       {showStyleControls &&(
+//         <div>
+//           <StyleControls
+//             geojson={geojson}
+//             updateStyle={updateStyle}
+//             polygonStyles={polygonStyles}
+//             zoomanddelete={zoomanddelete}
+//           />
+//         </div>
+//       )}
 
-    </li>
-  );
-};
+//     </li>
+//   );
+// };

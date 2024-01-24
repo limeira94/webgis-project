@@ -197,8 +197,9 @@ export const MapComponent = ({
           }
         };
       } else {
-        // Se não houver Polígonos, mantenha a primeira feature da coleção original
         combinedFeature = geojsonData.features[0];
+        geojsonData.features[0].properties.name = fileName;
+        // console.log("FEATURESSS",geojsonData.features[0])
       }
 
       const featuresCollection = {
@@ -208,13 +209,11 @@ export const MapComponent = ({
 
       const calculatedBounds = bbox(featuresCollection);
 
-      // Atualiza a visibilidade para o novo GeoJSON
       setVisibleGeoJSONs(prevVisible => ({
         ...prevVisible,
         [combinedFeature.properties.id]: true
       }));
 
-      // Ajusta a visualização do mapa para os limites da nova FeatureCollection
       if (mapInstance && calculatedBounds) {
         const boundsLatLng = L.latLngBounds(
           [calculatedBounds[1], calculatedBounds[0]],
@@ -223,7 +222,6 @@ export const MapComponent = ({
         mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
       }
 
-      // Adiciona a nova FeatureCollection combinada ao estado
       setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, combinedFeature]);
     };
     reader.readAsText(file);
@@ -348,6 +346,8 @@ export const MapComponent = ({
     </MapContainer>
 
   </>
+  
+  
 
   return (
     <>
@@ -355,6 +355,7 @@ export const MapComponent = ({
         rasters={rasters}
         setRasters={setRasters}
         geojsons={geojsons}
+        setGeojsons={setGeoJSONs}
         polygonStyles={polygonStyles}
         setPolygonStyles={setPolygonStyles}
         rasterStyles={rasterStyles}
@@ -366,6 +367,7 @@ export const MapComponent = ({
         geojsonLayerRefs={geojsonLayerRefs}
         mapInstance={mapInstance}
         selectedFeatureAttributes={selectedFeatureAttributes}
+        inmemory={savetomemory}
       />
 
       <BasemapSelector
