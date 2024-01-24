@@ -187,7 +187,7 @@ const initialState =  {
     geojson: [],
     vector: [],
     raster: [],
-    loading: true,
+    loading: false,//true,
 }
 
 const dataSlice = createSlice({

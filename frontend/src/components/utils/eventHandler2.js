@@ -7,17 +7,19 @@ import { featureCollection } from '@turf/helpers';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
-export const handleRaster = async (event,setRasters,mapInstance,dispatch,projectid) => {
+export const handleRaster = async (event,setRasters,mapInstance,dispatch,projectid,setUploading) => {
     // const formData = new FormData();
     // const file = event.target.files[0];
     // formData.append('raster', file);
     // formData.append('name', file.name);
     // formData.append('user', "1");
+    
     event.preventDefault();
     const file = event.target.files[0];
     event.target.value = null;
   
     try {
+      setUploading(true)
       const response = await dispatch(upload_raster({file,projectid}));
 
       console.log(response)
@@ -41,20 +43,22 @@ export const handleRaster = async (event,setRasters,mapInstance,dispatch,project
         if (mapInstance) {
           mapInstance.flyTo(newCenter, 15);
         }
-      
       }
+      setUploading(false)
     } catch (error) {
+      setUploading(false)
       console.log(error)
       console.error(error);
     }
 };
 
-export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapInstance, dispatch, projectid) => {
+export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapInstance, dispatch, projectid,setUploading) => {
   event.preventDefault();
   const file = event.target.files[0];
   event.target.value = null;
 
   try {
+    setUploading(true)
     const response = await dispatch(upload_geojson({file, projectid}));
 
     if (response.type === 'geojson/upload/fulfilled') {
@@ -95,8 +99,9 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
       }
 
       setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...featuresCollection.features]);
-
+      setUploading(false)
     } else {
+      setUploading(false)
       console.error('File upload failed with status:', response.type);
       alert('There was an error uploading the file. Please try again.');
     }

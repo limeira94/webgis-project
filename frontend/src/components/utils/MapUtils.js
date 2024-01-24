@@ -40,49 +40,49 @@ const handleDeleteFiles = (fileId,dispatch,datasets,setDatasets,functionDelete,i
   }
 }
 
-const handleDeleteRaster = (rasterId,dispatch,rasters,setRasters,inmemory=false)=> {
-  if (inmemory) {
-    const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
-    setRasters(newRasters);
-  }
-  else{
-  dispatch(delete_raster(rasterId))
-          .then((action) => {
+// const handleDeleteRaster = (rasterId,dispatch,rasters,setRasters,inmemory=false)=> {
+//   if (inmemory) {
+//     const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
+//     setRasters(newRasters);
+//   }
+//   else{
+//   dispatch(delete_raster(rasterId))
+//           .then((action) => {
             
-            if (action.meta.requestStatus === 'fulfilled') {
-              const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
-              setRasters(newRasters);
-            } else {
-              console.error('Failed to delete raser');
-            }
-          })
-          .catch((error) => {
-            console.error('Error occurred while deleting request:', error);
-          });
-}
-}
+//             if (action.meta.requestStatus === 'fulfilled') {
+//               const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
+//               setRasters(newRasters);
+//             } else {
+//               console.error('Failed to delete raser');
+//             }
+//           })
+//           .catch((error) => {
+//             console.error('Error occurred while deleting request:', error);
+//           });
+// }
+// }
 
-const handleDeleteGeojson = (geojsonId,dispatch,geojsons,setGeojsons,inmemory=false)=> {
-  if (inmemory){
+// const handleDeleteGeojson = (geojsonId,dispatch,geojsons,setGeojsons,inmemory=false)=> {
+//   if (inmemory){
 
-  }
-  else{
-  dispatch(delete_geojson(geojsonId))
-          .then((action) => {
+//   }
+//   else{
+//   dispatch(delete_geojson(geojsonId))
+//           .then((action) => {
             
-            if (action.meta.requestStatus === 'fulfilled') {
-              // window.location.reload();
-              const newGeoJSONs = geojsons.filter(geojsonItem => geojsonItem.id !== geojsonId);
-              setGeojsons(newGeoJSONs);
-            } else {
-              console.error('Failed to delete geojson');
-            }
-          })
-          .catch((error) => {
-            console.error('Error occurred while deleting request:', error);
-          });
-  }
-}
+//             if (action.meta.requestStatus === 'fulfilled') {
+//               // window.location.reload();
+//               const newGeoJSONs = geojsons.filter(geojsonItem => geojsonItem.id !== geojsonId);
+//               setGeojsons(newGeoJSONs);
+//             } else {
+//               console.error('Failed to delete geojson');
+//             }
+//           })
+//           .catch((error) => {
+//             console.error('Error occurred while deleting request:', error);
+//           });
+//   }
+// }
 
 export const parseGeoJSON = (data) => {
         return data.map(item => ({
@@ -483,6 +483,7 @@ export const ListItemWithStyleAll = ({
               className="filled-in" 
               checked={visibleDatasets[dataset_id] ?? false}
               onClick={() => handleVisibilityChange(dataset_id, !(visibleDatasets[dataset_id] ?? false))}
+              onChange={()=>{}}
             />
             <span className='tooltipped flex-container' data-position="bottom" data-tooltip={dataset_name}>
               <img className="icon-data" src={url + img_icon} alt={`${datatype}-item`} />

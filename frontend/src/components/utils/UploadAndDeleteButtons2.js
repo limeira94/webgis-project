@@ -22,7 +22,8 @@ const UpDelButttons = ({
     setRasters,
     mapInstance,
     setVisibleGeoJSONs,
-    projectid  //TODO: Change the way to do this, maybe running two different routes
+    projectid,  //TODO: Change the way to do this, maybe running two different routes
+    setUploading
 }) => {
     const rasterInputRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -58,7 +59,8 @@ const UpDelButttons = ({
                                 setRasters,
                                 mapInstance,
                                 dispatch,
-                                projectid
+                                projectid,
+                                setUploading
                             )}
                             ref={rasterInputRef}
                             style={{ display: 'none' }}
@@ -80,7 +82,8 @@ const UpDelButttons = ({
                                 setVisibleGeoJSONs,
                                 mapInstance,
                                 dispatch,
-                                projectid
+                                projectid,
+                                setUploading
                             )}
 
                             ref={fileInputRef}

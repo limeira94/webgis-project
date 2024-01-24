@@ -39,7 +39,7 @@ const Homepage = () => {
 
     var url = process.env.PUBLIC_URL
     // var url = 'http://127.0.0.1:3000/'
-    console.log(projects)
+    // console.log(projects)
 
     const handleAddProject = (projectId) => {
         navigate(`/project/${projectId}`);

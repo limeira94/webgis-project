@@ -8,7 +8,7 @@ export const handleRaster = async (event) => {
     formData.append('raster', file);
     formData.append('name', file.name);
     formData.append('user', "1");
-  
+
     try {
       const response = await axios.post(
         `${API_URL}api/main/rasters/`,
@@ -30,7 +30,7 @@ export const handleRaster = async (event) => {
 export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,setVisibleGeoJSONs,mapInstance,isAuthenticated) => {
     const file = event.target.files[0];
     event.target.value = null;
-    
+
     if (file) {
       if (isAuthenticated) {
         try {
@@ -131,36 +131,36 @@ export const handleFileChange = async (event,getCenterOfGeoJSON,setGeoJSONs,setV
   };
 
 
-export const handleDeleteClick = (setGeoJSONs) => {
-  axios
-    .delete(
-      // `http://127.0.0.1:8000/api/main/geojson/`
-      `${API_URL}api/main/geojson/`
-    )
-    .then((response) => {
-      console.log('GeoJSON deleted successfully');
-      setGeoJSONs([])
-      // setGeoJSONs((prevGeojsons) => prevGeojsons.filter((geojson) => geojson.id !== id));
-    })
-    .catch((error) => {
-      console.error('Error deleting GeoJSON:', error);
-    });
-};
+// export const handleDeleteClick = (setGeoJSONs) => {
+//   axios
+//     .delete(
+//       // `http://127.0.0.1:8000/api/main/geojson/`
+//       `${API_URL}api/main/geojson/`
+//     )
+//     .then((response) => {
+//       console.log('GeoJSON deleted successfully');
+//       setGeoJSONs([])
+//       // setGeoJSONs((prevGeojsons) => prevGeojsons.filter((geojson) => geojson.id !== id));
+//     })
+//     .catch((error) => {
+//       console.error('Error deleting GeoJSON:', error);
+//     });
+// };
 
 
-export const handleDeleteRasterClick = (setRasters) => {
-  axios
-      .delete(
-          // `${API_URL}api/main/rasters/delete_all/`
-          // `${API_URL}api/main/delete_all_rasters/`
-          `${API_URL}api/main/rasters/`
-      )
-      .then((response) => {
-          console.log('All rasters deleted successfully');
-          setRasters([])
-      })
-      .catch((error) => {
-          console.error('Error deleting rasters:', error);
-      });
-};
+// export const handleDeleteRasterClick = (setRasters) => {
+//   axios
+//       .delete(
+//           // `${API_URL}api/main/rasters/delete_all/`
+//           // `${API_URL}api/main/delete_all_rasters/`
+//           `${API_URL}api/main/rasters/`
+//       )
+//       .then((response) => {
+//           console.log('All rasters deleted successfully');
+//           setRasters([])
+//       })
+//       .catch((error) => {
+//           console.error('Error deleting rasters:', error);
+//       });
+// };
 

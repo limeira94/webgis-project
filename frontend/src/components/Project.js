@@ -74,7 +74,7 @@ function Project() {
 
 
     useEffect(() => {
-        console.log(projects)
+        // console.log(projects)
         if (project_id && projects && project === null) {
             const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
             if (selectedProject) {
@@ -139,7 +139,7 @@ function Project() {
             });
 
             setProjects(response.data)
-            console.log("DADOS GETPROJECT", response.data)
+            // console.log("DADOS GETPROJECT", response.data)
         } catch (error) {
             console.error('Error fetching GeoJSON data:', error);
         }

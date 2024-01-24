@@ -3,6 +3,7 @@ import tileLayersData from './tileLayers.json';
 import defaultStyle from "./defaultStyle.json";
 import './MapComponent.css'
 import 'leaflet/dist/leaflet.css';
+import { useSelector } from 'react-redux';
 import {
   MapContainer,
   TileLayer,
@@ -89,10 +90,13 @@ export const MapComponent = ({
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] = useState(null);
   const [modalData, setModalData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploading,setUploading] = useState(false)
 
   const fileInputRef = useRef(null);
   const fileInputRasterRef = useRef(null);
   const defaultOpacity = 1
+
+  const { loading } = useSelector(state => state.data);
 
   useEffect(() => {
     M.AutoInit();
@@ -198,6 +202,7 @@ export const MapComponent = ({
         };
       } else {
         combinedFeature = geojsonData.features[0];
+        //TODO: Aqui é gambiarra, tem que modificar isso pra não ser desse jeito
         geojsonData.features[0].properties.name = fileName;
         // console.log("FEATURESSS",geojsonData.features[0])
       }
@@ -348,9 +353,18 @@ export const MapComponent = ({
   </>
   
   
+  const loadingIcon = (
+    <div className="loading-container">
+      <div className="loading-icon"></div>
+    </div>
+  );
 
   return (
     <>
+      {
+        // loading
+        uploading 
+        ? loadingIcon : null}
       <ToggleLayersSelector
         rasters={rasters}
         setRasters={setRasters}
@@ -382,6 +396,7 @@ export const MapComponent = ({
           mapInstance={mapInstance}
           setVisibleGeoJSONs={setVisibleGeoJSONs}
           projectid={projectid}
+          setUploading={setUploading}
         />
       )}
 

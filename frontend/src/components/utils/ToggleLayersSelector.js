@@ -1,4 +1,3 @@
-// import React, { useState } from 'react';
 import React, { useState, useRef } from 'react';
 import L from 'leaflet';
 import M from 'materialize-css';
@@ -124,28 +123,6 @@ const ToggleLayersSelector = (
               inmemory={inmemory}
               />
           ))}
-        {/* {geojsons.map((geojson) => (
-                <ListItemWithStyleControls
-                  key={geojson.properties.id}
-                  geojson={geojson}
-                  updateStyle={updateStyle}
-                  polygonStyles={polygonStyles}
-                  visibleGeoJSONs={visibleGeoJSONs}
-                  setVisibleGeoJSONs={setVisibleGeoJSONs}
-                  zoomToLayer={zoomToLayer}
-                />
-            ))}
-        {rasters.map((raster) => (
-              <ListItemWithStyleControlsRaster
-              setRasters={setRasters}
-              rasters={rasters}
-              key={raster.id}
-              raster={raster}
-              visibleRasters={visibleRasters}
-              setVisibleRasters={setVisibleRasters}
-              zoomToLayerRaster={zoomToLayerRaster}
-              />
-            ))} */}
       </ul>
       <div className='btn-menu'>
         <a 
