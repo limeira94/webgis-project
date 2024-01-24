@@ -498,9 +498,9 @@ export const ListItemWithStyleAll = ({
       {showStyleControls &&(
         <div>
           {styleControlItem}
-          <button onClick={handleOpenModal}>
+          {/* <button onClick={handleOpenModal}>
             Ver Atributos
-          </button>
+          </button> */}
         </div>
       )}
 

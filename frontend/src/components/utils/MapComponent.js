@@ -90,7 +90,7 @@ export const MapComponent = ({
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] = useState(null);
   const [modalData, setModalData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [uploading,setUploading] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   const fileInputRef = useRef(null);
   const fileInputRasterRef = useRef(null);
@@ -130,7 +130,7 @@ export const MapComponent = ({
       const [xmin, ymin, xmax, ymax] = tileCoordinates;
       const bounds = [[ymin, xmin], [ymax, xmax]];
       console.log(bounds)
-  
+
       // setRasters((prevRasters) => [
       //   ...prevRasters,
       //   {
@@ -158,6 +158,9 @@ export const MapComponent = ({
       const polygonFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'Polygon');
       const pointFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'Point');
       const lineFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'Line');
+      const multiPolygonFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'MultiPolygon');
+      const multiPointFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'MultiPoint');
+      const multiLineFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'MultiLine');
 
       if (polygonFeatures.length > 0) {
         // Extrai todas as coordenadas dos polígonos e cria um MultiPolygon
@@ -200,6 +203,48 @@ export const MapComponent = ({
             name: fileName
           }
         };
+      } else if (multiPolygonFeatures.length > 0) {
+        const allMultiPolygons = multiPolygonFeatures.map(feature => feature.geometry.coordinates);
+        combinedFeature = {
+          type: "Feature",
+          geometry: {
+            type: "MultiPolygon",
+            coordinates: allMultiPolygons.flat(1)
+          },
+          properties: {
+            id: Math.floor(Math.random() * 1000000000),
+            name: fileName
+          }
+        };
+
+      } else if (multiPointFeatures.length > 0) {
+        const allMultiPoints = multiPointFeatures.map(feature => feature.geometry.coordinates);
+        combinedFeature = {
+          type: "Feature",
+          geometry: {
+            type: "MultiPoint",
+            coordinates: allMultiPoints.flat(1)
+          },
+          properties: {
+            id: Math.floor(Math.random() * 1000000000),
+            name: fileName
+          }
+        };
+
+      } else if (multiLineFeatures.length > 0) {
+        const allMultiLines = multiLineFeatures.map(feature => feature.geometry.coordinates);
+        combinedFeature = {
+          type: "Feature",
+          geometry: {
+            type: "MultiLine",
+            coordinates: allMultiLines.flat(1)
+          },
+          properties: {
+            id: Math.floor(Math.random() * 1000000000),
+            name: fileName
+          }
+        };
+
       } else {
         combinedFeature = geojsonData.features[0];
         //TODO: Aqui é gambiarra, tem que modificar isso pra não ser desse jeito
@@ -351,8 +396,8 @@ export const MapComponent = ({
     </MapContainer>
 
   </>
-  
-  
+
+
   const loadingIcon = (
     <div className="loading-container">
       <div className="loading-icon"></div>
@@ -363,8 +408,8 @@ export const MapComponent = ({
     <>
       {
         // loading
-        uploading 
-        ? loadingIcon : null}
+        uploading
+          ? loadingIcon : null}
       <ToggleLayersSelector
         rasters={rasters}
         setRasters={setRasters}
