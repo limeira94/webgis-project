@@ -147,135 +147,76 @@ export const MapComponent = ({
   const uploadToMemory = (event) => {
     const file = event.target.files[0];
     event.target.value = null;
-
+  
     const fileName = file.name.split('.')[0];
-
+  
     const reader = new FileReader();
     reader.onload = (e) => {
       const geojsonData = JSON.parse(e.target.result);
-
-      let combinedFeature;
-      const polygonFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'Polygon');
-      const pointFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'Point');
-      const lineFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'Line');
-      const multiPolygonFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'MultiPolygon');
-      const multiPointFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'MultiPoint');
-      const multiLineFeatures = geojsonData.features.filter(feature => feature.geometry.type === 'MultiLine');
-
-      if (polygonFeatures.length > 0) {
-        // Extrai todas as coordenadas dos polígonos e cria um MultiPolygon
-        const allPolygons = polygonFeatures.map(feature => feature.geometry.coordinates);
-        combinedFeature = {
-          type: "Feature",
-          geometry: {
-            type: "MultiPolygon",
-            coordinates: allPolygons
-          },
-          properties: {
-            id: Math.floor(Math.random() * 1000000000),
-            name: fileName
-          }
-        };
-
-      } else if (pointFeatures.length > 0) {
-        const allPoints = pointFeatures.map(feature => feature.geometry.coordinates);
-        combinedFeature = {
-          type: "Feature",
-          geometry: {
-            type: "MultiPoint",
-            coordinates: allPoints
-          },
-          properties: {
-            id: Math.floor(Math.random() * 1000000000),
-            name: fileName
-          }
-        };
-      } else if (lineFeatures.length > 0) {
-        const allLines = lineFeatures.map(feature => feature.geometry.coordinates);
-        combinedFeature = {
-          type: "Feature",
-          geometry: {
-            type: "MultiLine",
-            coordinates: allLines
-          },
-          properties: {
-            id: Math.floor(Math.random() * 1000000000),
-            name: fileName
-          }
-        };
-      } else if (multiPolygonFeatures.length > 0) {
-        const allMultiPolygons = multiPolygonFeatures.map(feature => feature.geometry.coordinates);
-        combinedFeature = {
-          type: "Feature",
-          geometry: {
-            type: "MultiPolygon",
-            coordinates: allMultiPolygons.flat(1)
-          },
-          properties: {
-            id: Math.floor(Math.random() * 1000000000),
-            name: fileName
-          }
-        };
-
-      } else if (multiPointFeatures.length > 0) {
-        const allMultiPoints = multiPointFeatures.map(feature => feature.geometry.coordinates);
-        combinedFeature = {
-          type: "Feature",
-          geometry: {
-            type: "MultiPoint",
-            coordinates: allMultiPoints.flat(1)
-          },
-          properties: {
-            id: Math.floor(Math.random() * 1000000000),
-            name: fileName
-          }
-        };
-
-      } else if (multiLineFeatures.length > 0) {
-        const allMultiLines = multiLineFeatures.map(feature => feature.geometry.coordinates);
-        combinedFeature = {
-          type: "Feature",
-          geometry: {
-            type: "MultiLine",
-            coordinates: allMultiLines.flat(1)
-          },
-          properties: {
-            id: Math.floor(Math.random() * 1000000000),
-            name: fileName
-          }
-        };
-
-      } else {
-        combinedFeature = geojsonData.features[0];
-        //TODO: Aqui é gambiarra, tem que modificar isso pra não ser desse jeito
-        geojsonData.features[0].properties.name = fileName;
-        // console.log("FEATURESSS",geojsonData.features[0])
-      }
-
+  
+      const combinedFeature = createCombinedFeature(geojsonData, fileName);
       const featuresCollection = {
         type: "FeatureCollection",
         features: [combinedFeature]
       };
-
+  
       const calculatedBounds = bbox(featuresCollection);
-
-      setVisibleGeoJSONs(prevVisible => ({
-        ...prevVisible,
-        [combinedFeature.properties.id]: true
-      }));
-
-      if (mapInstance && calculatedBounds) {
-        const boundsLatLng = L.latLngBounds(
-          [calculatedBounds[1], calculatedBounds[0]],
-          [calculatedBounds[3], calculatedBounds[2]]
-        );
-        mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
-      }
-
+      updateMapAndView(calculatedBounds, combinedFeature);
+  
       setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, combinedFeature]);
     };
     reader.readAsText(file);
   };
+  
+  const createCombinedFeature = (geojsonData, fileName) => {
+    const geometryTypes = ['Polygon', 'Point', 'Line', 'MultiPolygon', 'MultiPoint', 'MultiLine'];
+    for (const type of geometryTypes) {
+      const features = geojsonData.features.filter(feature => feature.geometry.type === type);
+      if (features.length > 0) {
+        return createFeature(type, features, fileName);
+      }
+    }
+    return handleFallbackFeature(geojsonData, fileName);
+  };
+  
+  const createFeature = (type, features, fileName) => {
+    const coordinates = features.map(feature => feature.geometry.coordinates);
+    const isMultiType = type.startsWith('Multi');
+    return {
+      type: "Feature",
+      geometry: {
+        type: isMultiType ? type : `Multi${type}`,
+        coordinates: isMultiType ? coordinates.flat(1) : coordinates
+      },
+      properties: {
+        id: Math.floor(Math.random() * 1000000000),
+        name: fileName
+      }
+    };
+  };
+  
+  const handleFallbackFeature = (geojsonData, fileName) => {
+    // Tratamento do caso de fallback
+    const fallbackFeature = geojsonData.features[0];
+    fallbackFeature.properties.name = fileName;
+    return fallbackFeature;
+  };
+  
+  const updateMapAndView = (calculatedBounds, combinedFeature) => {
+    setVisibleGeoJSONs(prevVisible => ({
+      ...prevVisible,
+      [combinedFeature.properties.id]: true
+    }));
+  
+    if (mapInstance && calculatedBounds) {
+      const boundsLatLng = L.latLngBounds(
+        [calculatedBounds[1], calculatedBounds[0]],
+        [calculatedBounds[3], calculatedBounds[2]]
+      );
+      mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
+    }
+  };
+  
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
