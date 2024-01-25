@@ -216,7 +216,6 @@ export const MapComponent = ({
       mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
     }
   };
-  
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
@@ -227,7 +226,12 @@ export const MapComponent = ({
   };
 
   const memoryButton = <>
-    <a onClick={handleButtonClick} className='btn-floating waves-effect waves-light  upload-geo-button'>
+    <a 
+      onClick={handleButtonClick} 
+      className='btn-floating waves-effect waves-light  upload-geo-button'
+      title='Upload GeoJSON'
+      >
+      
       <i className="small material-icons">file_upload</i>
       <input
         type="file"

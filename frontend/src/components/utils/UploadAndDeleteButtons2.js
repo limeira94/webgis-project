@@ -67,8 +67,11 @@ const UpDelButttons = ({
                         // accept=".tif, application/geo+json"
                         />
                         <a
-                            className="btn-floating waves-effect waves-light green" data-tooltip="Upload raster"
-                            onClick={handleFileClickRaster}>
+                            className="btn-floating waves-effect waves-light green" 
+                            data-tooltip="Upload raster"
+                            onClick={handleFileClickRaster}
+                            title="Upload Raster"
+                            >
                             <i className="material-icons">file_upload</i>
                         </a>
                     </li>
@@ -91,8 +94,11 @@ const UpDelButttons = ({
                             accept=".geojson, application/geo+json"
                         />
                         <a
-                            className="btn-floating waves-effect waves-light blue" data-tooltip="Upload geojson"
-                            onClick={handleFileClick}>
+                            className="btn-floating waves-effect waves-light blue" 
+                            data-tooltip="Upload geojson"
+                            onClick={handleFileClick}
+                            title='Upload GeoJSON'
+                        >
                             <i className="material-icons">file_upload</i>
                         </a>
                     </li>
