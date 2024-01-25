@@ -40,50 +40,6 @@ const handleDeleteFiles = (fileId,dispatch,datasets,setDatasets,functionDelete,i
   }
 }
 
-// const handleDeleteRaster = (rasterId,dispatch,rasters,setRasters,inmemory=false)=> {
-//   if (inmemory) {
-//     const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
-//     setRasters(newRasters);
-//   }
-//   else{
-//   dispatch(delete_raster(rasterId))
-//           .then((action) => {
-            
-//             if (action.meta.requestStatus === 'fulfilled') {
-//               const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
-//               setRasters(newRasters);
-//             } else {
-//               console.error('Failed to delete raser');
-//             }
-//           })
-//           .catch((error) => {
-//             console.error('Error occurred while deleting request:', error);
-//           });
-// }
-// }
-
-// const handleDeleteGeojson = (geojsonId,dispatch,geojsons,setGeojsons,inmemory=false)=> {
-//   if (inmemory){
-
-//   }
-//   else{
-//   dispatch(delete_geojson(geojsonId))
-//           .then((action) => {
-            
-//             if (action.meta.requestStatus === 'fulfilled') {
-//               // window.location.reload();
-//               const newGeoJSONs = geojsons.filter(geojsonItem => geojsonItem.id !== geojsonId);
-//               setGeojsons(newGeoJSONs);
-//             } else {
-//               console.error('Failed to delete geojson');
-//             }
-//           })
-//           .catch((error) => {
-//             console.error('Error occurred while deleting request:', error);
-//           });
-//   }
-// }
-
 export const parseGeoJSON = (data) => {
         return data.map(item => ({
           type: 'Feature',
@@ -259,85 +215,6 @@ export const StyleControls = ({ geojson, updateStyle, polygonStyles,zoomanddelet
     </div>
   );
 };
-
-// export const ListItemWithStyleControlsRaster = ({
-//   rasters,
-//   setRasters,
-//   raster,
-//   visibleRasters,
-//   setVisibleRasters,
-//   zoomToLayerRaster
-// }) => {
-//   const dispatch = useDispatch();
-//   const [showStyleControls, setShowStyleControls] = useState(false);
-
-//   const handleToggleClick = () => {
-//     setShowStyleControls(!showStyleControls);
-//   };
-
-//   const handleVisibilityChange = (id, isVisible) => {
-//     setVisibleRasters(prev => ({ ...prev, [id]: isVisible }));
-//   };
-//   var url = process.env.PUBLIC_URL
-  
-//   return (
-//     <li 
-//       key={`raster-${raster.id}`}
-//       className='list-dataset'
-//       >
-      
-//       <div 
-//       className='list-div-dataset'
-//       >
-//          <button 
-//           className="dropdown-button" 
-//           onClick={handleToggleClick}
-//           style={{ visibility: 'visible' }}
-//           >
-//           { showStyleControls ? (
-//             <span className="material-icons">keyboard_arrow_down</span>
-//           ) :(
-//             <span className="material-icons">keyboard_arrow_right</span>
-//           )
-//           }
-//         </button>
-//         <p>
-//           <label >
-//             <input 
-//               type="checkbox" 
-//               className="filled-in" 
-//               checked={visibleRasters[raster.id] ?? false}
-//               onClick={() => handleVisibilityChange(raster.id, !(visibleRasters[raster.id] ?? false))}
-//             />
-//             <span className='tooltipped' data-position="bottom" data-tooltip={raster.name}>
-//               <img className="icon-data" src={url + "/raster.png"} alt="raster-item" />
-//               {raster.name.length > maxCharacters ? raster.name.slice(0, maxCharacters) + '...' : raster.name}
-//             </span>
-//           </label>
-//         </p>
-
-//         <button className='zoom-button' onClick={() => zoomToLayerRaster(raster.id)}>
-//           <span className="material-icons">zoom_in_map</span>
-//         </button>
-//         <a href="#" onClick={() => handleDeleteRaster(raster.id,dispatch,rasters,setRasters)}><i className='material-icons'>delete</i></a>
-//         {showStyleControls && (
-//         <div style={{ marginTop: '10px' }}>
-//           <StyleRasterControls
-//           rasters={rasters}
-//           setRasters={setRasters}
-//           raster={raster}
-//           dispatch={dispatch}
-//           zoomToLayerRaster={zoomToLayerRaster}
-//           />
-//         </div>
-//         )}
-//       </div>
-//     </li>
-//   );
-// }
-
-// //TODO:
-// // Aqui to gerando dessa forma para unificar os "ListItem" de vetor e de raster. Simplificando código.
 
 export const ListItemWithStyleAll = ({
   datasets,

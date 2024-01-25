@@ -33,12 +33,17 @@ def normalize_ar(ar):
 
 def get_bounds(file):
     ds = gdal.Open(file)
+    print(ds)
+    print(ds.GetGeoTransform())
+    print(ds.GetProjection())
     xmin, xpixel, _, ymax, _, ypixel = ds.GetGeoTransform()
     width, height = ds.RasterXSize, ds.RasterYSize
     xmax = xmin + width * xpixel
     ymin = ymax + height * ypixel
     poly = Polygon([[xmin, ymax], [xmax, ymax], [xmax, ymin], [xmin, ymin]])
     proj = osr.SpatialReference(wkt=ds.GetProjection())
+    print(proj)
+    print(poly)
     epsg = proj.GetAttrValue('AUTHORITY', 1)
     if int(epsg) != 4326:
 
