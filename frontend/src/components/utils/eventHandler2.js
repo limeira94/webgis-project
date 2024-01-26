@@ -4,6 +4,7 @@ import { upload_geojson,upload_raster } from '../../features/data';
 import L from 'leaflet';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
+import M from 'materialize-css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
@@ -22,7 +23,6 @@ export const handleRaster = async (event,setRasters,mapInstance,dispatch,project
       setUploading(true)
       const response = await dispatch(upload_raster({file,projectid}));
 
-      console.log(response)
       if (response.type === 'rasters/upload/fulfilled') {
         const { payload } = response;
 
@@ -39,16 +39,36 @@ export const handleRaster = async (event,setRasters,mapInstance,dispatch,project
         // setRasters(prevRasters => [...prevRasters, ...newRaster]);
 
         setRasters(prevRasters => [...prevRasters, raster]);
+
+        M.toast(
+          {html: "File uploaded sucessfully.", 
+           classes: 'green rounded',
+           displayLength:5000});
   
         if (mapInstance) {
           mapInstance.flyTo(newCenter, 15);
         }
       }
+      else{
+        console.log("Response",response)
+        var errorMessage = `${response.error.message}: ${response.payload.message}` 
+        // console.log("VISH")
+        M.toast({
+          html: errorMessage,
+          classes: 'red rounded',
+          displayLength: 10000
+        });
+      }
       setUploading(false)
     } catch (error) {
       setUploading(false)
       console.log(error)
-      console.error(error);
+      M.toast({
+        html: error,
+        classes: 'red rounded',
+        displayLength: 10000
+      });
+      // console.error(error);
     }
 };
 

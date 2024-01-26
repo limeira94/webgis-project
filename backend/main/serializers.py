@@ -126,8 +126,13 @@ class GeoJsonFileSerializer(serializers.ModelSerializer):
 class RasterFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = RasterFile
-        fields = ('id', 'name', 'user', 'raster',"tiles")
+        fields = ('id', 'name', 'user', 'raster',"tiles","png")
         # fields = ('id', 'name', 'user', 'raster')
+
+        validators = [
+            FileExtensionValidator(allowed_extensions=['tif', 'tiff']),
+            validate_file_size
+        ]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

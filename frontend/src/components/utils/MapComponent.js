@@ -283,7 +283,8 @@ export const MapComponent = ({
         return isVisible && (
           <ImageOverlay
             // url={url + raster.raster}
-            url={raster.raster}
+            // url={raster.raster}
+            url={raster.png}
             bounds={bounds}
             opacity={(feature) => rasterStyles[feature.id] || defaultOpacity}
             // opacity={1}

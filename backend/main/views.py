@@ -332,7 +332,18 @@ class RasterPostView(APIView):
 
 
 
+def convert_to_MB(number):
 
+    l = ["KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    n = -1
+    while number>1000:
+        number = number/1024
+        n+=1
+
+    return f"{round(number,2)} {l[n]}"
+    # return round(number / (1024*1024),2)
+
+valid_format_rasters = ["tif","TIF","tiff","jp2"]
 
 class RasterViewSet(viewsets.ModelViewSet):
     queryset = RasterFile.objects.all()
@@ -342,18 +353,33 @@ class RasterViewSet(viewsets.ModelViewSet):
         raster_data = request.data['raster']
         name = request.data["name"]
         projectid = request.data['projectid']
+        
+        # print(dir(raster_data))
+        # print(type(raster_data))
+        # raster_format = raster_data.file.name.split(".")[-1]
+        raster_format = raster_data.name.split(".")[-1]
+        if raster_format not in valid_format_rasters:
+            return Response({'message': f"The file format provided is not accepted ({raster_format}), valid options: {','.join(valid_format_rasters)}",},
+                             status=status.HTTP_400_BAD_REQUEST,)
 
+        if raster_data.size > 100 * 1024 * 1024:
+            return Response({'message': f"The maximum file size that can be uploaded is 100MB. The file provided have {convert_to_MB(raster_data.size)}",},status=status.HTTP_400_BAD_REQUEST,)
+        
         raster_create = RasterFile(
             name = name,raster=raster_data,user=request.user
         )
+        
         project = get_object_or_404(Project,pk=projectid)  
 
         assert request.user == project.user
-        raster_create.save()
+        
+        try:
+            raster_create.save()
+        except Exception as e:
+            return Response({'message': e},
+                            status=status.HTTP_400_BAD_REQUEST,)
         project.raster.add(raster_create.id)
         project.save()
-
-
         raster = get_object_or_404(RasterFile,pk = raster_create.pk)
         bounds = raster.tiles
         bounds = [float(i) for i in bounds.split(",")]

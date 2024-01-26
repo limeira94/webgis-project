@@ -10,6 +10,7 @@ from django.contrib.gis.db import models
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.files import File
 from django.db.models import JSONField
+from django.core.validators import FileExtensionValidator#, MaxFileSizeValidator
 # from djongo import models as modelsdb
 
 from PIL import Image
@@ -39,14 +40,19 @@ class GeoserverData(models.Model):
     name = models.CharField(max_length=50)
     epsg = models.IntegerField()
 
-
 class RasterFile(models.Model):
     name = models.CharField(max_length=100)
     raster = models.FileField(
         # upload_to='rasters/', 
         upload_to=generate_upload_path_raster,
-        validators=[validate_file_extension]
+        # validators=[validate_file_extension]
+        validators=[
+            FileExtensionValidator(allowed_extensions=['tif', 'tiff']),
+            validate_file_size
+            # MaxFileSizeValidator(100 * 1024 * 1024)  # 100MB limit
+        ]
     )
+    png = models.FileField(upload_to=generate_upload_path_raster,blank=True,null=True)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True
     )
@@ -71,6 +77,8 @@ class RasterFile(models.Model):
         # N = 18
 
         if self.tiles == '':
+            import time
+            t1 = time.time()
             ###############
             ###     PNG
             # name=self.raster.url
@@ -89,19 +97,30 @@ class RasterFile(models.Model):
             else:
                 file = site + self.raster.url
 
-            print(file)
+            # print(file)
 
-            bounds = get_bounds(file)
+            try:
+                bounds = get_bounds(file)
+            except:
+                raise ValidationError("There is a problem with the provided file.")
             
-            resp = requests.get(file)
-            img = tiff.imread(io.BytesIO(resp.content))
+            #TODO: Replace this
+            # resp = requests.get(file)
+            # img = tiff.imread(io.BytesIO(resp.content))
+
+            img = gdal.Open(file).ReadAsArray()
 
             # TODO:
             ### Create the way to select the bands to use and way to stretch for better visual
             try:
-                r = Image.fromarray(normalize_ar(img[:, :, 0]))
-                g = Image.fromarray(normalize_ar(img[:, :, 1]))
-                b = Image.fromarray(normalize_ar(img[:, :, 2]))
+                # r = Image.fromarray(normalize_ar(img[:, :, 0]))
+                # g = Image.fromarray(normalize_ar(img[:, :, 1]))
+                # b = Image.fromarray(normalize_ar(img[:, :, 2]))
+
+                r = Image.fromarray(normalize_ar(img[0,:, :]))
+                g = Image.fromarray(normalize_ar(img[1,:, :]))
+                b = Image.fromarray(normalize_ar(img[2,:, :]))
+                
                 im1 = Image.merge('RGB', (r, g, b))
             except IndexError as e:
                 # print(e)
@@ -118,7 +137,10 @@ class RasterFile(models.Model):
             # filename = 'raster/%s/%s' % (self.user.username, filename)
 
             self.tiles = ','.join([str(i) for i in bounds])
-            self.raster.save(filename, File(io.BytesIO(image_data)))
+            # self.raster.save(filename, File(io.BytesIO(image_data)))
+            self.png.save(filename, File(io.BytesIO(image_data)))
+
+            print(round(time.time()-t1,2))
 
             # ##############
             # ###   GEOSERVER
@@ -162,6 +184,13 @@ class RasterFile(models.Model):
             # print("#"*50)
             # print(f"TIME TO PROCESS {N} tiles: {d}")
             # print("#"*50)
+
+
+# class RasterVisual(models.Model):
+#     url = models.CharField(max_length=50)
+#     raster_id = models.ForeignKey(RasterFile,on_delete=models.CASCADE)
+#     png = models.FileField(upload_to=generate_upload_path_raster,)
+            
 
 
 # #### FUTURE IMPROVEMENTS

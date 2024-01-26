@@ -64,7 +64,7 @@ const UpDelButttons = ({
                             )}
                             ref={rasterInputRef}
                             style={{ display: 'none' }}
-                        // accept=".tif, application/geo+json"
+                            accept=".tif,.jp2"
                         />
                         <a
                             className="btn-floating waves-effect waves-light green" 
