@@ -9,15 +9,20 @@ import M from 'materialize-css';
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
 export const handleRaster = async (event,setRasters,mapInstance,dispatch,projectid,setUploading) => {
-    // const formData = new FormData();
-    // const file = event.target.files[0];
-    // formData.append('raster', file);
-    // formData.append('name', file.name);
-    // formData.append('user', "1");
     
     event.preventDefault();
     const file = event.target.files[0];
     event.target.value = null;
+
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    if (file.size > maxSize) {
+        M.toast({
+            html: "File size exceeds 100MB limit.",
+            classes: 'red rounded',
+            displayLength: 5000
+        });
+        return;
+    }
   
     try {
       setUploading(true)
