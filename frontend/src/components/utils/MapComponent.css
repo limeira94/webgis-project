@@ -1,19 +1,19 @@
 .map-container {
-    position: relative;
-    height: 100vh;
-    width: 100%;
-  }
-  
-.btn-menu {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    /* border-radius: 50%; */
-  }
+  position: relative;
+  height: 100vh;
+  width: 100%;
+}
 
-.btn-color{
-  background-color: #01579b ;
+.btn-menu {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  /* border-radius: 50%; */
+}
+
+.btn-color {
+  background-color: #01579b;
 }
 
 .raster-upload-container {
@@ -59,33 +59,40 @@
 } */
 
 .leaflet-control-geocoder-icon {
-  background-image: none !important; 
-  background-color: #01579b !important; 
-  color: white !important; 
-  text-indent: -9999px !important; 
-  position: relative !important; 
-  line-height: 30px !important; 
+  background-image: none !important;
+  background-color: #01579b !important;
+  color: white !important;
+  text-indent: -9999px !important;
+  position: relative !important;
+  line-height: 30px !important;
 }
 
 .leaflet-control-geocoder-icon::before {
-  content: 'search' !important; /* Texto do ícone do Materialize */
-  font-family: 'Material Icons' !important; /* Fonte do Materialize */
-  text-indent: 0 !important; /* Mostra o texto do ícone */
+  content: 'search' !important;
+  /* Texto do ícone do Materialize */
+  font-family: 'Material Icons' !important;
+  /* Fonte do Materialize */
+  text-indent: 0 !important;
+  /* Mostra o texto do ícone */
   position: absolute !important;
   top: 50% !important;
   left: 50% !important;
-  transform: translate(-50%, -50%) !important; /* Centraliza o ícone */
-  font-size: 20px !important; /* Tamanho do ícone */
+  transform: translate(-50%, -50%) !important;
+  /* Centraliza o ícone */
+  font-size: 20px !important;
+  /* Tamanho do ícone */
 }
 
 .leaflet-control-geocoder-form input {
   border-radius: 0% !important;
-  color: white !important; /* Muda a cor do texto para branco */
+  color: white !important;
+  /* Muda a cor do texto para branco */
 }
 
 .leaflet-control-geocoder-address-context {
   border-radius: 0% !important;
-  color: white !important; /* Muda a cor do texto para branco */
+  color: white !important;
+  /* Muda a cor do texto para branco */
 }
 
 
@@ -107,15 +114,15 @@
   background-color: #01579b !important;
   color: white !important;
   cursor: pointer;
-  
+
 }
 
 .leaflet-control-browser-print a::before {
   content: 'print';
-  font-family: 'Material Icons'; 
-  display: block; 
+  font-family: 'Material Icons';
+  display: block;
   font-size: 16px;
-  line-height: inherit; 
+  line-height: inherit;
 }
 
 /* .leaflet-control-measure {
@@ -128,13 +135,13 @@
 .leaflet-control-measure a {
   background: none !important;
   background-color: #01579b !important;
-  position: relative; 
+  position: relative;
 }
 
 .leaflet-control-measure a::before {
   content: 'straighten';
   font-family: 'Material Icons';
-  font-size: 16px; 
+  font-size: 16px;
   position: absolute;
   color: white;
   top: 50%;
@@ -161,7 +168,7 @@
 }
 
 .dropdown-button .material-icons {
-  font-size: 15px; 
+  font-size: 15px;
 }
 
 .sidebar-title {
@@ -174,34 +181,52 @@
 .fixed-action-btn {
   position: fixed;
   bottom: 20px;
-  right:51%;
+  right: 51%;
   z-index: 1000;
-} 
+}
 
-.clip-button{
+.clip-button {
   /* top: 120px; */
   /* bottom: 800px; */
   right: 51%;
 }
 
-.upload-geo-button{
-  position:fixed;
-  bottom:20px;
+.upload-geo-button {
+  position: fixed;
+  bottom: 20px;
   right: 51%;
   z-index: 1000;
-  background-color: #01579b 
+  background-color: #01579b
 }
 
-.upload-geo-button-raster{
-  position:fixed;
-  top:120px;
+.custom-draw-button {
+  position: fixed;
+  bottom: 20px;
+  /* Ajuste a distância do fundo conforme necessário */
+  right: 55%;
+  /* Posiciona o botão à esquerda */
+  z-index: 1000;
+  /* Garante que esteja visível acima do mapa */
+}
+
+.edit-geo-button {
+  position: fixed;
+  bottom: 20px;
+  right: 55%;
+  z-index: 1000;
+  background-color: #01579b
+}
+
+.upload-geo-button-raster {
+  position: fixed;
+  top: 120px;
   right: 20px;
   /* bottom:20px; */
   /* right: 55%; */
   /* right: 450px; */
   /* left: 50px; */
   z-index: 1000;
-  background-color: #019b34 
+  background-color: #019b34
 }
 
 
@@ -213,11 +238,11 @@
 }
 
 .map-style-selector a {
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 41px;
-  height: 41px; 
+  height: 41px;
 }
 
 .drawer-map-style {
@@ -231,15 +256,15 @@
 .map-styles {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px; 
-  justify-content: center; 
-  align-items: center; 
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
 }
 
 .map-style-item {
-  flex: 0 1 auto; 
+  flex: 0 1 auto;
   margin: 5px;
-  text-align: center; 
+  text-align: center;
 }
 
 .map-style-item p {
@@ -257,7 +282,7 @@
 }
 
 .dialog-titlebar {
-  background-color: #01579b; 
+  background-color: #01579b;
   height: 40px;
   color: white;
   display: flex;
@@ -269,7 +294,7 @@
 
 .dialog-titlebar h3 {
   font-size: 1.2rem;
-  margin: 0; 
+  margin: 0;
 }
 
 .close-button {
@@ -279,32 +304,33 @@
 }
 
 .leaflet-control-zoom-out {
-  background-color: #28a745; 
-  color: white; 
-  border: none; 
+  background-color: #28a745;
+  color: white;
+  border: none;
 }
 
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out {
   background-color: #01579b !important;
-  color: white !important; 
+  color: white !important;
 }
 
 .leaflet-control-fullscreen {
-  background-color: #01579b !important; 
-  color: white !important; 
+  background-color: #01579b !important;
+  color: white !important;
 }
 
 .fullscreen-icon {
-  background-color: #01579b !important; 
-  background-image: none !important; 
+  background-color: #01579b !important;
+  background-image: none !important;
 }
+
 .fullscreen-icon::before {
-  content: 'fullscreen'; 
+  content: 'fullscreen';
   font-family: 'Material Icons';
-  font-size: 30px; 
-  display: block; 
-  color: white; 
+  font-size: 30px;
+  display: block;
+  color: white;
   position: absolute;
   text-align: center;
 }
@@ -319,7 +345,7 @@
 }
 
 .zoom-button .material-icons {
-  font-size: 15px; 
+  font-size: 15px;
 }
 
 .checkbox-button {
@@ -345,19 +371,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000; /* Ensure it's on top of other elements */
+  z-index: 1000;
+  /* Ensure it's on top of other elements */
 }
 
 .loading-icon {
-  width: 50px; /* Adjust the size as needed */
-  height: 50px; /* Adjust the size as needed */
+  width: 50px;
+  /* Adjust the size as needed */
+  height: 50px;
+  /* Adjust the size as needed */
   border: 4px solid #ccc;
   border-radius: 50%;
-  border-top: 4px solid #3498db; /* Adjust the color as needed */
+  border-top: 4px solid #3498db;
+  /* Adjust the color as needed */
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

@@ -4,17 +4,17 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
 const BasemapSelector = (
-    { 
-      setSelectedTileLayer,
-      tileLayersData,
-    }) => {
-    const [isMapStyleDrawerOpen, setIsMapStyleDrawerOpen] = useState(false);
-  
-    const toggleMapStyleDrawer = (open) => () => {
+  {
+    setSelectedTileLayer,
+    tileLayersData,
+  }) => {
+  const [isMapStyleDrawerOpen, setIsMapStyleDrawerOpen] = useState(false);
+
+  const toggleMapStyleDrawer = (open) => () => {
     setIsMapStyleDrawerOpen(open);
   };
 
-    const changeMapStyle = (newTileLayerUrl) => {
+  const changeMapStyle = (newTileLayerUrl) => {
     setSelectedTileLayer(newTileLayerUrl);
   };
 

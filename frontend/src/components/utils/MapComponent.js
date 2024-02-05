@@ -18,6 +18,8 @@ import ToggleLayersSelector from './ToggleLayersSelector'
 import UpDelButttons from './UploadAndDeleteButtons2';
 import { leafletDefaultButtons } from './LeafletButtons';
 import L from 'leaflet';
+import 'leaflet-draw';
+import 'leaflet-draw/dist/leaflet.draw.css';
 import M from 'materialize-css';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
@@ -95,6 +97,8 @@ export const MapComponent = ({
   const fileInputRef = useRef(null);
   const fileInputRasterRef = useRef(null);
   const defaultOpacity = 1
+  const [isDrawControlVisible, setIsDrawControlVisible] = useState(false);
+  const drawControlRef = useRef(null);
 
   const { loading } = useSelector(state => state.data);
 
@@ -114,6 +118,45 @@ export const MapComponent = ({
       setButtonsCreated: setButtonsCreated
     });
   }, [mapInstance, buttonsCreated, setButtonsCreated]);
+
+  useEffect(() => {
+    if (mapInstance && !drawControlRef.current) {
+      const drawControl = new L.Control.Draw({
+        position: 'bottomleft',
+        draw: {
+          polygon: true,
+          polyline: true,
+          rectangle: true,
+          circle: true,
+          marker: true,
+        },
+        edit: {
+          featureGroup: new L.FeatureGroup().addTo(mapInstance),
+        },
+      });
+
+      drawControlRef.current = drawControl;
+
+      mapInstance.on(L.Draw.Event.CREATED, (e) => {
+        const layer = e.layer;
+        const featureGroup = drawControl.options.edit.featureGroup;
+        featureGroup.addLayer(layer);
+      });
+    }
+  }, [mapInstance]);
+
+  const toggleDrawControl = () => {
+    if (isDrawControlVisible) {
+      // Se estiver visível (ou seja, adicionado ao mapa), remova-o
+      mapInstance.removeControl(drawControlRef.current);
+    } else {
+      // Se não estiver visível, adicione-o ao mapa
+      mapInstance.addControl(drawControlRef.current);
+    }
+    // Inverte o estado de visibilidade
+    setIsDrawControlVisible(!isDrawControlVisible);
+  };
+
 
   const uploadToMemoryRaster = async (event) => {
     const file = event.target.files[0];
@@ -147,27 +190,27 @@ export const MapComponent = ({
   const uploadToMemory = (event) => {
     const file = event.target.files[0];
     event.target.value = null;
-  
+
     const fileName = file.name.split('.')[0];
-  
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const geojsonData = JSON.parse(e.target.result);
-  
+
       const combinedFeature = createCombinedFeature(geojsonData, fileName);
       const featuresCollection = {
         type: "FeatureCollection",
         features: [combinedFeature]
       };
-  
+
       const calculatedBounds = bbox(featuresCollection);
       updateMapAndView(calculatedBounds, combinedFeature);
-  
+
       setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, combinedFeature]);
     };
     reader.readAsText(file);
   };
-  
+
   const createCombinedFeature = (geojsonData, fileName) => {
     const geometryTypes = ['Polygon', 'Point', 'Line', 'MultiPolygon', 'MultiPoint', 'MultiLine'];
     for (const type of geometryTypes) {
@@ -178,7 +221,7 @@ export const MapComponent = ({
     }
     return handleFallbackFeature(geojsonData, fileName);
   };
-  
+
   const createFeature = (type, features, fileName) => {
     const coordinates = features.map(feature => feature.geometry.coordinates);
     const isMultiType = type.startsWith('Multi');
@@ -194,20 +237,20 @@ export const MapComponent = ({
       }
     };
   };
-  
+
   const handleFallbackFeature = (geojsonData, fileName) => {
     // Tratamento do caso de fallback
     const fallbackFeature = geojsonData.features[0];
     fallbackFeature.properties.name = fileName;
     return fallbackFeature;
   };
-  
+
   const updateMapAndView = (calculatedBounds, combinedFeature) => {
     setVisibleGeoJSONs(prevVisible => ({
       ...prevVisible,
       [combinedFeature.properties.id]: true
     }));
-  
+
     if (mapInstance && calculatedBounds) {
       const boundsLatLng = L.latLngBounds(
         [calculatedBounds[1], calculatedBounds[0]],
@@ -226,12 +269,12 @@ export const MapComponent = ({
   };
 
   const memoryButton = <>
-    <a 
-      onClick={handleButtonClick} 
+    <a
+      onClick={handleButtonClick}
       className='btn-floating waves-effect waves-light  upload-geo-button'
       title='Upload GeoJSON'
-      >
-      
+    >
+
       <i className="small material-icons">file_upload</i>
       <input
         type="file"
@@ -390,7 +433,11 @@ export const MapComponent = ({
           setUploading={setUploading}
         />
       )}
-
+      <div className='custom-draw-button'>
+        <a onClick={toggleDrawControl} className='btn-floating waves-effect waves-light edit-geo-button' title='Draw'>
+          <i className="small material-icons">edit</i>
+        </a>
+      </div>
 
       <div className='home-button-map'>
         <a href="/" className="btn-floating waves-effect waves-light black">
