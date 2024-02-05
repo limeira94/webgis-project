@@ -19,16 +19,11 @@ const Navbar = () => {
     const user = useSelector((state) => state.user);
 	const { isAuthenticated } = useSelector(state => state.user);
 
-    // console.log(isAuthenticated)
-
     var url = process.env.PUBLIC_URL
-    // var url = 'http://127.0.0.1:3000/'
 
     var link_itens = 
     <>
         <li><a href="/map">Go to Map</a></li>
-        
-        {/* <li><a href="/new-project">New Project</a></li> */}
     </>
 
     var guest_links = 
@@ -56,7 +51,6 @@ const Navbar = () => {
             <a href="#" data-target="mobile-demo" className="sidenav-trigger"><i className="material-icons">menu</i></a>
             <ul className="right hide-on-med-and-down">
                 {link_itens}
-                {/* {auth_links} */}
                 {isAuthenticated ? auth_links : guest_links}
             </ul>
             </div>
@@ -64,7 +58,6 @@ const Navbar = () => {
 
         <ul className="sidenav" id="mobile-demo">
             {link_itens}
-            {/* {auth_links} */}
             {isAuthenticated ? auth_links : guest_links}
         </ul>
     </>
