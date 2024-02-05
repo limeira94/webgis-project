@@ -30,9 +30,6 @@ const Login = () => {
         .then(data => {
           if (data.meta.requestStatus==='rejected') {
             const errors = Object.values(data.payload).flat();
-
-            // setRegisterError(errors.join(' '));
-
             errors.forEach(error => {
               M.toast({
                 html: error,
@@ -40,10 +37,6 @@ const Login = () => {
                 displayLength: 10000
               });
             })
-            // M.toast(
-            //   {html: "Login failed", 
-            //    classes: 'red rounded',
-            //    displayLength:5000});
           } else {
             M.toast(
               {html: "Login sucessful", 

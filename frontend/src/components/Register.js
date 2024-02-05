@@ -30,14 +30,9 @@ function Register() {
         e.preventDefault();
         dispatch(register({username,email,password,password2}))
         .then(data=>{
-          console.log(data);
           if (data.meta.requestStatus==='rejected') {
-            
-
             const errors = Object.values(data.payload).flat();
-
               setRegisterError(errors.join(' '));
-
               errors.forEach(error => {
                 M.toast({
                   html: error,
