@@ -4,19 +4,19 @@ import Cookies from 'js-cookie'
 export const geojson = createAsyncThunk(
     'geojson',
     async (thunkAPI) => {
-        try{
+        try {
             const res = await fetch(
-				`${process.env.REACT_APP_API_URL}api/main/geojson/`
-			,{
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${Cookies.get('access_token')}`
-                },
-            });
+                `${process.env.REACT_APP_API_URL}api/main/geojson/`
+                , {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${Cookies.get('access_token')}`
+                    },
+                });
             const data = await res.json();
             if (res.status === 200) {
-                return data;   
+                return data;
             } else {
                 return thunkAPI.rejectWithValue(data);
             }
@@ -30,25 +30,25 @@ export const geojson = createAsyncThunk(
 export const raster = createAsyncThunk(
     'raster',
     async (thunkAPI) => {
-        try{
+        try {
             const res = await fetch(
-				`${process.env.REACT_APP_API_URL}api/main/rasters/`
-			,{
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${Cookies.get('access_token')}`
-                },
-            });
+                `${process.env.REACT_APP_API_URL}api/main/rasters/`
+                , {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${Cookies.get('access_token')}`
+                    },
+                });
             const data = await res.json();
             if (res.status === 200) {
-                return data;   
+                return data;
             } else {
                 return thunkAPI.rejectWithValue(data);
             }
 
         } catch (err) {
-            
+
             return thunkAPI.rejectWithValue(err.response.data);
         }
     }
@@ -56,30 +56,64 @@ export const raster = createAsyncThunk(
 
 export const upload_geojson = createAsyncThunk(
     'geojson/upload',
-    async ({file,projectid},thunkAPI) => {
+    async ({ file, projectid }, thunkAPI) => {
         const formData = new FormData();
-        formData.append('geojson', file, file.name); 
-        formData.append('projectid',projectid)
+        formData.append('geojson', file, file.name);
+        formData.append('projectid', projectid)
         // for (var key of formData.entries()) {
         //     console.log("FORM",key[0] + ', ' + key[1]);
         // }
 
-        try{
+        try {
             const res = await fetch(
-				`${process.env.REACT_APP_API_URL}api/main/upload/`
-			,{
-                method: 'POST',
-                headers: {
-                    // Accept: 'application/json',
-                    // 'Content-Type': 'application/json',
-                    Authorization: `Bearer ${Cookies.get('access_token')}`,
-                },
-                // body,
-                body:formData,
-            });
+                `${process.env.REACT_APP_API_URL}api/main/upload/`
+                , {
+                    method: 'POST',
+                    headers: {
+                        // Accept: 'application/json',
+                        // 'Content-Type': 'application/json',
+                        Authorization: `Bearer ${Cookies.get('access_token')}`,
+                    },
+                    // body,
+                    body: formData,
+                });
             const data = await res.json();
             if (res.status === 201) {
-                return data;   
+                return data;
+            } else {
+                return thunkAPI.rejectWithValue(data);
+            }
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.response.data);
+        }
+    }
+);
+
+export const uploadDraw = createAsyncThunk(
+    'draw/upload',
+    async ({ geometry, projectid }, thunkAPI) => {
+        console.log("GEOMETRY", geometry, projectid)
+        const body = JSON.stringify({
+            geometry: geometry,
+            projectid: projectid,
+        });
+        console.log("BODY", body)
+
+        try {
+            const response = await fetch(
+                `${process.env.REACT_APP_API_URL}api/main/upload_draw/`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${Cookies.get('access_token')}`,
+                    },
+                    body: body,
+                });
+
+            const data = await response.json();
+            if (response.status === 201) {
+                return data;
             } else {
                 return thunkAPI.rejectWithValue(data);
             }
@@ -92,30 +126,30 @@ export const upload_geojson = createAsyncThunk(
 
 export const upload_raster = createAsyncThunk(
     'rasters/upload',
-    async ({file,projectid},thunkAPI) => {
-        
-        const formData = new FormData();
-        formData.append("name",file.name)
-        formData.append('raster', file, file.name); 
-        formData.append('projectid',projectid)
+    async ({ file, projectid }, thunkAPI) => {
 
-        try{
+        const formData = new FormData();
+        formData.append("name", file.name)
+        formData.append('raster', file, file.name);
+        formData.append('projectid', projectid)
+
+        try {
             const res = await fetch(
-				`${process.env.REACT_APP_API_URL}api/main/rasters/`
-			,{
-                method: 'POST',
-                headers: {
-                    // Accept: 'application/json',
-                    Authorization: `Bearer ${Cookies.get('access_token')}`
-                },
-                // body,
-                body:formData,
-            });
+                `${process.env.REACT_APP_API_URL}api/main/rasters/`
+                , {
+                    method: 'POST',
+                    headers: {
+                        // Accept: 'application/json',
+                        Authorization: `Bearer ${Cookies.get('access_token')}`
+                    },
+                    // body,
+                    body: formData,
+                });
 
             const data = await res.json();
 
             if (res.status === 201) {
-                return data;                
+                return data;
             } else {
                 return thunkAPI.rejectWithValue(data);
             }
@@ -128,62 +162,62 @@ export const upload_raster = createAsyncThunk(
 
 export const delete_geojson = createAsyncThunk(
     'geojson/delete',
-    async(id,thunkAPI) => {
+    async (id, thunkAPI) => {
         // console.log("AAAAAAa",id)
         try {
             const res = await fetch(
                 `${process.env.REACT_APP_API_URL}api/main/geojson/${id}`
-			,{
-                method: 'DELETE',
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${Cookies.get('access_token')}`
-                },
-            });
+                , {
+                    method: 'DELETE',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${Cookies.get('access_token')}`
+                    },
+                });
 
             if (res.ok) {
                 return id;
 
-              } else {
+            } else {
                 const data = await res.json();
                 return thunkAPI.rejectWithValue(data);
-              }
-            
-        } catch (error) {
-            return thunkAPI.rejectWithValue(error.response.data);
-        }
-    }
-    )
+            }
 
-export const delete_raster = createAsyncThunk(
-    'raster/delete',
-    async (id,thunkAPI) => {
-        try {
-            const res = await fetch(
-                `${process.env.REACT_APP_API_URL}api/main/rasters/${id}`
-			,{
-                method: 'DELETE',
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${Cookies.get('access_token')}`
-                },
-            });
-
-            if (res.ok) {
-                return id;
-
-              } else {
-                const data = await res.json();
-                return thunkAPI.rejectWithValue(data);
-              }
-            
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
     }
 )
 
-const initialState =  {
+export const delete_raster = createAsyncThunk(
+    'raster/delete',
+    async (id, thunkAPI) => {
+        try {
+            const res = await fetch(
+                `${process.env.REACT_APP_API_URL}api/main/rasters/${id}`
+                , {
+                    method: 'DELETE',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${Cookies.get('access_token')}`
+                    },
+                });
+
+            if (res.ok) {
+                return id;
+
+            } else {
+                const data = await res.json();
+                return thunkAPI.rejectWithValue(data);
+            }
+
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+)
+
+const initialState = {
     geojson: [],
     vector: [],
     raster: [],
@@ -191,13 +225,13 @@ const initialState =  {
 }
 
 const dataSlice = createSlice({
-    name:'data',
+    name: 'data',
     initialState,
-    reducers:{
-        addGeojsons:(state,action) => {
+    reducers: {
+        addGeojsons: (state, action) => {
             state.geojson = action.payload;
         },
-        addRasters:(state,action) => {
+        addRasters: (state, action) => {
             state.raster = action.payload;
         }
         // resetRegistered: state => {
@@ -231,5 +265,5 @@ const dataSlice = createSlice({
 })
 
 // export const { resetRegistered } = userSlice.actions;
-export const {addGeojsons,addRasters} = dataSlice.actions;
+export const { addGeojsons, addRasters } = dataSlice.actions;
 export default dataSlice.reducer;

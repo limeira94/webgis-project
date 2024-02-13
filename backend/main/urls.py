@@ -14,6 +14,7 @@ app_name = 'main'
 router = routers.DefaultRouter()
 router.register('rasters', views.RasterViewSet, basename='rasters')
 router.register('upload', views.GeoJSONFileUploadViewSet, basename='upload_geojson_api')
+router.register('upload_draw', views.LeafletDrawUploadViewSet, basename='upload_draw_api')
 # router.register('delete_all_rasters', views.DeleteAllRasterViewSet, basename='delete_all_rasters')
 # router.register('rasters/delete_all', views.DeleteAllRasterViewSet, basename='delete_all_rasters')
 

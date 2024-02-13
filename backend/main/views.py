@@ -514,6 +514,57 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
             )
 
 
+class LeafletDrawUploadViewSet(viewsets.ViewSet):
+    def create(self, request):
+        print("Raw data request", request.data)
+        try:
+            geometry_data = request.data.get('geometry')
+            print("Geometry data", geometry_data)
+            projectid = request.data.get('projectid')
+            
+            if not geometry_data or not projectid:
+                raise ValueError("Missing 'geometry' or 'projectid'")
+            
+            geometry_feature = geometry_data['geometry']
+            project = get_object_or_404(Project, pk=projectid)
+            assert request.user == project.user
+            
+            geometry = GEOSGeometry(json.dumps(geometry_feature))
+            properties = geometry_data.get('properties', {})
+            print("Processed Geometry:", geometry)
+            
+            geometry_instance = GeoJSONFile(
+                name='Drawn Geometry',
+                user=request.user,
+                geojson=geometry,
+                attributes=properties
+            )
+            
+            geometry_instance.save()
+            project.geojson.add(geometry_instance.id)
+            project.save()
+            
+            return Response(
+                {
+                    'message': 'Data saved successfully',
+                    'savedGeometry': {
+                        'id': geometry_instance.id,
+                        'geojson': json.loads(geometry_instance.geojson.geojson),
+                        'properties': properties,
+                    }
+                },
+                status=status.HTTP_201_CREATED,
+            )
+            
+        except Exception as e:
+            print("Error", e)
+            return Response(
+                {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
+            )
+            
+          
+        
+
 class UserRegistrarionView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegister

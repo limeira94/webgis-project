@@ -3,7 +3,7 @@ import tileLayersData from './tileLayers.json';
 import defaultStyle from "./defaultStyle.json";
 import './MapComponent.css'
 import 'leaflet/dist/leaflet.css';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   MapContainer,
   TileLayer,
@@ -16,6 +16,7 @@ import {
 import BasemapSelector from './BasemapSelector';
 import ToggleLayersSelector from './ToggleLayersSelector'
 import UpDelButttons from './UploadAndDeleteButtons2';
+import { handleDrawUpload } from './eventHandler2';
 import { leafletDefaultButtons } from './LeafletButtons';
 import L from 'leaflet';
 import 'leaflet-draw';
@@ -33,6 +34,7 @@ import GeoTIFF from 'geotiff';
 import proj4 from 'proj4';
 import { fromArrayBuffer } from 'geotiff';
 import { featureCollection } from '@turf/helpers';
+
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -102,6 +104,8 @@ export const MapComponent = ({
 
   const { loading } = useSelector(state => state.data);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     M.AutoInit();
   }, []);
@@ -136,14 +140,24 @@ export const MapComponent = ({
       });
 
       drawControlRef.current = drawControl;
+      mapInstance.addControl(drawControlRef.current);
 
-      mapInstance.on(L.Draw.Event.CREATED, (e) => {
+      mapInstance.on(L.Draw.Event.CREATED, async (e) => {
         const layer = e.layer;
-        const featureGroup = drawControl.options.edit.featureGroup;
-        featureGroup.addLayer(layer);
+
+        const geometryJson = layer.toGeoJSON();
+        // console.log('Geometry JSON:', geometryJson)
+
+        await handleDrawUpload(geometryJson, dispatch, projectid, setUploading);
+
       });
     }
-  }, [mapInstance]);
+    return () => {
+      if (mapInstance) {
+        mapInstance.off(L.Draw.Event.CREATED);
+      }
+    };
+  }, [mapInstance, dispatch, projectid, setUploading]);
 
   const toggleDrawControl = () => {
     if (isDrawControlVisible) {
