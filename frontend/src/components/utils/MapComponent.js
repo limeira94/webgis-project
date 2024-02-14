@@ -34,6 +34,7 @@ import GeoTIFF from 'geotiff';
 import proj4 from 'proj4';
 import { fromArrayBuffer } from 'geotiff';
 import { featureCollection } from '@turf/helpers';
+import * as turf from '@turf/turf';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -143,21 +144,50 @@ export const MapComponent = ({
       mapInstance.addControl(drawControlRef.current);
 
       mapInstance.on(L.Draw.Event.CREATED, async (e) => {
-        const layer = e.layer;
+        console.log('Draw event:', e);
+        let layer = e.layer;
 
-        const geometryJson = layer.toGeoJSON();
-        console.log('Geometry JSON:', geometryJson)
+        if (layer instanceof L.Circle) {
+          const center = layer.getLatLng();
+          const radius = layer.getRadius();
 
-        await handleDrawUpload(
-          geometryJson, 
-          setGeoJSONs, 
-          setVisibleGeoJSONs, 
-          mapInstance, 
-          dispatch, 
-          projectid, 
-          setUploading
-        );
+          const centerPoint = turf.point([center.lng, center.lat]);
+          const options = { steps: 60, units: 'kilometers' };
 
+          const buffer = turf.buffer(centerPoint, radius / 1000, options);
+
+          const feature = {
+            type: 'Feature',
+            geometry: buffer.geometry,
+            properties: {},
+          };
+
+          const geometryJson = feature;
+
+          await handleDrawUpload(
+            geometryJson,
+            setGeoJSONs,
+            setVisibleGeoJSONs,
+            mapInstance,
+            dispatch,
+            projectid,
+            setUploading
+          );
+        } else {
+
+          const geometryJson = layer.toGeoJSON();
+          console.log('Geometry JSON:', geometryJson)
+
+          await handleDrawUpload(
+            geometryJson,
+            setGeoJSONs,
+            setVisibleGeoJSONs,
+            mapInstance,
+            dispatch,
+            projectid,
+            setUploading
+          );
+        }
       });
     }
     return () => {
