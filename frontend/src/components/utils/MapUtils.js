@@ -365,7 +365,7 @@ export const ListItemWithStyleAll = ({
             <span className='tooltipped flex-container' data-position="bottom" data-tooltip={dataset_name}>
               <img className="icon-data" src={url + img_icon} alt={`${datatype}-item`} />
               <span className='text-container'>
-              {dataset_name.length > maxCharacters ? dataset_name.slice(0, maxCharacters) + '...' : dataset_name}
+              {dataset_name?.length > maxCharacters ? dataset_name.slice(0, maxCharacters) + '...' : dataset_name}
               </span>
             </span>
           </label>

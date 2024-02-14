@@ -146,9 +146,17 @@ export const MapComponent = ({
         const layer = e.layer;
 
         const geometryJson = layer.toGeoJSON();
-        // console.log('Geometry JSON:', geometryJson)
+        console.log('Geometry JSON:', geometryJson)
 
-        await handleDrawUpload(geometryJson, dispatch, projectid, setUploading);
+        await handleDrawUpload(
+          geometryJson, 
+          setGeoJSONs, 
+          setVisibleGeoJSONs, 
+          mapInstance, 
+          dispatch, 
+          projectid, 
+          setUploading
+        );
 
       });
     }
@@ -157,7 +165,8 @@ export const MapComponent = ({
         mapInstance.off(L.Draw.Event.CREATED);
       }
     };
-  }, [mapInstance, dispatch, projectid, setUploading]);
+  }, [mapInstance, setGeoJSONs, setVisibleGeoJSONs, dispatch, projectid, setUploading]);
+
 
   const toggleDrawControl = () => {
     if (isDrawControlVisible) {

@@ -139,7 +139,7 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
 };
 
 
-export const handleDrawUpload = async (geometryJson, dispatch, projectid, setUploading) => {
+export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJSONs, mapInstance, dispatch, projectid, setUploading) => {
   console.log('Sending GeoJSON:', geometryJson);
   try {
     setUploading(true);
@@ -151,11 +151,31 @@ export const handleDrawUpload = async (geometryJson, dispatch, projectid, setUpl
     if (response.type === 'draw/upload/fulfilled') {
 
       const { payload } = response;
-      // Aqui você pode tratar a resposta conforme necessário
-      // Por exemplo, atualizar o estado da aplicação com os dados da nova geometria
+      const savedGeometry = payload.savedGeometry;
 
+      const feature = {
+        type: "Feature",
+        geometry: savedGeometry.geojson,
+        properties: {
+          id: savedGeometry.id,
+          name: savedGeometry.name,
+          attributes: savedGeometry.attributes,
+        },
+      };
+
+      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, feature]);
+
+      setVisibleGeoJSONs(prevVisible => ({
+        ...prevVisible,
+        [savedGeometry.id]: true
+      }));
+
+      if (mapInstance) {
+        const bounds = L.geoJSON(feature).getBounds();
+        mapInstance.fitBounds(bounds, { maxZoom: 16 });
+      }
       setUploading(false);
-      alert('Drawing uploaded successfully.');
+
     } else {
       setUploading(false);
       console.error('Draw upload failed with status:', response.type);
