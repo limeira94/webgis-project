@@ -143,9 +143,15 @@ export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJ
   console.log('Sending GeoJSON:', geometryJson);
   try {
     setUploading(true);
+
+    const geometryType = geometryJson.geometry.type;
+
+    const name = geometryTypeToName(geometryType);
+
     const response = await dispatch(uploadDraw({
       geometry: geometryJson,
       projectid: projectid,
+      name: name,
     }));
     console.log("RESPONSE type", response.type)
     if (response.type === 'draw/upload/fulfilled') {
@@ -158,7 +164,7 @@ export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJ
         geometry: savedGeometry.geojson,
         properties: {
           id: savedGeometry.id,
-          name: savedGeometry.name,
+          name: name,
           attributes: savedGeometry.attributes,
         },
       };
@@ -188,6 +194,18 @@ export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJ
   }
 };
 
+function geometryTypeToName(type) {
+  const names = {
+    'Point': 'Ponto',
+    'LineString': 'Linha',
+    'Polygon': 'Polígono',
+    'MultiPoint': 'Multi Pontos',
+    'MultiLineString': 'Multi Linhas',
+    'MultiPolygon': 'Multi Polígonos',
+  };
+
+  return names[type] || 'Desconhecido';
+}
 
 
 export const handleDeleteClick = (setGeoJSONs) => {

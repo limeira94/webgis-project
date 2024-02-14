@@ -91,10 +91,11 @@ export const upload_geojson = createAsyncThunk(
 
 export const uploadDraw = createAsyncThunk(
     'draw/upload',
-    async ({ geometry, projectid }, thunkAPI) => {
+    async ({ geometry, projectid, name }, thunkAPI) => {
         console.log("GEOMETRY", geometry, projectid)
         const body = JSON.stringify({
             geometry: geometry,
+            name: name,
             projectid: projectid,
         });
         console.log("BODY", body)

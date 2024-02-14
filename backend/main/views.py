@@ -534,7 +534,7 @@ class LeafletDrawUploadViewSet(viewsets.ViewSet):
             print("Processed Geometry:", geometry)
             
             geometry_instance = GeoJSONFile(
-                name='Drawn Geometry',
+                name=request.data.get('name'),
                 user=request.user,
                 geojson=geometry,
                 attributes=properties
