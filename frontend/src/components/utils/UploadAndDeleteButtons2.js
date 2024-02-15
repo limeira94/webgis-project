@@ -5,6 +5,7 @@ import L from 'leaflet';
 import * as turf from '@turf/turf';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import { updateGeometry } from '../../features/data';
 
 
 const UpDelButttons = ({
@@ -43,6 +44,8 @@ const UpDelButttons = ({
     useEffect(() => {
         if (!mapInstance) return;
 
+        const editableLayers = new L.FeatureGroup().addTo(mapInstance);
+
         const drawControl = new L.Control.Draw({
             position: 'bottomleft',
             draw: {
@@ -52,18 +55,17 @@ const UpDelButttons = ({
                 circle: true,
                 marker: true,
             },
-            edit: {
-                featureGroup: new L.FeatureGroup().addTo(mapInstance),
-            },
+            // edit: {
+            //     featureGroup: editableLayers,
+            // },
         });
 
         drawControlRef.current = drawControl;
-        mapInstance.addControl(drawControl);
 
         mapInstance.on(L.Draw.Event.CREATED, async (e) => {
             console.log('Draw event:', e);
             let layer = e.layer;
-
+            editableLayers.addLayer(layer);
             if (layer instanceof L.Circle) {
                 const center = layer.getLatLng();
                 const radius = layer.getRadius();
@@ -107,83 +109,108 @@ const UpDelButttons = ({
             }
         });
 
+        mapInstance.on(L.Draw.Event.EDITED, (e) => {
+            const layers = e.layers;
+            layers.eachLayer((layer) => {
+                const updateGeometryAsync = async () => {
+                    const geometryJson = layer.toGeoJSON();
+                    console.log('Geometry JSON after edit:', geometryJson);
+                    
+                    // Supondo que você tenha o ID e uma função updateGeometry para chamar
+                    const geometryId = layer.feature?.properties?.id;
+                    if (geometryId) {
+                        try {
+                            await updateGeometry(geometryJson, geometryId);
+                            console.log('Geometry updated successfully');
+                        } catch (error) {
+                            console.error('Error updating geometry:', error);
+                        }
+                    }
+                };
+                updateGeometryAsync();
+            });
+        });
+
+        
+
         return () => {
             if (mapInstance) {
                 mapInstance.removeControl(drawControl);
                 mapInstance.off(L.Draw.Event.CREATED);
+                // mapInstance.off(L.Draw.Event.EDITED);
             }
         };
     }, [mapInstance]);
 
 
     return (
-
         <>
             <div className='custom-draw-button'>
-                <a onClick={toggleDrawControl} className='btn-floating waves-effect waves-light edit-geo-button' title='Draw'>
+                <a onClick={toggleDrawControl} className='btn-floating btn-color' title='Draw'>
                     <i className="small material-icons">edit</i>
                 </a>
             </div>
+            <div className="attach-file-button">
+                <div className="fixed-action-btn">
 
-            <div className="fixed-action-btn">
+                    <a className="btn-floating btn-color">
+                        <i className="large material-icons">attach_file</i>
+                    </a>
+                    <ul>
+                        <li>
+                            <input
+                                type="file"
+                                // onChange={handleRaster}
+                                onChange={(event) => handleRaster(
+                                    event,
+                                    setRasters,
+                                    mapInstance,
+                                    dispatch,
+                                    projectid,
+                                    setUploading
+                                )}
+                                ref={rasterInputRef}
+                                style={{ display: 'none' }}
+                                accept=".tif"
+                            />
+                            <a
+                                className="btn-floating waves-effect waves-light green"
+                                data-tooltip="Upload raster"
+                                onClick={handleFileClickRaster}
+                                title="Upload Raster"
+                            >
+                                <i className="material-icons">file_upload</i>
+                            </a>
+                        </li>
+                        <li>
+                            <input
+                                type="file"
+                                onChange={(event) => handleGeojson(
+                                    event,
+                                    //    getCenterOfGeoJSON, 
+                                    setGeoJSONs,
+                                    setVisibleGeoJSONs,
+                                    mapInstance,
+                                    dispatch,
+                                    projectid,
+                                    setUploading
+                                )}
 
-                <a className="btn-floating btn-color">
-                    <i className="large material-icons">attach_file</i>
-                </a>
-                <ul>
-                    <li>
-                        <input
-                            type="file"
-                            // onChange={handleRaster}
-                            onChange={(event) => handleRaster(
-                                event,
-                                setRasters,
-                                mapInstance,
-                                dispatch,
-                                projectid,
-                                setUploading
-                            )}
-                            ref={rasterInputRef}
-                            style={{ display: 'none' }}
-                            accept=".tif"
-                        />
-                        <a
-                            className="btn-floating waves-effect waves-light green"
-                            data-tooltip="Upload raster"
-                            onClick={handleFileClickRaster}
-                            title="Upload Raster"
-                        >
-                            <i className="material-icons">file_upload</i>
-                        </a>
-                    </li>
-                    <li>
-                        <input
-                            type="file"
-                            onChange={(event) => handleGeojson(
-                                event,
-                                //    getCenterOfGeoJSON, 
-                                setGeoJSONs,
-                                setVisibleGeoJSONs,
-                                mapInstance,
-                                dispatch,
-                                projectid,
-                                setUploading
-                            )}
-
-                            ref={fileInputRef}
-                            style={{ display: 'none' }}
-                            accept=".geojson, application/geo+json"
-                        />
-                        <a
-                            className="btn-floating waves-effect waves-light blue"
-                            data-tooltip="Upload geojson"
-                            onClick={handleFileClick}
-                            title='Upload GeoJSON'
-                        >
-                            <i className="material-icons">file_upload</i>
-                        </a>
-                    </li>
-                </ul>
+                                ref={fileInputRef}
+                                style={{ display: 'none' }}
+                                accept=".geojson, application/geo+json"
+                            />
+                            <a
+                                className="btn-floating waves-effect waves-light blue"
+                                data-tooltip="Upload geojson"
+                                onClick={handleFileClick}
+                                title='Upload GeoJSON'
+                            >
+                                <i className="material-icons">file_upload</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
         </>

@@ -92,13 +92,13 @@ export const upload_geojson = createAsyncThunk(
 export const uploadDraw = createAsyncThunk(
     'draw/upload',
     async ({ geometry, projectid, name }, thunkAPI) => {
-        console.log("GEOMETRY", geometry, projectid)
+        
         const body = JSON.stringify({
             geometry: geometry,
             name: name,
             projectid: projectid,
         });
-        console.log("BODY", body)
+        
 
         try {
             const response = await fetch(
@@ -124,6 +124,26 @@ export const uploadDraw = createAsyncThunk(
     }
 );
 
+export const updateGeometry = async (geometryJson, geometryId) => {
+
+    const response = await fetch(`${process.env.REACT_APP_API_URL}api/main/upload_draw/${geometryId}/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('access_token')}`,
+        },
+        body: JSON.stringify({
+            geometry: geometryJson,
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to update geometry');
+    }
+
+    const data = await response.json();
+    return data;
+};
 
 export const upload_raster = createAsyncThunk(
     'rasters/upload',

@@ -45,7 +45,7 @@ const BasemapSelector = (
           </div>
         </div>
       </Dialog>
-      <div className='map-style-selector'>
+      <div className='map-selector'>
         <a
           className="btn-floating waves-effect waves-light btn-color"
           onClick={toggleMapStyleDrawer(true)}>

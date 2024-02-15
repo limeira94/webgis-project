@@ -516,10 +516,8 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
 
 class LeafletDrawUploadViewSet(viewsets.ViewSet):
     def create(self, request):
-        print("Raw data request", request.data)
         try:
             geometry_data = request.data.get('geometry')
-            print("Geometry data", geometry_data)
             projectid = request.data.get('projectid')
             
             if not geometry_data or not projectid:
@@ -531,7 +529,6 @@ class LeafletDrawUploadViewSet(viewsets.ViewSet):
             
             geometry = GEOSGeometry(json.dumps(geometry_feature))
             properties = geometry_data.get('properties', {})
-            print("Processed Geometry:", geometry)
             
             geometry_instance = GeoJSONFile(
                 name=request.data.get('name'),
@@ -562,8 +559,44 @@ class LeafletDrawUploadViewSet(viewsets.ViewSet):
                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
             
-          
+    #TODO: implementar a função de update
+    def update(self, request, pk=None):
+        try:
+            geometry_data = request.data.get('geometry')
+            if not geometry_data:
+                raise ValueError("Missing 'geometry'")
+            
+            geometry_feature = geometry_data['geometry']
+            geometry = GEOSGeometry(json.dumps(geometry_feature))
+            
+            try:
+                geometry_instance = GeoJSONFile.objects.get(pk=pk, user=request.user)
+            except GeoJSONFile.DoesNotExist:
+                return Response(
+                    {'error': 'Geometry not found'}, status=status.HTTP_404_NOT_FOUND
+                )
+            
+            geometry_instance.geojson = geometry
+            geometry_instance.save()
+            
+            return Response(
+                {
+                    'message': 'Geometry updated successfully',
+                    'updatedGeometry': {
+                        'id': geometry_instance.id,
+                        'geojson': json.loads(geometry_instance.geojson.geojson)
+                    }
+                },
+                status=status.HTTP_200_OK,
+            )
         
+        except Exception as e:
+            return Response(
+                {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
+            )
+            
+            
+            
 
 class UserRegistrarionView(generics.CreateAPIView):
     queryset = User.objects.all()
