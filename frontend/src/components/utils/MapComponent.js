@@ -88,7 +88,6 @@ export const MapComponent = ({
   const [visibleRasters, setVisibleRasters] = useState({});
   const [polygonStyles, setPolygonStyles] = useState({});
   const [rasterStyles, setRasterStyles] = useState({});
-  const [selectedPolygon, setSelectedPolygon] = useState(null);
   const [buttonsCreated, setButtonsCreated] = useState(false);
   const geojsonLayerRefs = useRef({});
   const [mapInstance, setMapInstance] = useState(null);
@@ -100,12 +99,7 @@ export const MapComponent = ({
   const fileInputRef = useRef(null);
   const fileInputRasterRef = useRef(null);
   const defaultOpacity = 1
-  const [isDrawControlVisible, setIsDrawControlVisible] = useState(false);
-  const drawControlRef = useRef(null);
 
-  const { loading } = useSelector(state => state.data);
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     M.AutoInit();
@@ -123,93 +117,6 @@ export const MapComponent = ({
       setButtonsCreated: setButtonsCreated
     });
   }, [mapInstance, buttonsCreated, setButtonsCreated]);
-
-  useEffect(() => {
-    if (mapInstance && !drawControlRef.current) {
-      const drawControl = new L.Control.Draw({
-        position: 'bottomleft',
-        draw: {
-          polygon: true,
-          polyline: true,
-          rectangle: true,
-          circle: true,
-          marker: true,
-        },
-        edit: {
-          featureGroup: new L.FeatureGroup().addTo(mapInstance),
-        },
-      });
-
-      drawControlRef.current = drawControl;
-      mapInstance.addControl(drawControlRef.current);
-
-      mapInstance.on(L.Draw.Event.CREATED, async (e) => {
-        console.log('Draw event:', e);
-        let layer = e.layer;
-
-        if (layer instanceof L.Circle) {
-          const center = layer.getLatLng();
-          const radius = layer.getRadius();
-
-          const centerPoint = turf.point([center.lng, center.lat]);
-          const options = { steps: 60, units: 'kilometers' };
-
-          const buffer = turf.buffer(centerPoint, radius / 1000, options);
-
-          const feature = {
-            type: 'Feature',
-            geometry: buffer.geometry,
-            properties: {},
-          };
-
-          const geometryJson = feature;
-
-          await handleDrawUpload(
-            geometryJson,
-            setGeoJSONs,
-            setVisibleGeoJSONs,
-            mapInstance,
-            dispatch,
-            projectid,
-            setUploading
-          );
-        } else {
-
-          const geometryJson = layer.toGeoJSON();
-          console.log('Geometry JSON:', geometryJson)
-
-          await handleDrawUpload(
-            geometryJson,
-            setGeoJSONs,
-            setVisibleGeoJSONs,
-            mapInstance,
-            dispatch,
-            projectid,
-            setUploading
-          );
-        }
-      });
-    }
-    return () => {
-      if (mapInstance) {
-        mapInstance.off(L.Draw.Event.CREATED);
-      }
-    };
-  }, [mapInstance, setGeoJSONs, setVisibleGeoJSONs, dispatch, projectid, setUploading]);
-
-
-  const toggleDrawControl = () => {
-    if (isDrawControlVisible) {
-      // Se estiver visível (ou seja, adicionado ao mapa), remova-o
-      mapInstance.removeControl(drawControlRef.current);
-    } else {
-      // Se não estiver visível, adicione-o ao mapa
-      mapInstance.addControl(drawControlRef.current);
-    }
-    // Inverte o estado de visibilidade
-    setIsDrawControlVisible(!isDrawControlVisible);
-  };
-
 
   const uploadToMemoryRaster = async (event) => {
     const file = event.target.files[0];
@@ -486,11 +393,11 @@ export const MapComponent = ({
           setUploading={setUploading}
         />
       )}
-      <div className='custom-draw-button'>
+      {/* <div className='custom-draw-button'>
         <a onClick={toggleDrawControl} className='btn-floating waves-effect waves-light edit-geo-button' title='Draw'>
           <i className="small material-icons">edit</i>
         </a>
-      </div>
+      </div> */}
 
       <div className='home-button-map'>
         <a href="/" className="btn-floating waves-effect waves-light black">
