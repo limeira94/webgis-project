@@ -47,7 +47,7 @@ const UpDelButttons = ({
         const editableLayers = new L.FeatureGroup().addTo(mapInstance);
 
         const drawControl = new L.Control.Draw({
-            position: 'bottomleft',
+            
             draw: {
                 polygon: true,
                 polyline: true,

@@ -144,8 +144,6 @@ export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJ
   try {
     setUploading(true);
 
-    const geometryType = geometryJson.geometry.type;
-
     const name = prompt("Please enter a name for your geometry:", "New Geometry");
     if (name === null || name === "") {
       alert("You must provide a name to proceed with the upload.");
@@ -195,21 +193,10 @@ export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJ
     setUploading(false);
     console.error('Error during draw upload:', error);
     alert('There was an error uploading the drawing. Please try again.');
+  } finally {
+    setUploading(false);
   }
 };
-
-function geometryTypeToName(type) {
-  const names = {
-    'Point': 'Ponto',
-    'LineString': 'Linha',
-    'Polygon': 'Polígono',
-    'MultiPoint': 'Multi Pontos',
-    'MultiLineString': 'Multi Linhas',
-    'MultiPolygon': 'Multi Polígonos',
-  };
-
-  return names[type] || 'Desconhecido';
-}
 
 
 export const handleDeleteClick = (setGeoJSONs) => {

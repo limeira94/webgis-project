@@ -425,3 +425,11 @@
   z-index: 1001;
   /* Opcionalmente, um z-index mais alto se você precisar que este botão sobreponha os outros */
 }
+
+.leaflet-draw-toolbar {
+  position: fixed;
+  bottom: 70px; /* Ajuste baseado na altura do seu botão + espaço desejado */
+  left: calc(50% - 60px); /* Centro horizontalmente */
+  transform: translateX(-50%); /* Ajuste fino para centralizar */
+  z-index: 1001; /* Garante que o controle fique acima da maioria dos elementos */
+}
