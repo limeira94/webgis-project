@@ -7,7 +7,7 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='mydefaultsecretkey')
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 GDAL_LIBRARY_PATH = config('GDAL_LIBRARY_PATH', default='')
 GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH', default='')
@@ -33,6 +33,10 @@ if DEBUG:
 CORS_ALLOWED_ORIGINS = [
     'https://webgis.site',
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://webgis.site'
+    ]
 
 if DEBUG:
     CORS_ALLOWED_ORIGINS.append('http://127.0.0.1:3000')
