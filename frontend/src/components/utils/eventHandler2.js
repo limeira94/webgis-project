@@ -140,20 +140,24 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
 
 
 export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJSONs, mapInstance, dispatch, projectid, setUploading) => {
-  console.log('Sending GeoJSON:', geometryJson);
+  
   try {
     setUploading(true);
 
     const geometryType = geometryJson.geometry.type;
 
-    const name = geometryTypeToName(geometryType);
+    const name = prompt("Please enter a name for your geometry:", "New Geometry");
+    if (name === null || name === "") {
+      alert("You must provide a name to proceed with the upload.");
+      setUploading(false);
+      return; // Interrompe a execução se nenhum nome for fornecido
+    }
 
     const response = await dispatch(uploadDraw({
       geometry: geometryJson,
       projectid: projectid,
       name: name,
     }));
-    console.log("RESPONSE type", response.type)
     if (response.type === 'draw/upload/fulfilled') {
 
       const { payload } = response;
