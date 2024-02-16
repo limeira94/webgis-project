@@ -74,8 +74,6 @@ class ProjectList(APIView):
         except Project.DoesNotExist:
             return Response({'detail': 'Project not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-
-
 class VectorList(APIView):
     queryset = Vector.objects.all()
     permission_classes = [permissions.IsAuthenticated]
@@ -406,7 +404,87 @@ class RasterViewSet(viewsets.ModelViewSet):
     #     delete_rasters = self.queryset.all()
     #     delete_rasters.delete()
     #     return Response(self.serializer_class(delete_rasters, many=True).data)
+
+
+class RasterVisualization(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,pk):
+        # raster_id = request.data.get('raster')
+        raster = get_object_or_404(RasterFile, pk=pk)
+        assert request.user == raster.user
+
+        visual_type = request.data.get('visual_type')
+        params = request.data.get("params")
+
+        ## 3 types:
+        # -> multiband.
+        # -> paletted.
+        # -> single band gray.
+        # -> single band pseudocolor.
+
+        img = gdal.Open(raster.raster.url)
+        if visual_type=="composition":
+            b1 = params['R']
+            b2 = params['G']
+            b3 = params['B']
+            r = Image.fromarray(normalize_ar(img.GetRasterBand(int(b1)+1).ReadAsArray()))
+            g = Image.fromarray(normalize_ar(img.GetRasterBand(int(b2)+1).ReadAsArray()))
+            b = Image.fromarray(normalize_ar(img.GetRasterBand(int(b3)+1).ReadAsArray()))
+
+            image = Image.merge('RGB', (r, g, b))
+
+        elif visual_type=="grayscale":
+            b1 = params['Gray']
+            ar = normalize_ar(img.GetRasterBand(int(b1)+1).ReadAsArray())
+
+            image = Image.fromarray(ar)
+
+        # elif visual_type=="paletted":
+
+        #     b1 = request.data.get('b1')
+        #     ar = normalize_ar(img.GetRasterBand(b1).ReadAsArray())
+
+        with io.BytesIO() as buffer:
+            image.save(buffer, format='PNG')
+            image_data = buffer.getvalue()
+        name = os.path.basename(raster.png.name)
+        raster.png.save(name, File(io.BytesIO(image_data)))
+
+
+        return Response(
+            {
+                'message': 'Data saved successfully',
+                'png': raster.png.url,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+
+
+            
+
+
+            
+
+
+        
     
+
+class RasterCalculatorView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request):
+
+        raster_id = request.data.get('raster')
+        raster = get_object_or_404(RasterFile, pk=raster_id)
+        assert request.user == raster.user
+
+
+        
+
+
 
 class GeoJSONDetailView(APIView):
     permission_classes = [permissions.IsAuthenticated]

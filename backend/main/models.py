@@ -1,6 +1,7 @@
 import io
 import os
 import subprocess
+import time
 
 import requests
 import tifffile as tiff
@@ -40,82 +41,53 @@ class GeoserverData(models.Model):
     name = models.CharField(max_length=50)
     epsg = models.IntegerField()
 
+def get_bands(self):
+    return gdal.Open(self.raster.url).RasterCount
+
 class RasterFile(models.Model):
     name = models.CharField(max_length=100)
-    raster = models.FileField(
-        # upload_to='rasters/', 
-        upload_to=generate_upload_path_raster,
-        # validators=[validate_file_extension]
-        validators=[
-            FileExtensionValidator(allowed_extensions=['tif', 'tiff']),
-            validate_file_size
-            # MaxFileSizeValidator(100 * 1024 * 1024)  # 100MB limit
-        ]
-    )
+    raster = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['tif', 'tiff']),validate_file_size])
     png = models.FileField(upload_to=generate_upload_path_raster,blank=True,null=True)
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, blank=True, null=True
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     tiles = models.CharField(max_length=300, default='', null=True, blank=True)
-    # wms = models.CharField(max_length=300,default='',null=True,blank=True)
+    bands = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
+    
+    @property
+    def get_bands(self):
+        return gdal.Open(self.raster.url).RasterCount
 
-    # TODO:
-    # Solve problem with render raster
-    # Options:
-    # Create tiles using gdal2tiles
-    # Use Geoserver
-    # Convert to PNG
-    # Other....
     def save(self, *args, **kwargs):
         NAME = self.raster.name
         super().save(*args, **kwargs)
-
-        # # To create zoom levels
-        # N = 18
+        
+        if self.bands==0:
+            file = self.raster.url
+            n = gdal.Open(file).RasterCount
+            self.bands = n
+            self.save()
 
         if self.tiles == '':
-            import time
             t1 = time.time()
-            ###############
-            ###     PNG
-            # name=self.raster.url
-            # file = self.raster.storage.path(name=name.replace('/media/',''))#
-            # TODO:
-            # solve this problem with the file.
-            site = 'https://webgis.site'
-            if os.environ.get('LOCAL') == 'True':
-                site = 'http://127.0.0.1:8000'
-            
-            # site = 'http://127.0.0.1:8000'
-            # windows = 'C:/Users/limei/Documents/05_VSCode/webgis-project/backend/' + self.raster.url
             
             if self.raster.url.find("s3")!=-1:
                 file = self.raster.url
             else:
+                site = 'https://webgis.site'
+                if os.environ.get('LOCAL') == 'True':
+                    site = 'http://127.0.0.1:8000'
                 file = site + self.raster.url
-
-            # print(file)
 
             try:
                 bounds = get_bounds(file)
             except:
                 raise ValidationError("There is a problem with the provided file.")
-            
-            #TODO: Replace this
-            # resp = requests.get(file)
-            # img = tiff.imread(io.BytesIO(resp.content))
 
             img = gdal.Open(file).ReadAsArray()
 
-            # TODO:
-            ### Create the way to select the bands to use and way to stretch for better visual
             try:
-                # r = Image.fromarray(normalize_ar(img[:, :, 0]))
-                # g = Image.fromarray(normalize_ar(img[:, :, 1]))
-                # b = Image.fromarray(normalize_ar(img[:, :, 2]))
 
                 r = Image.fromarray(normalize_ar(img[0,:, :]))
                 g = Image.fromarray(normalize_ar(img[1,:, :]))
@@ -123,8 +95,6 @@ class RasterFile(models.Model):
                 
                 im1 = Image.merge('RGB', (r, g, b))
             except IndexError as e:
-                # print(e)
-                # print(img.shape)
                 ar = normalize_ar(img)
                 im1 = Image.fromarray(ar)
 
@@ -132,12 +102,9 @@ class RasterFile(models.Model):
                 im1.save(buffer, format='PNG')
                 image_data = buffer.getvalue()
 
-            # filename = self.raster.url.replace('.tif', '.png')[1:]
             filename = NAME.replace('.tif', '.png')[1:]
-            # filename = 'raster/%s/%s' % (self.user.username, filename)
 
             self.tiles = ','.join([str(i) for i in bounds])
-            # self.raster.save(filename, File(io.BytesIO(image_data)))
             self.png.save(filename, File(io.BytesIO(image_data)))
 
             print(round(time.time()-t1,2))
@@ -186,29 +153,17 @@ class RasterFile(models.Model):
             # print("#"*50)
 
 
-# class RasterVisual(models.Model):
-#     url = models.CharField(max_length=50)
-#     raster_id = models.ForeignKey(RasterFile,on_delete=models.CASCADE)
-#     png = models.FileField(upload_to=generate_upload_path_raster,)
-            
+class RasterVisual(models.Model):
+    url = models.CharField(max_length=50)
+    # raster_id = models.ForeignKey(RasterFile,on_delete=models.CASCADE)
+    raster = models.OneToOneField(RasterFile,on_delete=models.CASCADE)
+    png = models.FileField(upload_to=generate_upload_path_raster,)
 
-
-# #### FUTURE IMPROVEMENTS
-# #TODO?:
-# # Create the way to allow users to create a VIEW, selecting bands
-# # for example, this option of selecting bands works with geoserver.
-# class RasterView(models.Model):
-#     raster = models.ForeignKey(RasterFile,on_delete=models.CASCADE)
-
-
-# ############## THIS IS JUST AN IDEA
 
 # #################TODO:
 # ### Handle multiple files from "shapefile" format
 # ### I believe that to do this, we will need to create another model just to handle the files
 # ### Something similar to the link bellow
-
-
 """
 ogr2ogr -f "PostgreSQL" PG:"dbname=mydatabase user=myuser password=mypassword host=localhost port=5432" -nln mytable -nlt PROMOTE_TO_MULTI -update -overwrite -skipfailures /path/to/your/shapefile
 """

@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/main/projects/<int:pk>/', views.ProjectList.as_view(), name='delete-project'),
     path('upload_geojson/', views.GeoJSONUploadView.as_view(), name='upload-geojson'),
     path('upload_shapefile/', views.ShapefileUploadView.as_view(), name='upload-shapefile'),
+    path("api/main/raster/change-visual/<int:pk>",views.RasterVisualization.as_view(),name="raster-visual"),
     
     # Rotas de autenticação
     path('api/main/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
