@@ -20,20 +20,24 @@ import "./Project.css"
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
-const Map = ({ project }) => {
-    const [rasters, setRasters] = useState([]);
-    const [geojsons, setGeoJSONs] = useState([]);
+const Map = ({ project,
+    rasters, setRasters,
+    geojsons, setGeoJSONs
+
+}) => {
+    // const [rasters, setRasters] = useState([]);
+    // const [geojsons, setGeoJSONs] = useState([]);
 
     useEffect(() => {
         M.AutoInit();
     }, []);
 
-    useEffect(() => {
-        if (project) {
-            setGeoJSONs(parseGeoJSON(project.geojson))
-            setRasters(project.raster)
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (project) {
+    //         setGeoJSONs(parseGeoJSON(project.geojson))
+    //         setRasters(project.raster)
+    //     }
+    // }, [])
     useEffect(() => {
         var elems = document.querySelectorAll('.fixed-action-btn');
         var instances = M.FloatingActionButton.init(elems, {
@@ -64,6 +68,8 @@ function Project() {
     const [projects, setProjects] = useState([]);
     const [projectTextInput, setProjectTextInput] = useState(false);
     const [inputValue, setInputValue] = useState("");
+    const [rasters, setRasters] = useState([]);
+    const [geojsons, setGeoJSONs] = useState([]);
 
     const { project_id } = useParams();
 
@@ -79,6 +85,10 @@ function Project() {
             const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
             if (selectedProject) {
                 setProject(selectedProject);
+                //????????????????????????????????????????????????????
+                setGeoJSONs(parseGeoJSON(selectedProject.geojson))
+                setRasters(selectedProject.raster);
+                //????????????????????????????????????????????????????
             }
             else {
                 navigate(`/project`);
@@ -246,7 +256,14 @@ function Project() {
 
             </div>
 
-            {project ? <Map project={project} /> : null}
+            {project ? 
+            <Map 
+                project={project}
+                rasters={rasters}
+                setRasters={setRasters}
+                geojsons={geojsons}
+                setGeoJSONs={setGeoJSONs}
+             /> : null}
 
 
         </>

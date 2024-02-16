@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import data, { delete_geojson, delete_raster } from '../../features/data';
 import './MapUtils.css'
 import M from 'materialize-css';
+import Cookies from 'js-cookie'
+import axios from 'axios';
 
 const removeItemFromList = (datasets, setDatasets, fileId, datatype) => {
   if (datatype == "raster") {
@@ -104,16 +106,214 @@ export const getCenterOfGeoJSON = (geojson) => {
   return [(minLat + maxLat) / 2, (minLong + maxLong) / 2];
 };
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
+
+const changeVisual = async (rasters,setRasters,raster_id,visual_type,params) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}api/main/raster/change-visual/${raster_id}`, 
+      {
+        params:params,
+        visual_type: visual_type
+      },
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${Cookies.get('access_token')}`
+          }
+      }
+    );
+
+    const updatedRasters = rasters.map(raster => {
+      if (raster.id === raster_id) {
+        return { ...raster, png: response.data.png };
+      }
+      return raster;
+    });
+    setRasters(updatedRasters)
+    console.log(response)
+
+    if (response.status===201) {
+      M.toast(
+        {html: "Raster updated sucessfully.", 
+         classes: 'green rounded',
+         displayLength:5000});  
+    } else {
+      M.toast(
+        {html: "Error while trying to update raster", 
+         classes: 'red rounded',
+         displayLength:5000})
+    }
+
+
+    return response
+
+  } catch (error) {
+    console.log(error)
+      // console.error('Error fetching GeoJSON data:', error);
+  }
+}
+
 export const StyleRasterControls = ({
-  // rasters,
-  // setRasters,
+  rasters,
+  setRasters,
   // dispatch,
   // raster,
   // zoomToLayerRaster,
-  zoomanddelete
+  zoomanddelete,
+  bands,
+  raster_id,
   // updateStyle,
   // rasterStyles
 }) => {
+
+  const [selectedValues, setSelectedValues] = useState({ R: '', G: '', B: '', Gray: '' });
+
+  useEffect(() => {
+    var options = {}
+    var elems = document.querySelectorAll('.collapsible');
+    M.Collapsible.init(elems, options);
+
+    var elems = document.querySelectorAll('select');
+    M.FormSelect.init(elems);
+
+}, [])
+
+const handleSubmitComposition = () => {
+
+  const visual_type = "composition"
+
+  const params = {
+    R: selectedValues['R'],
+    G: selectedValues['G'],
+    B: selectedValues['B']
+  };
+
+  if (!selectedValues['R'] || !selectedValues['G'] || !selectedValues['B']) {
+    alert('Please select values for R, G, and B.');
+    return;
+  }
+
+  changeVisual(rasters,setRasters,raster_id,visual_type,params)
+
+};
+
+const handleSubmitGrayscale = () => {
+  const visual_type = "grayscale"
+  const params = {
+    Gray: selectedValues['Gray'],
+  };
+
+  if (!selectedValues['Gray']) {
+    alert('Please select the band.')
+    return;
+  }
+
+  changeVisual(rasters,setRasters,raster_id,visual_type,params)
+
+};
+
+const selectItems = (key) => {
+    return (
+      <select 
+        // ref={key} 
+        // value={} 
+        onChange={(e) => setSelectedValues({ ...selectedValues, [key]: e.target.value })}
+        defaultValue={selectedValues[key]}
+        >
+        <option value="" disabled>
+          Choose your option
+        </option>
+        {Array.from({ length: bands }, (_, index) => (
+          <option key={index} value={index}>
+            {`Band ${index+1}`}
+          </option>
+        ))}
+      </select>
+    );
+    }
+
+const tableComposition = (
+  <table className='centered'>
+    <thead>
+      <tr>
+        <th>Band</th>
+        <th>Options</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Red</td>
+        <td>
+          {selectItems("R")}
+        </td>
+      </tr>
+      <tr>
+        <td>Green</td>
+        <td>
+          {selectItems("G")}
+        </td>
+      </tr>
+      <tr>
+        <td>Blue</td>
+        <td>
+          {selectItems("B")}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+);
+
+  const tableGray = (
+    <table className='centered'>
+      <thead>
+        <tr>
+          <th>Band</th>
+          <th>Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Choose your option:</td>
+          <td>
+            {selectItems("Gray")}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  )
+
+  const bandsItem = 
+      <div className='collapsible-raster'>
+        <h5 className='center'>Display:</h5>
+        <ul className="collapsible">
+          <li>
+            <div className="collapsible-header">Composition</div>
+            <div className="collapsible-body">
+              {tableComposition}
+              <button onClick={handleSubmitComposition} type='submit' className="btn submit-display-button center">
+                Submit
+              </button>
+            </div>
+          </li>
+          <li>
+            <div className="collapsible-header">
+              Grayscale
+            </div>
+            <div className="collapsible-body">
+              {tableGray}
+              <button onClick={handleSubmitGrayscale} type='submit' className="btn submit-display-button center">
+                Submit
+              </button>
+            </div>
+          </li>
+          {/* <li>
+            <div className="collapsible-header"><i className="material-icons">whatshot</i>Paletted</div>
+            <div className="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+          </li> */}
+        </ul>
+      </div>
+
   return (
     <div className='side-nav-item-dropdown-style z-depth-5'>
       <table>
@@ -121,6 +321,7 @@ export const StyleRasterControls = ({
           {zoomanddelete}
         </tbody>
       </table>
+      {bands>0 && bandsItem}
     </div>
     // <div className='style-raster-class'>
     //   <div className='style-raster-item'>
@@ -297,7 +498,6 @@ export const ListItemWithStyleAll = ({
         </a>
       </td>
     </tr>
-
   </>
 
   if (datatype === "raster") {
@@ -307,11 +507,13 @@ export const ListItemWithStyleAll = ({
     dataset_name = dataset.name
     img_icon = "/raster.png"
     styleControlItem = <StyleRasterControls
-      // rasters={datasets}
-      // setRasters={setDatasets}
+      rasters={datasets}
+      setRasters={setDatasets}
       // raster={dataset}
       // dispatch={dispatch}
       // zoomToLayerRaster={zoomToLayer}
+      raster_id={dataset_id}
+      bands={dataset.bands}
       zoomanddelete={zoomanddelete}
     />
   }

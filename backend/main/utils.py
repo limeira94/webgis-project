@@ -23,7 +23,7 @@ def validate_file_extension(value):
     
 def validate_file_size(value):
     filesize = value.size
-    print("ARQUIVO TEM TAMANHO ", filesize)
+    # print("ARQUIVO TEM TAMANHO ", filesize)
     if filesize > 100 * 1024 * 1024:  # 100MB
         raise ValidationError("The maximum file size that can be uploaded is 100MB.")
 

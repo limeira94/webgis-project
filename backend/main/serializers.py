@@ -6,8 +6,7 @@ from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.gis.geos import GEOSGeometry
 
-from .models import *#AttributeDataT, GeoJSONFile, Project, RasterFile, SpatialDataT, Vector
-
+from .models import *
 
 class VectorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,11 +18,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
-        # model = get_user_model()
-        # fields = ('username', 'email',)
-        # fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile_picture']
-        # read_only_fields = ()
-
 
 class resetpasswordSerializer(serializers.ModelSerializer):
 
@@ -83,31 +77,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ['username', 'email', 'password']
-
-#     def __init__(self, *args, **kwargs):
-#         include_password2 = kwargs.pop('include_password2', False)
-
-#         if include_password2:
-#             self.Meta.fields += ['password2']
-#         print("B"*50)
-#         super().__init__(*args, **kwargs)
-
-#     def validate(self, data):
-#         if "password2" in data.keys():
-#             if data['password'] != data['password2']:
-#                 raise serializers.ValidationError("Passwords do not match")
-#         print("A"*50)
-#         return data
-
-#     def create(self, validated_data):
-#         validated_data.pop('password2', None)
-#         return super().create(validated_data)
-
-
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
@@ -126,8 +95,7 @@ class GeoJsonFileSerializer(serializers.ModelSerializer):
 class RasterFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = RasterFile
-        fields = ('id', 'name', 'user', 'raster',"tiles","png")
-        # fields = ('id', 'name', 'user', 'raster')
+        fields = ('id', 'name', 'user', 'raster',"tiles","png","bands")
 
         validators = [
             FileExtensionValidator(allowed_extensions=['tif', 'tiff']),
