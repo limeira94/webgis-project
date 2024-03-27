@@ -32,6 +32,7 @@ class GeoJSONFile(models.Model):
     )
     geojson = models.GeometryField()
     attributes = JSONField(blank=True, null=True)
+    group_id = models.IntegerField(default=0)
     # TODO: Banco de dados unico para cada usuário.
 
 

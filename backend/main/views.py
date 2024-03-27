@@ -461,17 +461,6 @@ class RasterVisualization(APIView):
         )
 
 
-
-
-            
-
-
-            
-
-
-        
-    
-
 class RasterCalculatorView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -480,10 +469,6 @@ class RasterCalculatorView(APIView):
         raster_id = request.data.get('raster')
         raster = get_object_or_404(RasterFile, pk=raster_id)
         assert request.user == raster.user
-
-
-        
-
 
 
 class GeoJSONDetailView(APIView):
@@ -530,67 +515,113 @@ class GeoJSONListView(APIView):
         )
 
 
+# class GeoJSONFileUploadViewSet(viewsets.ViewSet):
+#     def create(self, request):
+#         try:
+#             geojson_data = json.loads(request.data['geojson'].read())
+#             projectid = request.data['projectid']
+
+#             if not isinstance(geojson_data.get('features'), list):
+#                 raise ValueError('Invalid GeoJSON format')
+
+#             project = get_object_or_404(Project, pk=projectid)
+#             assert request.user == project.user
+
+#             geojson_file = request.FILES.get('geojson')
+#             filename = geojson_file.name if geojson_file else 'Uploaded_File'
+
+#             all_geometries = []
+#             all_attributes = []
+
+#             for feature in geojson_data['features']:
+#                 geometry = feature.get('geometry')
+#                 properties = feature.get('properties', {})
+                
+#                 # Adicione a geometria à lista de todas as geometrias
+#                 all_geometries.append(GEOSGeometry(json.dumps(geometry)))
+
+#                 # Adicione os atributos à lista de todos os atributos
+#                 all_attributes.append(properties)
+
+#             # Crie uma GeometryCollection com todas as geometrias
+#             combined_geometry = GeometryCollection(all_geometries)
+
+#             # Crie e salve a nova instância do modelo GeoJSONFile com a geometria e atributos
+#             geo_instance = GeoJSONFile(
+#                 name=filename, 
+#                 user=request.user, 
+#                 geojson=combined_geometry,  # Salvando a GeometryCollection
+#                 attributes=all_attributes  # Salvando a lista de atributos
+#             )
+#             geo_instance.save()
+#             project.geojson.add(geo_instance.id)
+#             project.save()
+
+#             return Response(
+#                 {
+#                     'message': 'Data saved successfully',
+#                     'savedGeoJson': {
+#                         'id': geo_instance.id,
+#                         'name': geo_instance.name,
+#                         'geojson': json.loads(geo_instance.geojson.geojson),
+#                         'attributes': all_attributes,
+#                     }
+#                 },
+#                 status=status.HTTP_201_CREATED,
+#             )
+
+#         except Exception as e:
+#             print(e)
+#             return Response(
+#                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
+#             )
+
 class GeoJSONFileUploadViewSet(viewsets.ViewSet):
     def create(self, request):
         try:
             geojson_data = json.loads(request.data['geojson'].read())
             projectid = request.data['projectid']
-
+            
             if not isinstance(geojson_data.get('features'), list):
                 raise ValueError('Invalid GeoJSON format')
-
+            
             project = get_object_or_404(Project, pk=projectid)
             assert request.user == project.user
-
+            
             geojson_file = request.FILES.get('geojson')
             filename = geojson_file.name if geojson_file else 'Uploaded_File'
-
-            all_geometries = []
-            all_attributes = []
-
+            
+            next_group_id = GeoJSONFile.objects.latest('id').id + 1 if GeoJSONFile.objects.exists() else 1
+            
             for feature in geojson_data['features']:
                 geometry = feature.get('geometry')
                 properties = feature.get('properties', {})
                 
-                # Adicione a geometria à lista de todas as geometrias
-                all_geometries.append(GEOSGeometry(json.dumps(geometry)))
-
-                # Adicione os atributos à lista de todos os atributos
-                all_attributes.append(properties)
-
-            # Crie uma GeometryCollection com todas as geometrias
-            combined_geometry = GeometryCollection(all_geometries)
-
-            # Crie e salve a nova instância do modelo GeoJSONFile com a geometria e atributos
-            geo_instance = GeoJSONFile(
-                name=filename, 
-                user=request.user, 
-                geojson=combined_geometry,  # Salvando a GeometryCollection
-                attributes=all_attributes  # Salvando a lista de atributos
-            )
-            geo_instance.save()
-            project.geojson.add(geo_instance.id)
+                geos_geometry = GEOSGeometry(json.dumps(geometry))
+                
+                geo_instance = GeoJSONFile( 
+                    name=filename,
+                    user=request.user,
+                    geojson=geos_geometry,
+                    attributes=properties,
+                    group_id=next_group_id
+                )
+                geo_instance.save()
+                project.geojson.add(geo_instance.id)
+            
             project.save()
-
+            
             return Response(
-                {
-                    'message': 'Data saved successfully',
-                    'savedGeoJson': {
-                        'id': geo_instance.id,
-                        'name': geo_instance.name,
-                        'geojson': json.loads(geo_instance.geojson.geojson),
-                        'attributes': all_attributes,
-                    }
-                },
+                {'message': 'Data saved successfully', 'group_id': next_group_id},
                 status=status.HTTP_201_CREATED,
             )
-
+            
         except Exception as e:
             print(e)
             return Response(
                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
-
+            
 
 class LeafletDrawUploadViewSet(viewsets.ViewSet):
     def create(self, request):
