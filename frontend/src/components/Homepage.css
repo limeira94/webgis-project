@@ -1,7 +1,4 @@
 .custom-shape-divider-top-1701366195 {
-    /* position: absolute;
-    top: 0;
-    left: 0; */
     width: 100%;
     overflow: hidden;
 
@@ -17,14 +14,6 @@
 .custom-shape-divider-top-1701366195 .shape-fill {
     fill: #FFFFFF;
 }
-
-/* .card-section{
-    background-color: cadetblue;
-} */
-
-/* .logo-img {
-    max-width: 100px;
-} */
 
 .img-logo {
     max-width: 150px;
@@ -52,22 +41,13 @@ h4 {
 }
 
 ul {
-    list-style-type: disc; 
+    list-style-type: disc;
 }
-
-/* li {
-    margin-left: 20px;
-} */
 
 .note {
     font-style: italic;
     color: #555;
 }
-
-/* .row {
-    display: flex;
-    flex-wrap: wrap;
-} */
 
 .card {
     flex: 1 0 auto;

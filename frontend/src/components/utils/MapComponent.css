@@ -69,30 +69,23 @@
 
 .leaflet-control-geocoder-icon::before {
   content: 'search' !important;
-  /* Texto do ícone do Materialize */
   font-family: 'Material Icons' !important;
-  /* Fonte do Materialize */
   text-indent: 0 !important;
-  /* Mostra o texto do ícone */
   position: absolute !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
-  /* Centraliza o ícone */
   font-size: 20px !important;
-  /* Tamanho do ícone */
 }
 
 .leaflet-control-geocoder-form input {
   border-radius: 0% !important;
-  color: white !important;
-  /* Muda a cor do texto para branco */
+  color: black !important;
 }
 
 .leaflet-control-geocoder-address-context {
   border-radius: 0% !important;
   color: white !important;
-  /* Muda a cor do texto para branco */
 }
 
 
@@ -428,8 +421,12 @@
 
 .leaflet-draw-toolbar {
   position: fixed;
-  bottom: 70px; /* Ajuste baseado na altura do seu botão + espaço desejado */
-  left: calc(50% - 60px); /* Centro horizontalmente */
-  transform: translateX(-50%); /* Ajuste fino para centralizar */
-  z-index: 1001; /* Garante que o controle fique acima da maioria dos elementos */
+  bottom: 70px;
+  /* Ajuste baseado na altura do seu botão + espaço desejado */
+  left: calc(50% - 60px);
+  /* Centro horizontalmente */
+  transform: translateX(-50%);
+  /* Ajuste fino para centralizar */
+  z-index: 1001;
+  /* Garante que o controle fique acima da maioria dos elementos */
 }
