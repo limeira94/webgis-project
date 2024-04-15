@@ -23,7 +23,6 @@ const handleDeleteFiles = (fileId, dispatch, datasets, setDatasets, functionDele
     // const newDatasets = datasets.filter(datasetItem => datasetItem.id !== fileId);
     // setDatasets(newDatasets);
     removeItemFromList(datasets, setDatasets, fileId, datatype)
-    console.log("inmemory", datasets, setDatasets, fileId, datatype)
   }
   else {
     dispatch(functionDelete(fileId))
@@ -45,15 +44,21 @@ const handleDeleteFiles = (fileId, dispatch, datasets, setDatasets, functionDele
 
 export const parseGeoJSON = (data) => {
   const grouped = data.reduce((acc, item) => {
-    const geojson = parse(item.geojson.split(';')[1]);
-    console.log(geojson)
-    const groupId = item.attributes.group_id; // assumindo que existe um atributo group_id
+    const parts = item.geojson.split(';');
+
+    const geojson = parts.length > 1 ? parse(parts[1]) : null;
+    if (!geojson) {
+      console.error("Invalid geojson data", item.geojson);
+      return acc;
+    }
+    const groupId = item.group_id;
     if (!acc[groupId]) {
       acc[groupId] = {
         type: 'FeatureCollection',
         features: [],
         properties: {
           id: groupId,
+          group_id: groupId,
           name: item.name,
           attributes: item.attributes,
         },
@@ -64,6 +69,7 @@ export const parseGeoJSON = (data) => {
       geometry: geojson,
       properties: {
         id: item.id,
+        group_id: groupId,
         name: item.name,
         attributes: item.attributes,
       },
@@ -73,6 +79,7 @@ export const parseGeoJSON = (data) => {
 
   return Object.values(grouped);
 };
+
 
 
 export const extractCoordsFromPoint = (coords, lats, longs) => {
@@ -511,10 +518,12 @@ export const ListItemWithStyleAll = ({
   let handleDelete, dataset_id, isPoint, dataset_name, img_icon, styleControlItem
   if (datatype === "raster") {
     // handleDelete = () => handleDeleteRaster(dataset.id,dispatch,datasets,setDatasets,inmemory)
+
     handleDelete = () => handleDeleteFiles(dataset.id, dispatch, datasets, setDatasets, delete_raster, inmemory = inmemory, datatype = datatype)
     // handleDelete = () => handleDeleteFiles( fileId,dispatch,datasets,setDatasets,functionDelete,inmemory=false,type="raster")
   }
   else {
+    console.log("datasetdelete", dataset)
     handleDelete = () => handleDeleteFiles(dataset.properties.id, dispatch, datasets, setDatasets, delete_geojson, inmemory = inmemory, datatype = datatype)
     // handleDelete = () => handleDeleteGeojson(dataset.properties.id,dispatch,datasets,setDatasets,inmemory)
   }
@@ -563,10 +572,10 @@ export const ListItemWithStyleAll = ({
     // handleDelete = () => handleDeleteGeojson(dataset.id,dispatch)
     dataset_id = dataset.properties.id
     console.log("DATASET", dataset)
-    console.log("dataset feature 0", dataset.features[0])
     // isPoint = dataset.geometry.type === "Point" || dataset.geometry.type === "MultiPoint";
     dataset_name = dataset.properties.name
     img_icon = "/vector.png"
+    
     styleControlItem = <StyleControls
       geojson={dataset.features[0]}
       updateStyle={updateStyle}

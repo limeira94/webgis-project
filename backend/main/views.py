@@ -487,7 +487,8 @@ class GeoJSONDetailView(APIView):
 
     def delete(self, request, pk):
         try:
-            geojson_file = GeoJSONFile.objects.get(pk=pk)
+            geojson_file = GeoJSONFile.objects.filter(group_id=pk)
+        
             geojson_file.delete()
             return Response(
                 {'message': 'GeoJSON file deleted successfully'},
