@@ -89,7 +89,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class GeoJsonFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeoJSONFile
-        fields = ('id', 'name', 'geojson', 'attributes')
+        fields = ('id', 'name', 'geojson', 'attributes', 'group_id')
 
 
 class RasterFileSerializer(serializers.ModelSerializer):
@@ -122,7 +122,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     geojson = GeoJsonFileSerializer(many=True, read_only=True)
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
-
+    
     class Meta:
         model = Project
         fields = '__all__'

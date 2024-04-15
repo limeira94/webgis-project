@@ -23,11 +23,12 @@ const handleDeleteFiles = (fileId, dispatch, datasets, setDatasets, functionDele
     // const newDatasets = datasets.filter(datasetItem => datasetItem.id !== fileId);
     // setDatasets(newDatasets);
     removeItemFromList(datasets, setDatasets, fileId, datatype)
+    console.log("inmemory", datasets, setDatasets, fileId, datatype)
   }
   else {
     dispatch(functionDelete(fileId))
       .then((action) => {
-
+        console.log("fileid", fileId)
         if (action.meta.requestStatus === 'fulfilled') {
           // const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
           // setRasters(newRasters);
@@ -43,16 +44,36 @@ const handleDeleteFiles = (fileId, dispatch, datasets, setDatasets, functionDele
 }
 
 export const parseGeoJSON = (data) => {
-  return data.map(item => ({
-    type: 'Feature',
-    geometry: parse(item.geojson.split(';')[1]),
-    properties: {
-      id: item.id,
-      name: item.name,
-      attributes: item.attributes,
-    },
-  }));
+  const grouped = data.reduce((acc, item) => {
+    const geojson = parse(item.geojson.split(';')[1]);
+    console.log(geojson)
+    const groupId = item.attributes.group_id; // assumindo que existe um atributo group_id
+    if (!acc[groupId]) {
+      acc[groupId] = {
+        type: 'FeatureCollection',
+        features: [],
+        properties: {
+          id: groupId,
+          name: item.name,
+          attributes: item.attributes,
+        },
+      };
+    }
+    acc[groupId].features.push({
+      type: 'Feature',
+      geometry: geojson,
+      properties: {
+        id: item.id,
+        name: item.name,
+        attributes: item.attributes,
+      },
+    });
+    return acc;
+  }, {});
+
+  return Object.values(grouped);
 };
+
 
 export const extractCoordsFromPoint = (coords, lats, longs) => {
   let [long, lat] = coords;
@@ -108,19 +129,19 @@ export const getCenterOfGeoJSON = (geojson) => {
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
-const changeVisual = async (rasters,setRasters,raster_id,visual_type,params) => {
+const changeVisual = async (rasters, setRasters, raster_id, visual_type, params) => {
   try {
     const response = await axios.post(
-      `${API_URL}api/main/raster/change-visual/${raster_id}`, 
+      `${API_URL}api/main/raster/change-visual/${raster_id}`,
       {
-        params:params,
+        params: params,
         visual_type: visual_type
       },
       {
         headers: {
           Accept: 'application/json',
           Authorization: `Bearer ${Cookies.get('access_token')}`
-          }
+        }
       }
     );
 
@@ -133,16 +154,20 @@ const changeVisual = async (rasters,setRasters,raster_id,visual_type,params) => 
     setRasters(updatedRasters)
     console.log(response)
 
-    if (response.status===201) {
+    if (response.status === 201) {
       M.toast(
-        {html: "Raster updated sucessfully.", 
-         classes: 'green rounded',
-         displayLength:5000});  
+        {
+          html: "Raster updated sucessfully.",
+          classes: 'green rounded',
+          displayLength: 5000
+        });
     } else {
       M.toast(
-        {html: "Error while trying to update raster", 
-         classes: 'red rounded',
-         displayLength:5000})
+        {
+          html: "Error while trying to update raster",
+          classes: 'red rounded',
+          displayLength: 5000
+        })
     }
 
 
@@ -150,7 +175,7 @@ const changeVisual = async (rasters,setRasters,raster_id,visual_type,params) => 
 
   } catch (error) {
     console.log(error)
-      // console.error('Error fetching GeoJSON data:', error);
+    // console.error('Error fetching GeoJSON data:', error);
   }
 }
 
@@ -177,92 +202,92 @@ export const StyleRasterControls = ({
     var elems = document.querySelectorAll('select');
     M.FormSelect.init(elems);
 
-}, [])
+  }, [])
 
-const handleSubmitComposition = () => {
+  const handleSubmitComposition = () => {
 
-  const visual_type = "composition"
+    const visual_type = "composition"
 
-  const params = {
-    R: selectedValues['R'],
-    G: selectedValues['G'],
-    B: selectedValues['B']
+    const params = {
+      R: selectedValues['R'],
+      G: selectedValues['G'],
+      B: selectedValues['B']
+    };
+
+    if (!selectedValues['R'] || !selectedValues['G'] || !selectedValues['B']) {
+      alert('Please select values for R, G, and B.');
+      return;
+    }
+
+    changeVisual(rasters, setRasters, raster_id, visual_type, params)
+
   };
 
-  if (!selectedValues['R'] || !selectedValues['G'] || !selectedValues['B']) {
-    alert('Please select values for R, G, and B.');
-    return;
-  }
+  const handleSubmitGrayscale = () => {
+    const visual_type = "grayscale"
+    const params = {
+      Gray: selectedValues['Gray'],
+    };
 
-  changeVisual(rasters,setRasters,raster_id,visual_type,params)
+    if (!selectedValues['Gray']) {
+      alert('Please select the band.')
+      return;
+    }
 
-};
+    changeVisual(rasters, setRasters, raster_id, visual_type, params)
 
-const handleSubmitGrayscale = () => {
-  const visual_type = "grayscale"
-  const params = {
-    Gray: selectedValues['Gray'],
   };
 
-  if (!selectedValues['Gray']) {
-    alert('Please select the band.')
-    return;
-  }
-
-  changeVisual(rasters,setRasters,raster_id,visual_type,params)
-
-};
-
-const selectItems = (key) => {
+  const selectItems = (key) => {
     return (
-      <select 
+      <select
         // ref={key} 
         // value={} 
         onChange={(e) => setSelectedValues({ ...selectedValues, [key]: e.target.value })}
         defaultValue={selectedValues[key]}
-        >
+      >
         <option value="" disabled>
           Choose your option
         </option>
         {Array.from({ length: bands }, (_, index) => (
           <option key={index} value={index}>
-            {`Band ${index+1}`}
+            {`Band ${index + 1}`}
           </option>
         ))}
       </select>
     );
-    }
+  }
 
-const tableComposition = (
-  <table className='centered'>
-    <thead>
-      <tr>
-        <th>Band</th>
-        <th>Options</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Red</td>
-        <td>
-          {selectItems("R")}
-        </td>
-      </tr>
-      <tr>
-        <td>Green</td>
-        <td>
-          {selectItems("G")}
-        </td>
-      </tr>
-      <tr>
-        <td>Blue</td>
-        <td>
-          {selectItems("B")}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-);
+  const tableComposition = (
+    <table className='centered'>
+      <thead>
+        <tr>
+          <th>Band</th>
+          <th>Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Red</td>
+          <td>
+            {selectItems("R")}
+          </td>
+        </tr>
+        <tr>
+          <td>Green</td>
+          <td>
+            {selectItems("G")}
+          </td>
+        </tr>
+        <tr>
+          <td>Blue</td>
+          <td>
+            {selectItems("B")}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
 
   const tableGray = (
     <table className='centered'>
@@ -283,36 +308,36 @@ const tableComposition = (
     </table>
   )
 
-  const bandsItem = 
-      <div className='collapsible-raster'>
-        <h5 className='center'>Display:</h5>
-        <ul className="collapsible">
-          <li>
-            <div className="collapsible-header">Composition</div>
-            <div className="collapsible-body">
-              {tableComposition}
-              <button onClick={handleSubmitComposition} type='submit' className="btn submit-display-button center">
-                Submit
-              </button>
-            </div>
-          </li>
-          <li>
-            <div className="collapsible-header">
-              Grayscale
-            </div>
-            <div className="collapsible-body">
-              {tableGray}
-              <button onClick={handleSubmitGrayscale} type='submit' className="btn submit-display-button center">
-                Submit
-              </button>
-            </div>
-          </li>
-          {/* <li>
+  const bandsItem =
+    <div className='collapsible-raster'>
+      <h5 className='center'>Display:</h5>
+      <ul className="collapsible">
+        <li>
+          <div className="collapsible-header">Composition</div>
+          <div className="collapsible-body">
+            {tableComposition}
+            <button onClick={handleSubmitComposition} type='submit' className="btn submit-display-button center">
+              Submit
+            </button>
+          </div>
+        </li>
+        <li>
+          <div className="collapsible-header">
+            Grayscale
+          </div>
+          <div className="collapsible-body">
+            {tableGray}
+            <button onClick={handleSubmitGrayscale} type='submit' className="btn submit-display-button center">
+              Submit
+            </button>
+          </div>
+        </li>
+        {/* <li>
             <div className="collapsible-header"><i className="material-icons">whatshot</i>Paletted</div>
             <div className="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
           </li> */}
-        </ul>
-      </div>
+      </ul>
+    </div>
 
   return (
     <div className='side-nav-item-dropdown-style z-depth-5'>
@@ -321,7 +346,7 @@ const tableComposition = (
           {zoomanddelete}
         </tbody>
       </table>
-      {bands>0 && bandsItem}
+      {bands > 0 && bandsItem}
     </div>
     // <div className='style-raster-class'>
     //   <div className='style-raster-item'>
@@ -385,9 +410,23 @@ const get_item_table = (title, inputType, value, name, geojson, updateStyle) => 
   )
 }
 var maxCharacters = 15
+
 export const StyleControls = ({ geojson, updateStyle, polygonStyles, zoomanddelete }) => {
-  const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
-  const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
+  console.log("StyleControls", geojson, geojson.geometry.type)
+
+  let isPoint = false;
+  let isLine = false;
+
+  if (geojson.type === 'FeatuteCollection') {
+    isPoint = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
+    isLine = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString"));
+  } else {
+    isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
+    isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
+  }
+
+  // const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
+  // const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
 
 
   const colorValue = polygonStyles[geojson.properties.id]?.fillColor || "#ff0000"
@@ -430,6 +469,7 @@ export const ListItemWithStyleAll = ({
   selectedFeatureAttributes,
   inmemory = false
 }) => {
+
 
   const dispatch = useDispatch();
   const [showStyleControls, setShowStyleControls] = useState(false);
@@ -478,6 +518,7 @@ export const ListItemWithStyleAll = ({
     handleDelete = () => handleDeleteFiles(dataset.properties.id, dispatch, datasets, setDatasets, delete_geojson, inmemory = inmemory, datatype = datatype)
     // handleDelete = () => handleDeleteGeojson(dataset.properties.id,dispatch,datasets,setDatasets,inmemory)
   }
+
   const zoomanddelete = <>
     <tr>
       <td>Zoom to</td>
@@ -521,11 +562,13 @@ export const ListItemWithStyleAll = ({
     // console.log("DATASET AAA",dataset)
     // handleDelete = () => handleDeleteGeojson(dataset.id,dispatch)
     dataset_id = dataset.properties.id
-    isPoint = dataset.geometry.type === "Point" || dataset.geometry.type === "MultiPoint";
+    console.log("DATASET", dataset)
+    console.log("dataset feature 0", dataset.features[0])
+    // isPoint = dataset.geometry.type === "Point" || dataset.geometry.type === "MultiPoint";
     dataset_name = dataset.properties.name
     img_icon = "/vector.png"
     styleControlItem = <StyleControls
-      geojson={dataset}
+      geojson={dataset.features[0]}
       updateStyle={updateStyle}
       polygonStyles={polygonStyles}
       zoomanddelete={zoomanddelete}
@@ -588,21 +631,16 @@ export const ListItemWithStyleAll = ({
           <div className="modal-content">
             <h4>Tabela de Atributos</h4>
             <table className="striped">
-              <thead>
-                <tr>
-
-                  {selectedAttributes && Object.keys(selectedAttributes).map((key) => (
-                    <th key={key}>{key}</th>
+              {selectedAttributes.features.map((feature, featureIndex) => (
+                <tbody key={featureIndex}>
+                  {Object.entries(feature.properties).map(([key, value], index) => (
+                    <tr key={index}>
+                      <th>{key}</th>
+                      <td>{value}</td>
+                    </tr>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {selectedAttributes && Object.values(selectedAttributes).map((value, index) => (
-                    <td key={index}>{value}</td>
-                  ))}
-                </tr>
-              </tbody>
+                </tbody>
+              ))}
             </table>
           </div>
           <div className="modal-footer">

@@ -3,12 +3,10 @@ import tileLayersData from './tileLayers.json';
 import defaultStyle from "./defaultStyle.json";
 import './MapComponent.css'
 import 'leaflet/dist/leaflet.css';
-import { useSelector, useDispatch } from 'react-redux';
 import {
   MapContainer,
   TileLayer,
   ZoomControl,
-  LayersControl,
   GeoJSON,
   ImageOverlay,
   ScaleControl,
@@ -16,7 +14,6 @@ import {
 import BasemapSelector from './BasemapSelector';
 import ToggleLayersSelector from './ToggleLayersSelector'
 import UpDelButttons from './UploadAndDeleteButtons2';
-import { handleDrawUpload } from './eventHandler2';
 import { leafletDefaultButtons } from './LeafletButtons';
 import L from 'leaflet';
 import 'leaflet-draw';
@@ -30,11 +27,7 @@ import 'leaflet.browser.print/dist/leaflet.browser.print.min.js';
 import 'leaflet-measure/dist/leaflet-measure.css';
 import 'leaflet-measure/dist/leaflet-measure.js';
 import bbox from '@turf/bbox';
-import GeoTIFF from 'geotiff';
-import proj4 from 'proj4';
 import { fromArrayBuffer } from 'geotiff';
-import { featureCollection } from '@turf/helpers';
-import * as turf from '@turf/turf';
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -45,35 +38,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
-
-const getBoundsIn4326 = (image) => {
-  try {
-    const geoAsciiParams = image.getFileDirectory().GeoAsciiParams;
-    const sourceCRS = extractProj4String(geoAsciiParams);
-    return convertToEPSG4326(image.getBoundingBox(), sourceCRS);
-  } catch (error) {
-    // console.error("Error getting CRS from GeoASCIIParams:", error);
-    console.log(error)
-    return image.getBoundingBox();
-  }
-};
-
-const extractProj4String = (geoAsciiParams) => {
-  const lines = geoAsciiParams.split('|');
-  const proj4Line = lines.find(line => line.includes('/ UTM') || line.includes('/ WGS'));
-  const proj4String = proj4Line ? proj4Line.split('|')[0].trim() : '';
-  return proj4String;
-};
-
-const convertToEPSG4326 = (tileCoordinates, sourceCRS) => {
-  const dest = new proj4.Proj('EPSG:4326'); // WGS 84
-  const source = proj4.Proj(sourceCRS);
-
-  const sw = proj4.transform(source, dest, proj4.toPoint([tileCoordinates[0], tileCoordinates[1]]));
-  const ne = proj4.transform(source, dest, proj4.toPoint([tileCoordinates[2], tileCoordinates[3]]));
-
-  return [[sw.y, sw.x], [ne.y, ne.x]];
-};
 
 export const MapComponent = ({
   rasters,
@@ -393,11 +357,6 @@ export const MapComponent = ({
           setUploading={setUploading}
         />
       )}
-      {/* <div className='custom-draw-button'>
-        <a onClick={toggleDrawControl} className='btn-floating waves-effect waves-light edit-geo-button' title='Draw'>
-          <i className="small material-icons">edit</i>
-        </a>
-      </div> */}
 
       <div className='home-button-map'>
         <a href="/" className="btn-floating waves-effect waves-light black">
@@ -407,31 +366,25 @@ export const MapComponent = ({
 
       <div id="attributesModal" className="modal">
         <div className="modal-content">
-          <h4>Tabela de Atributos</h4>
+          <h4>Tabela de Atributos2</h4>
           <table className="striped">
-            <thead>
-              <tr>
+            {flattenedData.map((item, index) => (
+              <tbody key={index}>
                 {uniqueKeys.map(key => (
-                  <th key={key}>{key}</th>
+                  <tr key={key}>
+                    <th>{key}</th>
+                    <td>{item[key] || '—'}</td>
+                  </tr>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {flattenedData.map((item, index) => (
-                <tr key={index}>
-                  {uniqueKeys.map(key => (
-                    <td key={key}>{item[key] || '—'}</td> // Exibe um traço se a chave não estiver presente no objeto
-                  ))}
-                </tr>
-              ))}
-            </tbody>
+              </tbody>
+            ))}
           </table>
-
         </div>
         <div className="modal-footer">
           <a href="#!" className="modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
       </div>
+
 
       {MapItem}
 

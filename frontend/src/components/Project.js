@@ -80,15 +80,12 @@ function Project() {
 
 
     useEffect(() => {
-        // console.log(projects)
         if (project_id && projects && project === null) {
             const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
             if (selectedProject) {
                 setProject(selectedProject);
-                //????????????????????????????????????????????????????
                 setGeoJSONs(parseGeoJSON(selectedProject.geojson))
                 setRasters(selectedProject.raster);
-                //????????????????????????????????????????????????????
             }
             else {
                 navigate(`/project`);
@@ -105,7 +102,6 @@ function Project() {
                 },
             });
     
-            // Optionally, you can update your projects list or navigate to a different page.
             await getProjects();
         } catch (error) {
             console.error('Error deleting project:', error);
@@ -128,7 +124,6 @@ function Project() {
             const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
             modalInstance.close();
 
-            //   setProjects(null);
             await getProjects();
 
             const selectedProjectId = parseInt(response.data.id, 10);
@@ -147,9 +142,8 @@ function Project() {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-
+            console.log("Response", response.data)
             setProjects(response.data)
-            // console.log("DADOS GETPROJECT", response.data)
         } catch (error) {
             console.error('Error fetching GeoJSON data:', error);
         }
