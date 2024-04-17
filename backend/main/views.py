@@ -643,12 +643,15 @@ class LeafletDrawUploadViewSet(viewsets.ViewSet):
             
             geometry = GEOSGeometry(json.dumps(geometry_feature))
             properties = geometry_data.get('properties', {})
+
+            next_group_id = GeoJSONFile.objects.latest('id').id + 1 if GeoJSONFile.objects.exists() else 1
             
             geometry_instance = GeoJSONFile(
                 name=request.data.get('name'),
                 user=request.user,
                 geojson=geometry,
-                attributes=properties
+                attributes=properties,
+                group_id=next_group_id
             )
             
             geometry_instance.save()
