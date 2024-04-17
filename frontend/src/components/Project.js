@@ -30,7 +30,7 @@ const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs}) => {
         });
     }, []);
 
-    return (
+    return ( //ERROR HERE:Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
         <>
             <MapComponent
                 rasters={rasters}

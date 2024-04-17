@@ -118,6 +118,7 @@ export const createGeojsons = (geojsons) => {
             // "bounds":bounds,
             "style": defaultStyle
         };
+        console.log("GEODATA",geojsonDict.data)
         result.push(geojsonDict);
     });
 

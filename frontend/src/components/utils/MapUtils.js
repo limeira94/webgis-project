@@ -94,7 +94,7 @@ export const parseGeoJSON = (data) => {
         type: 'FeatureCollection',
         features: [],
         properties: {
-          id: groupId,
+          id: item.id,
           group_id: groupId,
           name: item.name,
           attributes: item.attributes,
@@ -455,7 +455,7 @@ const get_item_table = (title, inputType, value, name, geojson, updateStyle) => 
 }
 var maxCharacters = 15
 
-export const StyleControls = ({ geojsondata, updateStyle, polygonStyles, zoomanddelete }) => {
+export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
 
   let isPoint = false;
   let isLine = false;
@@ -474,16 +474,16 @@ export const StyleControls = ({ geojsondata, updateStyle, polygonStyles, zoomand
   // const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
 
   
-  const colorValue = polygonStyles[geojson.properties.id]?.fillColor || "#ff0000"
+  const colorValue = geojsondata.style.fillColor//polygonStyles[geojson.properties.id]?.fillColor || "#ff0000"
   const colorRow = get_item_table("Color", "color", colorValue, "fillColor", geojson, updateStyle);
 
-  const lineColorValue = polygonStyles[geojson.properties.id]?.color || "#ff0000"
+  const lineColorValue = geojsondata.style.color//polygonStyles[geojson.properties.id]?.color || "#ff0000"
   const lineColorRow = get_item_table("Line Color", "color", lineColorValue, "color", geojson, updateStyle);
 
-  const widthValue = polygonStyles[geojson.properties.id]?.weight || 3
+  const widthValue = geojsondata.style.weight//polygonStyles[geojson.properties.id]?.weight || 3
   const widthRow = get_item_table("Line Size", "range", widthValue, "weight", geojson, updateStyle);
 
-  const opacityValue = polygonStyles[geojson.properties.id]?.fillOpacity || 0.65
+  const opacityValue = geojsondata.style.fillOpacity//polygonStyles[geojson.properties.id]?.fillOpacity || 0.65
   const opacityRow = get_item_table("Opacity", "range", opacityValue, "fillOpacity", geojson, updateStyle);
 
   return (
@@ -503,13 +503,11 @@ export const StyleControls = ({ geojsondata, updateStyle, polygonStyles, zoomand
 
 export const ListItemWithStyleAll = ({
   datasets,
-  polygonStyles,
   setDatasets,
   dataset,
   datatype,
   zoomToLayer,
   updateStyle,
-  selectedFeatureAttributes,
   inmemory = false
 }) => {
 
@@ -597,7 +595,6 @@ export const ListItemWithStyleAll = ({
     styleControlItem = <StyleControls
       geojsondata={dataset}//dataset.data.features[0]}
       updateStyle={updateStyle}
-      polygonStyles={polygonStyles}
       zoomanddelete={zoomanddelete}
     />
   }

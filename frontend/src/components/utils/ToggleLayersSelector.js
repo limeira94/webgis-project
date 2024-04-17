@@ -10,14 +10,6 @@ const ToggleLayersSelector = (
     setRasters,
     geojsons,
     setGeojsons,
-    polygonStyles,
-    setPolygonStyles,
-    visibleGeoJSONs,
-    rasterStyles,
-    setRasterStyles, //Criar meio para atualizar opacidade do raster
-    setVisibleGeoJSONs,
-    visibleRasters,
-    setVisibleRasters,
     geojsonLayerRefs,
     mapInstance,
     selectedFeatureAttributes,
@@ -26,13 +18,23 @@ const ToggleLayersSelector = (
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const updateStyle = (polygonId, styleKey, value) => {
-    setPolygonStyles(prevStyles => ({
-      ...prevStyles,
-      [polygonId]: {
-        ...prevStyles[polygonId],
-        [styleKey]: value
-      }
-    }));
+    setGeojsons(prevGeojsons => {
+      console.log("######################################")
+      return prevGeojsons.map(geojson => {
+        console.log("STYLE",geojson,geojson.data.properties.id,polygonId)
+        if (geojson.data.properties.id === polygonId) {
+          const updatedStyle = {
+            ...geojson.style,
+            [styleKey]: value
+          };
+          return {
+            ...geojson,
+            style: updatedStyle
+          };
+        }
+        return geojson;
+      });
+    });
   };
   
 
@@ -86,8 +88,6 @@ const ToggleLayersSelector = (
     if (mapInstance) {
       mapInstance.flyTo(newCenter, 15);
     }
-
-
   }
 
   return (

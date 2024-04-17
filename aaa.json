@@ -1,0 +1,42 @@
+[
+    {
+        "id": 33,
+        "vector": [],
+        "raster": [
+            {
+                "id": 229,
+                "name": "ICEYE_X12_QUICKLOOK_SLH_2155354_20230513T171831_modified5.tif",
+                "user": 2,
+                "raster": "https://s3.us-east-2.amazonaws.com/webgis.site.dev/static/raster/felipe/ICEYE_X12_QUICKLOOK_SLH_2155354_20230513T171831_modified5.tif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVHNKLCXS3CYC3DVY%2F20240417%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Date=20240417T184419Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=78f99c63ab37c2612bbbe86139e7c849dac105136497a31de627bb15cbe68208",
+                "tiles": "-47.55402877697244,-22.681892591249113,-47.4893943148551,-22.626619650439007",
+                "png": "https://s3.us-east-2.amazonaws.com/webgis.site.dev/static/raster/felipe/CEYE_X12_QUICKLOOK_SLH_2155354_20230513T171831_modified5.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVHNKLCXS3CYC3DVY%2F20240417%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Date=20240417T184419Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=741c53d38aa246fd737da6d4d816eaf1e9fcaf6265b86e33eadd7cdb13e8d6da",
+                "bands": 1
+            }
+        ],
+        "geojson": [
+            {
+                "id": 18616,
+                "name": "s",
+                "geojson": "SRID=4326;POLYGON ((-2.04895 51.117748, -2.04895 51.146187, -1.984406 51.146187, -1.984406 51.117748, -2.04895 51.117748))",
+                "attributes": {},
+                "group_id": 1
+            },
+            {
+                "id": 18617,
+                "name": "area1.geojson",
+                "geojson": "SRID=4326;MULTIPOLYGON (((42.488722419506615 17.74903920823866, 42.488722419506615 17.549039208238657, 42.28872241950661 17.549039208238657, 42.28872241950661 17.74903920823866, 42.488722419506615 17.74903920823866)))",
+                "attributes": {
+                    "X": 42.388722419506614,
+                    "Y": 17.64903920823866
+                },
+                "group_id": 18617
+            }
+        ],
+        "created_at": "3 months ago",
+        "updated_at": "33 minutes ago",
+        "name": "Projeto1",
+        "thumbnail": null,
+        "public": false,
+        "user": 2
+    }
+]

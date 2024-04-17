@@ -64,6 +64,7 @@ export const MapComponent = ({
 
 
   useEffect(() => {
+    console.log(geojsons)
     M.AutoInit();
   }, []);
 
@@ -293,14 +294,6 @@ export const MapComponent = ({
         setRasters={setRasters}
         geojsons={geojsons}
         setGeojsons={setGeoJSONs}
-        polygonStyles={polygonStyles}
-        setPolygonStyles={setPolygonStyles}
-        rasterStyles={rasterStyles}
-        setRasterStyles={setRasterStyles}
-        visibleGeoJSONs={visibleGeoJSONs}
-        setVisibleGeoJSONs={setVisibleGeoJSONs}
-        visibleRasters={visibleRasters}
-        setVisibleRasters={setVisibleRasters}
         geojsonLayerRefs={geojsonLayerRefs}
         mapInstance={mapInstance}
         selectedFeatureAttributes={selectedFeatureAttributes}
