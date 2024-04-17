@@ -151,7 +151,7 @@ export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJ
     if (name === null || name === "") {
       alert("You must provide a name to proceed with the upload.");
       setUploading(false);
-      return; // Interrompe a execução se nenhum nome for fornecido
+      return; 
     }
 
     const response = await dispatch(uploadDraw({
@@ -174,12 +174,9 @@ export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJ
         },
       };
 
-      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, feature]);
+      const geojson = createGeojsons([feature])
 
-      setVisibleGeoJSONs(prevVisible => ({
-        ...prevVisible,
-        [savedGeometry.id]: true
-      }));
+      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...geojson]);
 
       if (mapInstance) {
         const bounds = L.geoJSON(feature).getBounds();
@@ -200,38 +197,3 @@ export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJ
     setUploading(false);
   }
 };
-
-
-// export const handleDeleteClick = (setGeoJSONs) => {
-//   axios
-//     .delete(
-//       // `http://127.0.0.1:8000/api/main/geojson/`
-//       `${API_URL}api/main/geojson/`
-//     )
-//     .then((response) => {
-//       console.log('GeoJSON deleted successfully');
-//       setGeoJSONs([])
-//       // setGeoJSONs((prevGeojsons) => prevGeojsons.filter((geojson) => geojson.id !== id));
-//     })
-//     .catch((error) => {
-//       console.error('Error deleting GeoJSON:', error);
-//     });
-// };
-
-
-// export const handleDeleteRasterClick = (setRasters) => {
-//   axios
-//     .delete(
-//       // `${API_URL}api/main/rasters/delete_all/`
-//       // `${API_URL}api/main/delete_all_rasters/`
-//       `${API_URL}api/main/rasters/`
-//     )
-//     .then((response) => {
-//       console.log('All rasters deleted successfully');
-//       setRasters([])
-//     })
-//     .catch((error) => {
-//       console.error('Error deleting rasters:', error);
-//     });
-// };
-

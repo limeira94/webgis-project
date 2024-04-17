@@ -57,11 +57,18 @@ const handleDeleteFiles = (fileId, dispatch, datasets, setDatasets, functionDele
   else {
     dispatch(functionDelete(fileId))
       .then((action) => {
-        console.log("fileid", fileId)
+        // console.log("fileid", fileId)
         if (action.meta.requestStatus === 'fulfilled') {
           // const newRasters = rasters.filter(rasterItem => rasterItem.id !== rasterId);
           // setRasters(newRasters);
           removeItemFromList(datasets, setDatasets, fileId, datatype)
+          M.toast(
+            {
+              html: "File delete sucessfully",
+              classes: 'green rounded',
+              displayLength: 5000
+            });
+          
         } else {
           console.error(`Failed to delete ${datatype}`);
         }
@@ -519,11 +526,20 @@ export const ListItemWithStyleAll = ({
   }, []);
 
 
-  // const handleVisibilityChange = (id, isVisible) => {
   const handleVisibilityChange = (dataset) => {
     const updatedDataset = { ...dataset, visible: !dataset.visible };
-    setDatasets(prevDatasets => prevDatasets.map(item => (item.id === dataset.id ? updatedDataset : item)));
-  };
+    setDatasets(prevDatasets => {
+        return prevDatasets.map(item => {
+            
+            const comp = dataset.data.properties==undefined ? item.data.id === dataset.data.id : item.data.properties.id === dataset.data.properties.id 
+
+            if (comp) {
+                return updatedDataset;
+            }
+            return item;
+        });
+    });
+};
 
   const handleToggleClick = () => {
     setShowStyleControls(!showStyleControls);
@@ -619,7 +635,7 @@ export const ListItemWithStyleAll = ({
               }
               // onClick={() => handleVisibilityChange(dataset_id, !(visibleDatasets[dataset_id] ?? false))}
               onClick={() => handleVisibilityChange(dataset)}
-              // onChange={() => { }}
+              onChange={() => { }}
             />
             <span className='tooltipped flex-container' data-position="bottom" data-tooltip={dataset_name}>
               <img className="icon-data" src={url + img_icon} alt={`${datatype}-item`} />

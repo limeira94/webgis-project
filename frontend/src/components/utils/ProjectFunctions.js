@@ -60,10 +60,7 @@ export const handleNewProject = async (setProjects,inputValue,navigate) => {
     } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
     }
-
 }
-
-
 
 export const handleChooseOption = (id,navigate) => {
     const selectedProjectId = parseInt(id, 10);
@@ -131,9 +128,7 @@ export const setData = (setProject,setGeoJSONs,setRasters,project_id,projects,na
     const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
         if (selectedProject) {
             setProject(selectedProject);
-            // setGeoJSONs(parseGeoJSON(selectedProject.geojson))
             setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)))
-            // setRasters(selectedProject.raster);
             setRasters(createRasters(selectedProject.raster));
         }
         else {
