@@ -5,7 +5,7 @@ import React, { useState,useEffect } from 'react';
 //   useNavigate 
 // } from 'react-router-dom';
 // import { useDispatch } from 'react-redux';
-import { MapComponent } from './utils/MapComponent';
+import { MapComponent } from '../MapComponent';
 import M from 'materialize-css';
 
 function NewProject() {

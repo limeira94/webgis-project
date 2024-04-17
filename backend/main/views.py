@@ -616,7 +616,7 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
                 {
                     'message': 'Data saved successfully', 
                     'group_id': next_group_id,
-                    "savedGeoJson":GeoJsonFileSerializer(geo_instance).data
+                    "savedGeoJson":GeoJsonFileSerializer(geo_instance).data  #TODO: resolver esse problema aqui, adicionar todas as geometrias, não uma só
                 },
                     status=status.HTTP_201_CREATED,
             )

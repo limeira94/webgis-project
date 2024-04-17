@@ -86,7 +86,6 @@ const UpDelButttons = ({
                 await handleDrawUpload(
                     geometryJson,
                     setGeoJSONs,
-                    setVisibleGeoJSONs,
                     mapInstance,
                     dispatch,
                     projectid,
@@ -100,7 +99,6 @@ const UpDelButttons = ({
                 await handleDrawUpload(
                     geometryJson,
                     setGeoJSONs,
-                    setVisibleGeoJSONs,
                     mapInstance,
                     dispatch,
                     projectid,

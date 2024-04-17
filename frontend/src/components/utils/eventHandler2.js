@@ -142,7 +142,14 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
 };
 
 
-export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJSONs, mapInstance, dispatch, projectid, setUploading) => {
+export const handleDrawUpload = async (
+  geometryJson, 
+  setGeoJSONs, 
+  mapInstance, 
+  dispatch, 
+  projectid, 
+  setUploading
+  ) => {
   
   try {
     setUploading(true);
@@ -193,7 +200,8 @@ export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJ
     setUploading(false);
     console.error('Error during draw upload:', error);
     alert('There was an error uploading the drawing. Please try again.');
-  } finally {
+  } 
+  finally {
     setUploading(false);
   }
 };

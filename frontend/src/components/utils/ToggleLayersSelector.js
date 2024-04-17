@@ -19,9 +19,7 @@ const ToggleLayersSelector = (
 
   const updateStyle = (polygonId, styleKey, value) => {
     setGeojsons(prevGeojsons => {
-      console.log("######################################")
       return prevGeojsons.map(geojson => {
-        console.log("STYLE",geojson,geojson.data.properties.id,polygonId)
         if (geojson.data.properties.id === polygonId) {
           const updatedStyle = {
             ...geojson.style,

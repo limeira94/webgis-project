@@ -460,7 +460,9 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
   let isPoint = false;
   let isLine = false;
 
-  const geojson = geojsondata.data.features[0]
+  console.log(geojsondata)
+
+  const geojson = geojsondata.data.features === undefined ? geojsondata.data: geojsondata.data.features[0]
 
   if (geojson.type === 'FeatuteCollection') {
     isPoint = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));

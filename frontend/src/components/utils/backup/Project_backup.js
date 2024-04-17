@@ -14,8 +14,8 @@ import {
 import M from 'materialize-css';
 import axios from 'axios'
 import Cookies from 'js-cookie';
-import { MapComponent } from './utils/MapComponent';
-import { parseGeoJSON } from './utils/MapUtils';
+import { MapComponent } from '../MapComponent';
+import { parseGeoJSON } from '../MapUtils';
 
 import "./Project.css"
 
