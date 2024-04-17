@@ -613,8 +613,12 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
             project.save()
             
             return Response(
-                {'message': 'Data saved successfully', 'group_id': next_group_id},
-                status=status.HTTP_201_CREATED,
+                {
+                    'message': 'Data saved successfully', 
+                    'group_id': next_group_id,
+                    "savedGeoJson":GeoJsonFileSerializer(geo_instance).data
+                },
+                    status=status.HTTP_201_CREATED,
             )
             
         except Exception as e:

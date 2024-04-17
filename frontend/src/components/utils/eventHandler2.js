@@ -1,12 +1,12 @@
-import axios from 'axios';
-import { getCenterOfGeoJSON } from './MapUtils';
 import { upload_geojson, upload_raster, uploadDraw } from '../../features/data';
+import { createGeojsons } from './ProjectFunctions';
 import L from 'leaflet';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
 import M from 'materialize-css';
+import parse from 'wellknown';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
+// const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
 export const handleRaster = async (event, setRasters, mapInstance, dispatch, projectid, setUploading) => {
 
@@ -31,7 +31,13 @@ export const handleRaster = async (event, setRasters, mapInstance, dispatch, pro
     if (response.type === 'rasters/upload/fulfilled') {
       const { payload } = response;
 
-      const { bounds, message, raster, lat, lon } = payload;
+      const { 
+        // bounds, 
+        // message, 
+        raster, 
+        lat, 
+        lon 
+      } = payload;
 
       // const newRaster = raster
       // console.log(newRaster)
@@ -88,34 +94,29 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
     setUploading(true)
     const response = await dispatch(upload_geojson({ file, projectid }));
 
+    //TODO?: Aqui vai ser preciso verificar essa questão, porque ta usando redux do jeito errado.
     if (response.type === 'geojson/upload/fulfilled') {
       const { payload } = response;
       const { savedGeoJson } = payload;
 
-      // Certifique-se de que savedGeoJson é um array
       const features = Array.isArray(savedGeoJson) ? savedGeoJson : [savedGeoJson];
-
+      
+      //TODO: Need to double check if it works in all scenarios
       // Criar uma FeatureCollection com todas as features
-      const featuresCollection = featureCollection(features.map(feature => ({
+      const featuresCollection = featureCollection(features.map(feature => {
+        const parts = feature.geojson.split(';');
+        const geojson = parts.length > 1 ? parse(parts[1]) : null;
+        return({
         type: "Feature",
-        geometry: feature.geojson,
+        geometry: geojson,
         properties: {
           id: feature.id,
           name: feature.name,
           attributes: feature.attributes,
         },
-      })));
+      })}));
 
       const calculatedBounds = bbox(featuresCollection);
-
-      features.forEach(feature => {
-        const newGeoJSONId = feature.id;
-
-        setVisibleGeoJSONs(prevVisible => ({
-          ...prevVisible,
-          [newGeoJSONId]: true
-        }));
-      });
 
       if (mapInstance && calculatedBounds) {
         const boundsLatLng = L.latLngBounds(
@@ -125,7 +126,9 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
         mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
       }
 
-      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...featuresCollection.features]);
+      const geojsons = createGeojsons(featuresCollection.features)
+
+      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...geojsons])
       setUploading(false)
     } else {
       setUploading(false)
@@ -199,36 +202,36 @@ export const handleDrawUpload = async (geometryJson, setGeoJSONs, setVisibleGeoJ
 };
 
 
-export const handleDeleteClick = (setGeoJSONs) => {
-  axios
-    .delete(
-      // `http://127.0.0.1:8000/api/main/geojson/`
-      `${API_URL}api/main/geojson/`
-    )
-    .then((response) => {
-      console.log('GeoJSON deleted successfully');
-      setGeoJSONs([])
-      // setGeoJSONs((prevGeojsons) => prevGeojsons.filter((geojson) => geojson.id !== id));
-    })
-    .catch((error) => {
-      console.error('Error deleting GeoJSON:', error);
-    });
-};
+// export const handleDeleteClick = (setGeoJSONs) => {
+//   axios
+//     .delete(
+//       // `http://127.0.0.1:8000/api/main/geojson/`
+//       `${API_URL}api/main/geojson/`
+//     )
+//     .then((response) => {
+//       console.log('GeoJSON deleted successfully');
+//       setGeoJSONs([])
+//       // setGeoJSONs((prevGeojsons) => prevGeojsons.filter((geojson) => geojson.id !== id));
+//     })
+//     .catch((error) => {
+//       console.error('Error deleting GeoJSON:', error);
+//     });
+// };
 
 
-export const handleDeleteRasterClick = (setRasters) => {
-  axios
-    .delete(
-      // `${API_URL}api/main/rasters/delete_all/`
-      // `${API_URL}api/main/delete_all_rasters/`
-      `${API_URL}api/main/rasters/`
-    )
-    .then((response) => {
-      console.log('All rasters deleted successfully');
-      setRasters([])
-    })
-    .catch((error) => {
-      console.error('Error deleting rasters:', error);
-    });
-};
+// export const handleDeleteRasterClick = (setRasters) => {
+//   axios
+//     .delete(
+//       // `${API_URL}api/main/rasters/delete_all/`
+//       // `${API_URL}api/main/delete_all_rasters/`
+//       `${API_URL}api/main/rasters/`
+//     )
+//     .then((response) => {
+//       console.log('All rasters deleted successfully');
+//       setRasters([])
+//     })
+//     .catch((error) => {
+//       console.error('Error deleting rasters:', error);
+//     });
+// };
 

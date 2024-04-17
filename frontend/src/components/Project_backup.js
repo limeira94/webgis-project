@@ -1,26 +1,27 @@
 import React, { 
     useState, 
     useEffect, 
+    // useRef 
 } from 'react';
-import { 
-    getProjects,
-    handleNewProject,
-    handleDeleteOption,
-    handleChooseOption,
-    setData
-} from './utils/ProjectFunctions';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
+// import { getProjects } from './utils/get_infos';
 import { useParams } from 'react-router-dom';
 import {
     useNavigate
 } from 'react-router-dom';
+// import { useDispatch } from 'react-redux';
 import M from 'materialize-css';
+import axios from 'axios'
+import Cookies from 'js-cookie';
 import { MapComponent } from './utils/MapComponent';
+import { parseGeoJSON } from './utils/MapUtils';
 
 import "./Project.css"
 
-const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs}) => {
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
+
+const Map = ({ project,rasters, setRasters,geojsons, setGeoJSONs}) => {
 
     useEffect(() => {
         M.AutoInit();
@@ -46,6 +47,7 @@ const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs}) => {
 
 function Project() {
     const navigate = useNavigate();
+    // const dispatch = useDispatch();
 
     const { isAuthenticated, user, loading } = useSelector(state => state.user);
     const [project, setProject] = useState(null)
@@ -59,15 +61,102 @@ function Project() {
 
     useEffect(() => {
         M.AutoInit();
+        getProjects();
+    }, []);
+
+
+    useEffect(() => {
         if (project_id && projects && project === null) {
-            setData(setProject,setGeoJSONs,setRasters,project_id,projects,navigate)
-        }
-        else{
-            getProjects(setProjects);
+            const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
+            if (selectedProject) {
+                setProject(selectedProject);
+                setGeoJSONs(parseGeoJSON(selectedProject.geojson))
+                setRasters(selectedProject.raster);
+            }
+            else {
+                navigate(`/project`);
+            }
         }
     }, [project_id, project]);
 
+    const handleDeleteProject = async (projectId) => {
+        try {
+            const accessToken = Cookies.get('access_token');
+            await axios.delete(`${API_URL}api/main/projects/${projectId}/`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+    
+            await getProjects();
+        } catch (error) {
+            console.error('Error deleting project:', error);
+        }
+    };
+
+    const handleNewProject = async () => {
+        try {
+            const accessToken = Cookies.get('access_token');
+            const response = await axios.post(`${API_URL}api/main/projects/`,
+                {
+                    name: inputValue
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+            const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
+            modalInstance.close();
+
+            await getProjects();
+
+            const selectedProjectId = parseInt(response.data.id, 10);
+            navigate(`/project/${selectedProjectId}`);
+        } catch (error) {
+            console.error('Error fetching GeoJSON data:', error);
+        }
+
+    }
+
+    const getProjects = async () => {
+        try {
+            const accessToken = Cookies.get('access_token');
+            const response = await axios.get(`${API_URL}api/main/projects/`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            setProjects(response.data)
+        } catch (error) {
+            console.error('Error fetching GeoJSON data:', error);
+        }
+    }
+
     var url = process.env.PUBLIC_URL
+
+    const handleChooseOption = (id) => {
+        const selectedProjectId = parseInt(id, 10);
+        navigate(`/project/${selectedProjectId}`);
+        const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
+        modalInstance.close();
+    }
+
+    const handleDeleteOption = (id) => {
+        const selectedProjectId = parseInt(id, 10);
+      
+        const confirmDelete = window.confirm("Are you sure you want to delete this project? You will lost all your data.");
+      
+        if (confirmDelete) {
+          handleDeleteProject(selectedProjectId);
+          M.toast({
+            html: "Project deleted sucessfully",
+            classes: 'green rounded',
+            displayLength: 5000
+          });
+        }
+      };
 
     if (!isAuthenticated && !loading && user === null)
         return <Navigate to='/login' />;
@@ -96,10 +185,10 @@ function Project() {
                                             )}
                                             <span className="card-title">{project.name}</span>
                                             <a
-                                                onClick={() => handleChooseOption(project.id,navigate)}
+                                                onClick={() => handleChooseOption(project.id)}
                                                 className="btn-floating halfway-fab waves-effect waves-light red"><i className="material-icons">open_in_browser</i></a>
                                             <a
-                                                onClick={() => handleDeleteOption(project.id,setProjects)}
+                                                onClick={() => handleDeleteOption(project.id)}
                                                 className="btn-floating halfway-fab waves-effect waves-light red left"><i className="material-icons">delete</i></a>
                                         </div>
                                         <div className="card-content">
@@ -121,20 +210,19 @@ function Project() {
                                 onChange={(e) => setInputValue(e.target.value)}
                                 placeholder="Enter project text"
                             />
-                            <button onClick={
-                                // handleNewProject
-                                ()=>{handleNewProject(setProjects,inputValue,navigate)}
-
-                                } className="waves-effect waves-green btn-flat">
+                            <button onClick={handleNewProject} className="waves-effect waves-green btn-flat">
                                 Submit
                             </button>
                         </div>
                     ) : (
                         <a onClick={() => setProjectTextInput((prevValue) => !prevValue)} className="waves-effect waves-green btn-flat left">New Project</a>
                     )}
+
+
                     <a href="/" className="modal-close waves-effect waves-green btn-flat">Homepage</a>
                     <a className="modal-close waves-effect waves-green btn-flat">Close</a>
                 </div>
+
             </div>
 
             {project ? 
@@ -145,6 +233,8 @@ function Project() {
                 geojsons={geojsons}
                 setGeoJSONs={setGeoJSONs}
              /> : null}
+
+
         </>
     );
 }

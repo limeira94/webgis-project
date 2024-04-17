@@ -34,6 +34,7 @@ const ToggleLayersSelector = (
       }
     }));
   };
+  
 
   // const updateRasterStyle = (rasterId, styleKey, value) => {
   //   setRasterStyles(prevStyles => ({
@@ -74,8 +75,9 @@ const ToggleLayersSelector = (
   };
 
   const zoomToLayerRaster = (id) => {
-    const raster = rasters.find(rasterItem => rasterItem.id === id);
-    const boundingBox = raster.tiles
+    const raster = rasters.find(rasterItem => rasterItem.data.id === id);
+    console.log(raster)
+    const boundingBox = raster.data.tiles
     const [minLongitude, minLatitude, maxLongitude, maxLatitude] = boundingBox.split(',').map(Number);
     const centroidLongitude = (minLongitude + maxLongitude) / 2;
     const centroidLatitude = (minLatitude + maxLatitude) / 2;
@@ -92,32 +94,32 @@ const ToggleLayersSelector = (
     <>
       <ul id="slide-out" className="sidenav">
         <div className="sidebar-title">Your dataset:</div>
-        {geojsons.map((geojson) => (
+        {geojsons.map((geojson) => {
+          return (
           <ListItemWithStyleAll
-          // key={geojson.properties.id}
-          key={`$geojson-item-${geojson.properties.id}`}
+          key={`$geojson-item-${geojson.data.properties.id}`}
           datasets={geojsons}
           setDatasets={setGeojsons}
-          polygonStyles={polygonStyles}
+          polygonStyles={geojson.style}
+          // polygonStyles={polygonStyles}
           dataset={geojson}
-          visibleDatasets={visibleGeoJSONs}
-          setVisibleDatasets={setVisibleGeoJSONs}
           datatype={"geojson"}
           zoomToLayer={zoomToLayer}
           updateStyle={updateStyle}
           selectedFeatureAttributes={selectedFeatureAttributes}
           inmemory={inmemory}
           />
-        ))}
+          )
+
+          })}
+        
         {rasters.map((raster) => (
               <ListItemWithStyleAll
               // key={raster.id}
-              key={`$raster-item-${raster.id}`}
+              key={`$raster-item-${raster.data.id}`}
               datasets={rasters}
               setDatasets={setRasters}
               dataset={raster}
-              visibleDatasets={visibleRasters}
-              setVisibleDatasets={setVisibleRasters}
               datatype={"raster"}
               zoomToLayer={zoomToLayerRaster}
               inmemory={inmemory}

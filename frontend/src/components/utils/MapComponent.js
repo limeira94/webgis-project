@@ -27,8 +27,6 @@ import 'leaflet.browser.print/dist/leaflet.browser.print.min.js';
 import 'leaflet-measure/dist/leaflet-measure.css';
 import 'leaflet-measure/dist/leaflet-measure.js';
 import bbox from '@turf/bbox';
-import { fromArrayBuffer } from 'geotiff';
-
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -40,13 +38,13 @@ L.Icon.Default.mergeOptions({
 });
 
 export const MapComponent = ({
-  rasters,
-  geojsons,
-  setRasters,
-  setGeoJSONs,
-  projectid = null,
-  savetomemory = true
-}) => {
+    rasters,
+    geojsons,
+    setRasters,
+    setGeoJSONs,
+    projectid = null,
+    savetomemory = true
+  }) => {
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
   const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
   const [visibleRasters, setVisibleRasters] = useState({});
@@ -82,34 +80,7 @@ export const MapComponent = ({
     });
   }, [mapInstance, buttonsCreated, setButtonsCreated]);
 
-  const uploadToMemoryRaster = async (event) => {
-    const file = event.target.files[0];
-    event.target.value = null;
-
-    console.log(file);
-
-    if (file) {
-      const arrayBuffer = await file.arrayBuffer();
-      const tiff = await fromArrayBuffer(arrayBuffer);
-      const image = await tiff.getImage();
-      // const tileCoordinates = image.getTileCoordinates();
-      const tileCoordinates = image.getBoundingBox();
-      const [xmin, ymin, xmax, ymax] = tileCoordinates;
-      const bounds = [[ymin, xmin], [ymax, xmax]];
-      console.log(bounds)
-
-      // setRasters((prevRasters) => [
-      //   ...prevRasters,
-      //   {
-      //     id: prevRasters.length, // Adjust as needed
-      //     raster: URL.createObjectURL(file),
-      //     bounds,
-      //   },
-      // ]);
-
-      // console.log(rasters);
-    }
-  };
+  
 
   const uploadToMemory = (event) => {
     const file = event.target.files[0];
@@ -240,21 +211,13 @@ export const MapComponent = ({
 
       <TileLayer url={selectedTileLayer} />
 
-      {rasters.map((raster, index) => {
-        const isVisible = visibleRasters[raster.id];
-        const tileCoordinates = raster.tiles.split(',').map(Number);
-
-        const [xmin, ymin, xmax, ymax] = tileCoordinates;
-        const bounds = [[ymin, xmin], [ymax, xmax]];
-        // console.log(raster.raster)
-        return isVisible && (
+      {rasters.map((rasterdata, index) => {
+        const raster = rasterdata.data
+        return rasterdata.visible && (
           <ImageOverlay
-            // url={url + raster.raster}
-            // url={raster.raster}
             url={raster.png}
-            bounds={bounds}
-            opacity={(feature) => rasterStyles[feature.id] || defaultOpacity}
-            // opacity={1}
+            bounds={rasterdata.bounds}
+            opacity={rasterdata.style.opacity}
             zIndex={1000}
             key={index}
           />
@@ -269,10 +232,9 @@ export const MapComponent = ({
               zIndex={10}
             /> */}
 
-      {geojsons.map((geojson, index) => {
-        // console.log('geojsons', geojson)
-        const isVisible = visibleGeoJSONs[geojson.properties.id];
-        return isVisible && (
+      {geojsons.map((geojsondata, index) => {
+        const geojson = geojsondata.data
+        return geojsondata.visible && (
           <GeoJSON
             key={index}
             ref={(el) => {
@@ -284,7 +246,11 @@ export const MapComponent = ({
               type: 'FeatureCollection',
               features: [geojson],
             }}
-            style={(feature) => polygonStyles[feature.properties.id] || defaultStyle}
+            style={
+              // (feature) => polygonStyles[feature.properties.id] || defaultStyle
+              // (feature) => polygonStyles[feature.properties.id] || defaultStyle
+              geojsondata.style
+            }
 
             onEachFeature={(feature, layer) => {
               if (feature.geometry.type !== 'Point') {
@@ -320,7 +286,6 @@ export const MapComponent = ({
   return (
     <>
       {
-        // loading
         uploading
           ? loadingIcon : null}
       <ToggleLayersSelector

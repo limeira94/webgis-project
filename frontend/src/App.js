@@ -41,9 +41,6 @@ function App() {
         <Route path="/" exact element={<Home />} />
         <Route path="/map" exact element={<Map />} />
         <Route path="/login" exact element={<Login />} />
-        {/* <Route path="/map2" exact element={<Map2 />} /> */}
-        
-        {/* <Route path="/upload-file" exact element={<UploadMap />} /> */}
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/reset" element={<ResetPassword />}/>
@@ -51,7 +48,6 @@ function App() {
         <Route path="/project/:project_id" element={<Project />} />
         <Route path="/new-project" element={<NewProject />}/>
         <Route path="/about" element={<About/>}/>
-
       </Routes>
     </Router>
   );

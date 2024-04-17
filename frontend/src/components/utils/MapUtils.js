@@ -7,13 +7,43 @@ import './MapUtils.css'
 import M from 'materialize-css';
 import Cookies from 'js-cookie'
 import axios from 'axios';
+import { fromArrayBuffer } from 'geotiff';
+
+const uploadToMemoryRaster = async (event) => {
+  const file = event.target.files[0];
+  event.target.value = null;
+
+  console.log(file);
+
+  if (file) {
+    const arrayBuffer = await file.arrayBuffer();
+    const tiff = await fromArrayBuffer(arrayBuffer);
+    const image = await tiff.getImage();
+    // const tileCoordinates = image.getTileCoordinates();
+    const tileCoordinates = image.getBoundingBox();
+    const [xmin, ymin, xmax, ymax] = tileCoordinates;
+    const bounds = [[ymin, xmin], [ymax, xmax]];
+    console.log(bounds)
+
+    // setRasters((prevRasters) => [
+    //   ...prevRasters,
+    //   {
+    //     id: prevRasters.length, // Adjust as needed
+    //     raster: URL.createObjectURL(file),
+    //     bounds,
+    //   },
+    // ]);
+
+    // console.log(rasters);
+  }
+};
 
 const removeItemFromList = (datasets, setDatasets, fileId, datatype) => {
   if (datatype == "raster") {
-    const newDatasets = datasets.filter(datasetItem => datasetItem.id !== fileId);
+    const newDatasets = datasets.filter(datasetItem => datasetItem.data.id !== fileId);
     setDatasets(newDatasets);
   } else {
-    const newDatasets = datasets.filter(datasetItem => datasetItem.properties.id !== fileId);
+    const newDatasets = datasets.filter(datasetItem => datasetItem.data.properties.id !== fileId);
     setDatasets(newDatasets);
   }
 }
@@ -418,11 +448,12 @@ const get_item_table = (title, inputType, value, name, geojson, updateStyle) => 
 }
 var maxCharacters = 15
 
-export const StyleControls = ({ geojson, updateStyle, polygonStyles, zoomanddelete }) => {
-  console.log("StyleControls", geojson, geojson.geometry.type)
+export const StyleControls = ({ geojsondata, updateStyle, polygonStyles, zoomanddelete }) => {
 
   let isPoint = false;
   let isLine = false;
+
+  const geojson = geojsondata.data.features[0]
 
   if (geojson.type === 'FeatuteCollection') {
     isPoint = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
@@ -435,7 +466,7 @@ export const StyleControls = ({ geojson, updateStyle, polygonStyles, zoomanddele
   // const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
   // const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
 
-
+  
   const colorValue = polygonStyles[geojson.properties.id]?.fillColor || "#ff0000"
   const colorRow = get_item_table("Color", "color", colorValue, "fillColor", geojson, updateStyle);
 
@@ -468,8 +499,6 @@ export const ListItemWithStyleAll = ({
   polygonStyles,
   setDatasets,
   dataset,
-  visibleDatasets,
-  setVisibleDatasets,
   datatype,
   zoomToLayer,
   updateStyle,
@@ -485,48 +514,29 @@ export const ListItemWithStyleAll = ({
   const modalRef = useRef(null);
 
   useEffect(() => {
-    const options = {}; // Defina opções para o modal se necessário
+    const options = {};
     M.Modal.init(document.querySelector('.modal'), options);
   }, []);
 
 
-  const handleVisibilityChange = (id, isVisible) => {
-    setVisibleDatasets(prev => ({ ...prev, [id]: isVisible }));
+  // const handleVisibilityChange = (id, isVisible) => {
+  const handleVisibilityChange = (dataset) => {
+    const updatedDataset = { ...dataset, visible: !dataset.visible };
+    setDatasets(prevDatasets => prevDatasets.map(item => (item.id === dataset.id ? updatedDataset : item)));
   };
 
   const handleToggleClick = () => {
     setShowStyleControls(!showStyleControls);
   };
 
-  const handleOpenModal = () => {
-    if (modalRef.current) {
-      setSelectedAttributes(selectedFeatureAttributes);
-      console.log(selectedFeatureAttributes);
-      setIsModalOpen(true);
-      const instance = M.Modal.getInstance(modalRef.current);
-      instance.open();
-    }
-  };
-
-  const handleCloseModal = () => {
-    const instance = M.Modal.getInstance(modalRef.current);
-    instance.close();
-  };
-
   var url = process.env.PUBLIC_URL
 
-  let handleDelete, dataset_id, isPoint, dataset_name, img_icon, styleControlItem
-  if (datatype === "raster") {
-    // handleDelete = () => handleDeleteRaster(dataset.id,dispatch,datasets,setDatasets,inmemory)
+  let handleDelete, img_icon, styleControlItem,dataset_name
 
-    handleDelete = () => handleDeleteFiles(dataset.id, dispatch, datasets, setDatasets, delete_raster, inmemory = inmemory, datatype = datatype)
-    // handleDelete = () => handleDeleteFiles( fileId,dispatch,datasets,setDatasets,functionDelete,inmemory=false,type="raster")
-  }
-  else {
-    console.log("datasetdelete", dataset)
-    handleDelete = () => handleDeleteFiles(dataset.properties.id, dispatch, datasets, setDatasets, delete_geojson, inmemory = inmemory, datatype = datatype)
-    // handleDelete = () => handleDeleteGeojson(dataset.properties.id,dispatch,datasets,setDatasets,inmemory)
-  }
+  const deleteFunction = datatype === "raster" ? delete_raster : delete_geojson;
+  const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id ;
+
+  handleDelete = () => handleDeleteFiles(dataset_id, dispatch, datasets, setDatasets, deleteFunction, inmemory = inmemory, datatype = datatype)
 
   const zoomanddelete = <>
     <tr>
@@ -551,10 +561,7 @@ export const ListItemWithStyleAll = ({
   </>
 
   if (datatype === "raster") {
-    // handleDelete = () => handleDeleteRaster(dataset.id,dispatch,datasets,setDatasets)
-    dataset_id = dataset.id
-    isPoint = false
-    dataset_name = dataset.name
+    dataset_name = dataset.data.name
     img_icon = "/raster.png"
     styleControlItem = <StyleRasterControls
       rasters={datasets}
@@ -568,22 +575,16 @@ export const ListItemWithStyleAll = ({
     />
   }
   else {
-    // console.log("DATASET AAA",dataset)
-    // handleDelete = () => handleDeleteGeojson(dataset.id,dispatch)
-    dataset_id = dataset.properties.id
-    console.log("DATASET", dataset)
     // isPoint = dataset.geometry.type === "Point" || dataset.geometry.type === "MultiPoint";
-    dataset_name = dataset.properties.name
+    dataset_name = dataset.data.properties.name
     img_icon = "/vector.png"
-    
     styleControlItem = <StyleControls
-      geojson={dataset.features[0]}
+      geojsondata={dataset}//dataset.data.features[0]}
       updateStyle={updateStyle}
       polygonStyles={polygonStyles}
       zoomanddelete={zoomanddelete}
     />
   }
-  // console.log(datatype,dataset_name)
 
   return (
     <li
@@ -612,9 +613,13 @@ export const ListItemWithStyleAll = ({
             <input
               type="checkbox"
               className="filled-in"
-              checked={visibleDatasets[dataset_id] ?? false}
-              onClick={() => handleVisibilityChange(dataset_id, !(visibleDatasets[dataset_id] ?? false))}
-              onChange={() => { }}
+              checked={
+                dataset.visible
+                // visibleDatasets[dataset_id] ?? false
+              }
+              // onClick={() => handleVisibilityChange(dataset_id, !(visibleDatasets[dataset_id] ?? false))}
+              onClick={() => handleVisibilityChange(dataset)}
+              // onChange={() => { }}
             />
             <span className='tooltipped flex-container' data-position="bottom" data-tooltip={dataset_name}>
               <img className="icon-data" src={url + img_icon} alt={`${datatype}-item`} />
