@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios'
 import M from 'materialize-css';
 import { parseGeoJSON } from './MapUtils';
-import defaultStyle from "./defaultStyle.json";
+import defaultStyle from "../../configs/defaultStyle.json";
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 

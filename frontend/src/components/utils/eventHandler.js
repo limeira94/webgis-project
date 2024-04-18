@@ -6,8 +6,6 @@ import { featureCollection } from '@turf/helpers';
 import M from 'materialize-css';
 import parse from 'wellknown';
 
-// const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
-
 export const handleRaster = async (event, setRasters, mapInstance, dispatch, projectid, setUploading) => {
 
   event.preventDefault();
@@ -31,23 +29,13 @@ export const handleRaster = async (event, setRasters, mapInstance, dispatch, pro
     if (response.type === 'rasters/upload/fulfilled') {
       const { payload } = response;
 
-      const { 
-        // bounds, 
-        // message, 
-        raster, 
-        lat, 
-        lon 
+      const {
+        raster,
+        lat,
+        lon
       } = payload;
 
-      // const newRaster = raster
-      // console.log(newRaster)
-      // const newCenter = getCenterOfGeoJSON({
-      //   type: 'FeatureCollection',
-      //   features: newRaster,
-      // });
       var newCenter = L.latLng(lat, lon);
-
-      // setRasters(prevRasters => [...prevRasters, ...newRaster]);
 
       setRasters(prevRasters => [...prevRasters, raster]);
 
@@ -65,7 +53,6 @@ export const handleRaster = async (event, setRasters, mapInstance, dispatch, pro
     else {
       console.log("Response", response)
       var errorMessage = `${response.error.message}: ${response.payload.message}`
-      // console.log("VISH")
       M.toast({
         html: errorMessage,
         classes: 'red rounded',
@@ -81,7 +68,6 @@ export const handleRaster = async (event, setRasters, mapInstance, dispatch, pro
       classes: 'red rounded',
       displayLength: 10000
     });
-    // console.error(error);
   }
 };
 
@@ -100,21 +86,22 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
       const { savedGeoJson } = payload;
 
       const features = Array.isArray(savedGeoJson) ? savedGeoJson : [savedGeoJson];
-      
+
       //TODO: Need to double check if it works in all scenarios
       // Criar uma FeatureCollection com todas as features
       const featuresCollection = featureCollection(features.map(feature => {
         const parts = feature.geojson.split(';');
         const geojson = parts.length > 1 ? parse(parts[1]) : null;
-        return({
-        type: "Feature",
-        geometry: geojson,
-        properties: {
-          id: feature.id,
-          name: feature.name,
-          attributes: feature.attributes,
-        },
-      })}));
+        return ({
+          type: "Feature",
+          geometry: geojson,
+          properties: {
+            id: feature.id,
+            name: feature.name,
+            attributes: feature.attributes,
+          },
+        })
+      }));
 
       const calculatedBounds = bbox(featuresCollection);
 
@@ -143,14 +130,14 @@ export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapI
 
 
 export const handleDrawUpload = async (
-  geometryJson, 
-  setGeoJSONs, 
-  mapInstance, 
-  dispatch, 
-  projectid, 
+  geometryJson,
+  setGeoJSONs,
+  mapInstance,
+  dispatch,
+  projectid,
   setUploading
-  ) => {
-  
+) => {
+
   try {
     setUploading(true);
 
@@ -158,7 +145,7 @@ export const handleDrawUpload = async (
     if (name === null || name === "") {
       alert("You must provide a name to proceed with the upload.");
       setUploading(false);
-      return; 
+      return;
     }
 
     const response = await dispatch(uploadDraw({
@@ -200,7 +187,7 @@ export const handleDrawUpload = async (
     setUploading(false);
     console.error('Error during draw upload:', error);
     alert('There was an error uploading the drawing. Please try again.');
-  } 
+  }
   finally {
     setUploading(false);
   }

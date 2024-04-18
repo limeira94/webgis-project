@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { handleRaster, handleGeojson, handleDrawUpload } from './eventHandler2';
+import { handleRaster, handleGeojson, handleDrawUpload } from './eventHandler';
 import L from 'leaflet';
 import * as turf from '@turf/turf';
 import 'leaflet-draw';

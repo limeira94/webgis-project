@@ -4,7 +4,7 @@ import { register } from '../features/user';
 import NavbarComponent from './include/Navbar';
 import { Navigate } from 'react-router-dom';
 import M from 'materialize-css';
-import './Register.css'
+import '../styles/Register.css'
 
 function Register() {
   const dispatch = useDispatch();

@@ -3,7 +3,7 @@ import parse from 'wellknown';
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import data, { delete_geojson, delete_raster } from '../../features/data';
-import './MapUtils.css'
+import '../../styles/MapUtils.css'
 import M from 'materialize-css';
 import Cookies from 'js-cookie'
 import axios from 'axios';

@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from './include/Navbar';
 import Footer from './include/Footer';
-import './About.css';
+import '../styles/About.css';
 
 
 var url = process.env.PUBLIC_URL

@@ -18,7 +18,7 @@ import {
 import M from 'materialize-css';
 import { MapComponent } from './utils/MapComponent';
 
-import "./Project.css"
+import "../styles/Project.css"
 
 const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs}) => {
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import tileLayersData from './tileLayers.json';
-import defaultStyle from "./defaultStyle.json";
-import './MapComponent.css'
+import tileLayersData from '../../configs/tileLayers.json';
+import '../../styles/MapComponent.css'
 import 'leaflet/dist/leaflet.css';
 import {
   MapContainer,
@@ -46,9 +45,7 @@ export const MapComponent = ({
     savetomemory = true
   }) => {
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
-  const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({});
-  const [visibleRasters, setVisibleRasters] = useState({});
-  const [polygonStyles, setPolygonStyles] = useState({});
+  const [visibleGeoJSONs, setVisibleGeoJSONs] = useState({}); 
   const [rasterStyles, setRasterStyles] = useState({});
   const [buttonsCreated, setButtonsCreated] = useState(false);
   const geojsonLayerRefs = useRef({});
@@ -60,8 +57,6 @@ export const MapComponent = ({
 
   const fileInputRef = useRef(null);
   const fileInputRasterRef = useRef(null);
-  const defaultOpacity = 1
-
 
   useEffect(() => {
     console.log(geojsons)
@@ -82,7 +77,6 @@ export const MapComponent = ({
   }, [mapInstance, buttonsCreated, setButtonsCreated]);
 
   
-
   const uploadToMemory = (event) => {
     const file = event.target.files[0];
     event.target.value = null;
@@ -225,14 +219,6 @@ export const MapComponent = ({
         );
       })}
 
-      {/* in memory raster */}
-      {/* <ImageOverlay
-              url={'file:///media/felipe/3dbf30eb-9bce-46d8-a833-ec990ba72625/Documentos/projetos_pessoais/webgis-project/backend/tests/data/rasters/SAR/ICEYE_X12_QUICKLOOK_SLH_2155354_20230513T171831_modified5.tif'}
-              bounds={bounds}
-              opacity={1}
-              zIndex={10}
-            /> */}
-
       {geojsons.map((geojsondata, index) => {
         const geojson = geojsondata.data
         return geojsondata.visible && (
@@ -248,8 +234,6 @@ export const MapComponent = ({
               features: [geojson],
             }}
             style={
-              // (feature) => polygonStyles[feature.properties.id] || defaultStyle
-              // (feature) => polygonStyles[feature.properties.id] || defaultStyle
               geojsondata.style
             }
 
@@ -274,7 +258,6 @@ export const MapComponent = ({
       <FullscreenControl className="custom-fullscreen-control" position="bottomright" />
       <ZoomControl position="bottomright" />
     </MapContainer>
-
   </>
 
 
@@ -342,8 +325,7 @@ export const MapComponent = ({
           <a href="#!" className="modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
       </div>
-
-
+      
       {MapItem}
 
     </>
