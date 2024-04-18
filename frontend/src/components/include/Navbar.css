@@ -1,6 +1,19 @@
 .nav-wg{
     /* background-color: mediumpurple; */
-    background-color: black;
+    background-color: rgb(255, 255, 255);
     /* background-color: white; */
     
+}
+
+.language-selector{
+    top: 15px !important;
+}
+
+.icon-drop{
+    /* max-height: 50px; */
+    max-width: 50px;
+}
+
+.icon-nav-lan{
+    max-height: 64px;
 }

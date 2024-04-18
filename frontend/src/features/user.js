@@ -109,7 +109,7 @@ export const login = createAsyncThunk(
         });
 
         try {
-            const res = await fetch(`${process.env.REACT_APP_API_URL}api/main/token/`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/token/`, {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
@@ -147,7 +147,7 @@ export const checkAuth = createAsyncThunk(
 				token:Cookies.get('refresh_token'),//access
 			});
 
-			const res = await fetch(`${process.env.REACT_APP_API_URL}api/main/token/verify/`,{
+			const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/token/verify/`,{
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
