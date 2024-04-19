@@ -459,9 +459,7 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
 
   let isPoint = false;
   let isLine = false;
-
-  console.log(geojsondata)
-
+  
   const geojson = geojsondata.data.features === undefined ? geojsondata.data: geojsondata.data.features[0]
 
   if (geojson.type === 'FeatuteCollection') {

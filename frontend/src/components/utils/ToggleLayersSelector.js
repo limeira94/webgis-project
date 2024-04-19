@@ -34,17 +34,6 @@ const ToggleLayersSelector = (
       });
     });
   };
-  
-
-  // const updateRasterStyle = (rasterId, styleKey, value) => {
-  //   setRasterStyles(prevStyles => ({
-  //     ...prevStyles,
-  //     [polygonId]: {
-  //       ...prevStyles[polygonId],
-  //       [styleKey]: value
-  //     }
-  //   }));
-  // };
 
   useEffect(()=>{
     var options = {}
@@ -76,7 +65,6 @@ const ToggleLayersSelector = (
 
   const zoomToLayerRaster = (id) => {
     const raster = rasters.find(rasterItem => rasterItem.data.id === id);
-    console.log(raster)
     const boundingBox = raster.data.tiles
     const [minLongitude, minLatitude, maxLongitude, maxLatitude] = boundingBox.split(',').map(Number);
     const centroidLongitude = (minLongitude + maxLongitude) / 2;
@@ -99,7 +87,6 @@ const ToggleLayersSelector = (
           datasets={geojsons}
           setDatasets={setGeojsons}
           polygonStyles={geojson.style}
-          // polygonStyles={polygonStyles}
           dataset={geojson}
           datatype={"geojson"}
           zoomToLayer={zoomToLayer}
@@ -113,7 +100,6 @@ const ToggleLayersSelector = (
         
         {rasters.map((raster) => (
               <ListItemWithStyleAll
-              // key={raster.id}
               key={`$raster-item-${raster.data.id}`}
               datasets={rasters}
               setDatasets={setRasters}

@@ -12,7 +12,6 @@ const UpDelButttons = ({
     setGeoJSONs,
     setRasters,
     mapInstance,
-    setVisibleGeoJSONs,
     projectid,  //TODO: Change the way to do this, maybe running two different routes
     setUploading
 }) => {
@@ -63,9 +62,8 @@ const UpDelButttons = ({
         drawControlRef.current = drawControl;
 
         mapInstance.on(L.Draw.Event.CREATED, async (e) => {
-            console.log('Draw event:', e);
             let layer = e.layer;
-            editableLayers.addLayer(layer);
+            // editableLayers.addLayer(layer);
             if (layer instanceof L.Circle) {
                 const center = layer.getLatLng();
                 const radius = layer.getRadius();
@@ -94,7 +92,6 @@ const UpDelButttons = ({
             } else {
 
                 const geometryJson = layer.toGeoJSON();
-                console.log('Geometry JSON:', geometryJson)
 
                 await handleDrawUpload(
                     geometryJson,
@@ -112,7 +109,6 @@ const UpDelButttons = ({
             layers.eachLayer((layer) => {
                 const updateGeometryAsync = async () => {
                     const geometryJson = layer.toGeoJSON();
-                    console.log('Geometry JSON after edit:', geometryJson);
                     
                     // Supondo que você tenha o ID e uma função updateGeometry para chamar
                     const geometryId = layer.feature?.properties?.id;
@@ -187,7 +183,6 @@ const UpDelButttons = ({
                                     event,
                                     //    getCenterOfGeoJSON, 
                                     setGeoJSONs,
-                                    setVisibleGeoJSONs,
                                     mapInstance,
                                     dispatch,
                                     projectid,

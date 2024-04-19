@@ -71,7 +71,7 @@ export const handleRaster = async (event, setRasters, mapInstance, dispatch, pro
   }
 };
 
-export const handleGeojson = async (event, setGeoJSONs, setVisibleGeoJSONs, mapInstance, dispatch, projectid, setUploading) => {
+export const handleGeojson = async (event, setGeoJSONs,mapInstance, dispatch, projectid, setUploading) => {
   event.preventDefault();
   const file = event.target.files[0];
   event.target.value = null;

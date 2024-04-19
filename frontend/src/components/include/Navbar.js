@@ -55,19 +55,21 @@ const Navbar = () => {
 
 
     },[])
-    const user = useSelector((state) => state.user);
+    // const user = useSelector((state) => state.user);
 	const { isAuthenticated } = useSelector(state => state.user);
 
     
 
     var link_itens = 
     <>
-        <li><a href="/map">Go to Map</a></li>
+        <li><a className='black-text' href="/map">Go to Map</a></li>
     </>
 
     var guest_links = ()=>{
-        const loginText = (ln==="en") ? "Login" : "Acessar"
-        const registerText = (ln==="en") ? "Register" : "Cadastrar"
+        // const loginText = (ln==="en") ? "Login" : "Acessar"
+        // const registerText = (ln==="en") ? "Register" : "Cadastrar"
+        const loginText = "Login" 
+        const registerText = "Register"
 
         return (
     <>

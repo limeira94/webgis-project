@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import NavbarComponent from './include/Navbar';
+import NavbarComponent from '../../include/Navbar';
 import { useSelector } from 'react-redux';
 import { 
   useNavigate 
