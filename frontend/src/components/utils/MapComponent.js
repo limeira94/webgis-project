@@ -201,7 +201,7 @@ export const MapComponent = ({
 
       <div id="attributesModal" className="modal">
         <div className="modal-content">
-          <h4>Tabela de Atributos2</h4>
+          <h4>Tabela de Atributos</h4>
           <table className="striped">
             {flattenedData.map((item, index) => (
               <tbody key={index}>
