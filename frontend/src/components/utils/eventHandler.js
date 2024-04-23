@@ -3,6 +3,7 @@ import { createGeojsons } from './ProjectFunctions';
 import L from 'leaflet';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
+import { parseGeoJSON } from './MapUtils';
 import M from 'materialize-css';
 import parse from 'wellknown';
 
@@ -84,26 +85,27 @@ export const handleGeojson = async (event, setGeoJSONs,mapInstance, dispatch, pr
     if (response.type === 'geojson/upload/fulfilled') {
       const { payload } = response;
       const { savedGeoJson } = payload;
-      console.log("Saved GeoJson", savedGeoJson)
       const features = Array.isArray(savedGeoJson) ? savedGeoJson : [savedGeoJson];
 
-      //TODO: Need to double check if it works in all scenarios
-      // Criar uma FeatureCollection com todas as features
-      const featuresCollection = featureCollection(features.map(feature => {
-        const parts = feature.geojson.split(';');
-        const geojson = parts.length > 1 ? parse(parts[1]) : null;
-        return ({
-          type: "Feature",
-          geometry: geojson,
-          properties: {
-            id: feature.id,
-            name: feature.name,
-            attributes: feature.attributes,
-          },
-        })
-      }));
+      // //TODO: Need to double check if it works in all scenarios
+      // // Criar uma FeatureCollection com todas as features
 
-      const calculatedBounds = bbox(featuresCollection);
+      // const featuresCollection = featureCollection(features.map(feature => {
+      //   const parts = feature.geojson.split(';');
+      //   const geojson = parts.length > 1 ? parse(parts[1]) : null;
+      //   return ({
+      //     type: "Feature",
+      //     geometry: geojson,
+      //     properties: {
+      //       id: feature.id,
+      //       name: feature.name,
+      //       attributes: feature.attributes,
+      //     },
+      //   })
+      // }));
+
+      const geojsons = createGeojsons(parseGeoJSON(features))
+      const calculatedBounds = bbox(geojsons[0].data);
 
       if (mapInstance && calculatedBounds) {
         const boundsLatLng = L.latLngBounds(
@@ -112,8 +114,7 @@ export const handleGeojson = async (event, setGeoJSONs,mapInstance, dispatch, pr
         );
         mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
       }
-
-      const geojsons = createGeojsons(featuresCollection.features)
+      // const geojsons = createGeojsons(featuresCollection.features)
 
       setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...geojsons])
       setUploading(false)

@@ -50,7 +50,7 @@ export const MapComponent = ({
   const [mapInstance, setMapInstance] = useState(null);
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] = useState(null);
   const [modalData, setModalData] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false)
 
   const geojsonLayerRefs = useRef({});

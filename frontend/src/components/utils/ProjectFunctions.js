@@ -14,6 +14,7 @@ export const getProjects = async (setProjects) => {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
+        console.log("AAAA Project",response.data)
         setProjects(response.data)
     } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
@@ -126,6 +127,7 @@ export const createGeojsons = (geojsons) => {
 
 export const setData = (setProject,setGeoJSONs,setRasters,project_id,projects,navigate) => {
     const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
+    console.log("SET DATA")
         if (selectedProject) {
             setProject(selectedProject);
             setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)))

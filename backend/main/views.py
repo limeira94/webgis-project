@@ -264,7 +264,7 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
             filename = geojson_file.name if geojson_file else 'Uploaded_File'
             
             next_group_id = GeoJSONFile.objects.latest('id').id + 1 if GeoJSONFile.objects.exists() else 1
-            # all_geo_instances = []
+            all_geo_instances = []
             for feature in geojson_data['features']:
                 geometry = feature.get('geometry')
                 properties = feature.get('properties', {})
@@ -280,17 +280,17 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
                 )
                 geo_instance.save()
                 project.geojson.add(geo_instance.id)
-                # all_geo_instances.append(geo_instance)
+                all_geo_instances.append(geo_instance)
             
             project.save()
-            # serializer = GeoJsonFileSerializer(all_geo_instances, many=True)
+            serializer = GeoJsonFileSerializer(all_geo_instances, many=True)
             
             return Response(
                 {
                     'message': 'Data saved successfully', 
                     'group_id': next_group_id,
-                    "savedGeoJson": GeoJsonFileSerializer(geo_instance).data
-                    # "savedGeoJson": serializer.data  #TODO: resolver esse problema aqui, adicionar todas as geometrias, não uma só
+                    # "savedGeoJson": GeoJsonFileSerializer(geo_instance).data
+                    "savedGeoJson": serializer.data  #TODO: resolver esse problema aqui, adicionar todas as geometrias, não uma só
                 },
                     status=status.HTTP_201_CREATED,
             )

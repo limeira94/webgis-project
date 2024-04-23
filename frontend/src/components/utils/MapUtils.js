@@ -80,6 +80,7 @@ const handleDeleteFiles = (fileId, dispatch, datasets, setDatasets, functionDele
 }
 
 export const parseGeoJSON = (data) => {
+  console.log("DATA",data)
   const grouped = data.reduce((acc, item) => {
     const parts = item.geojson.split(';');
 
@@ -113,7 +114,6 @@ export const parseGeoJSON = (data) => {
     });
     return acc;
   }, {});
-
   return Object.values(grouped);
 };
 
