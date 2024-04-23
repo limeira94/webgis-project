@@ -45,7 +45,12 @@ if DEBUG:
     CORS_ALLOWED_ORIGINS.append('http://127.0.0.1:3000')
     CORS_ALLOWED_ORIGINS.append('http://localhost:3000')
     CORS_ALLOWED_ORIGINS.append('http://localhost:8000')
-    CORS_ORIGIN_ALLOW_ALL = True
+    # CORS_ORIGIN_ALLOW_ALL = True
+
+SESSION_COOKIE_SECURE = config('DEBUG', default=True, cast=bool)
+CSRF_COOKIE_SECURE = config('DEBUG', default=True, cast=bool)
+SECURE_SSL_REDIRECT = config('DEBUG', default=False, cast=bool)
+CORS_ALLOW_ALL_ORIGINS = config('DEBUG', default=True, cast=bool)
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
@@ -177,7 +182,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
-    'ALGORITHM': 'HS256',
+    'ALGORITHM': 'HS256',config('USE_S3') == 'True'
     'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
     'AUTH_HEADER_TYPES': ('Bearer',),

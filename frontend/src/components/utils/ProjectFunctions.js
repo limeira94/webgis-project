@@ -38,11 +38,7 @@ export const handleDeleteProject = async (projectId,setProjects) => {
 
 export const handleNewProject = async (setProjects,inputValue,navigate) => {
     try {
-        console.log(setProjects)
-        console.log(inputValue)
-        console.log(navigate)
         const accessToken = Cookies.get('access_token');
-        console.log(accessToken)
         const response = await axios.post(`${API_URL}api/main/projects/`,
             {
                 name: inputValue
@@ -56,15 +52,11 @@ export const handleNewProject = async (setProjects,inputValue,navigate) => {
 
         const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
         modalInstance.close();
-        console.log("MODAL")
 
         await getProjects(setProjects);
-        console.log("SET PROJECT")
 
         const selectedProjectId = parseInt(response.data.id, 10);
-        console.log("PARSEINT")
         navigate(`/project/${selectedProjectId}`);
-        console.log("NAVIGATE")
     } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
     }
