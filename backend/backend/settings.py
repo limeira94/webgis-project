@@ -45,7 +45,6 @@ if DEBUG:
     CORS_ALLOWED_ORIGINS.append('http://127.0.0.1:3000')
     CORS_ALLOWED_ORIGINS.append('http://localhost:3000')
     CORS_ALLOWED_ORIGINS.append('http://localhost:8000')
-    # CORS_ORIGIN_ALLOW_ALL = True
 
 SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True, cast=bool)
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=True, cast=bool)
@@ -106,10 +105,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -125,12 +120,6 @@ DATABASES = {
     #     'NAME': 'demodatabase',
     # },
 }
-
-# DATABASE_ROUTERS = ['main.database_router.MongoRouter']
-
-
-# Password validation
-# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -148,20 +137,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 ###########################################################################33333
-# Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-# USE_L10N = True
 USE_TZ = True
-
-
-
 ##########################################################################
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -171,24 +152,26 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
 
+if DEBUG==True:
+    REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] += [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
-    'ALGORITHM': 'HS256',config('USE_S3') == 'True'
+    'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
     'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
-    # 'AUTH_TOKEN_CLASSES': ('simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
@@ -200,35 +183,13 @@ GEOSERVER = {
     'PASSWORD': config('GEOSERVER_PASSWORD_WG', default='geoserver'),
 }
 
-# GEOSERVER_URL = config('GEOSERVER_URL_WG', default='http://localhost:8080/')
-# GEOSERVER_WORKSPACE = config('GEOSERVER_WORKSPACE_WG', default='')
-# GEOSERVER_USERNAME = config('GEOSERVER_USERNAME_WG', default='admin')
-# GEOSERVER_PASSWORD = config('GEOSERVER_PASSWORD_WG', default='geoserver')
-
-
-# EMAIL
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'  #'smtp-mail.outlook.com'
-EMAIL_HOST_USER = os.environ.get('EMAIL_USER')  # secrets['email_gmail']
-EMAIL_HOST_PASSWORD = os.environ.get(
-    'EMAIL_PASS_WEBGIS'
-)  # secrets['pass_gmail']
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS_WEBGIS') 
 EMAIL_PORT = 587
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
-
-#AWS:
-##############################    AWS    ##############################
-##########################################################################
-# STORAGES = {
-#     "default": {
-#         "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
-#     },
-#     "staticfiles": {
-#         "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
-#     },
-# }
 
 USE_S3 = config('USE_S3') == 'True'
 if USE_S3:
