@@ -21,7 +21,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'build')
 
 ALLOWED_HOSTS = [
-    'webgis.site'
+    'webgis.site',
+    'websig.com.br',
 ]
 
 if DEBUG:
@@ -32,10 +33,12 @@ if DEBUG:
 
 CORS_ALLOWED_ORIGINS = [
     'https://webgis.site',
+    'http://websig.com.br',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://webgis.site'
+    'https://webgis.site',
+    'http://websig.com.br',
     ]
 
 if DEBUG:

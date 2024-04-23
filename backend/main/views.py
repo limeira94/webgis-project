@@ -15,6 +15,7 @@ from shapely.geometry import box
 
 class ProjectList(APIView):
     def post(self, request):
+        print(request.user.is_authenticated)
         if request.user.is_authenticated:
             data = request.data
             data["user"] = request.user.pk

@@ -47,7 +47,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "relocate": "react-scripts build && rm -rf ../backend/build && mv -f build ../backend"
+    "relocate": "react-scripts build && rm -rf ../backend/build && mv -f build ../backend",
+    "build:prod": "cp .env.development.local .env && npm run relocate",
+    "build-ricardo:prod": "cp .env.production.ricardo .env && npm run relocate"
   },
   "eslintConfig": {
     "extends": [

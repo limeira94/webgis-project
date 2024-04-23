@@ -12,6 +12,7 @@ export const register = createAsyncThunk(
         });
 
         try {
+			console.log("process.env.REACT_APP_API_URL",process.env.REACT_APP_API_URL)
             const res = await fetch(
 				`${process.env.REACT_APP_API_URL}api/users/register/`
 			,{

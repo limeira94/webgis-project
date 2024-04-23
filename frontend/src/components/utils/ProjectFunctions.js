@@ -14,7 +14,6 @@ export const getProjects = async (setProjects) => {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        console.log("AAAA Project",response.data)
         setProjects(response.data)
     } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
@@ -39,7 +38,11 @@ export const handleDeleteProject = async (projectId,setProjects) => {
 
 export const handleNewProject = async (setProjects,inputValue,navigate) => {
     try {
+        console.log(setProjects)
+        console.log(inputValue)
+        console.log(navigate)
         const accessToken = Cookies.get('access_token');
+        console.log(accessToken)
         const response = await axios.post(`${API_URL}api/main/projects/`,
             {
                 name: inputValue
@@ -49,15 +52,19 @@ export const handleNewProject = async (setProjects,inputValue,navigate) => {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
+        console.log("RESPONSE",response)
 
         const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
         modalInstance.close();
+        console.log("MODAL")
 
         await getProjects(setProjects);
+        console.log("SET PROJECT")
 
         const selectedProjectId = parseInt(response.data.id, 10);
-        
+        console.log("PARSEINT")
         navigate(`/project/${selectedProjectId}`);
+        console.log("NAVIGATE")
     } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
     }
@@ -127,7 +134,6 @@ export const createGeojsons = (geojsons) => {
 
 export const setData = (setProject,setGeoJSONs,setRasters,project_id,projects,navigate) => {
     const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
-    console.log("SET DATA")
         if (selectedProject) {
             setProject(selectedProject);
             setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)))
