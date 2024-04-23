@@ -47,10 +47,10 @@ if DEBUG:
     CORS_ALLOWED_ORIGINS.append('http://localhost:8000')
     # CORS_ORIGIN_ALLOW_ALL = True
 
-SESSION_COOKIE_SECURE = config('DEBUG', default=True, cast=bool)
-CSRF_COOKIE_SECURE = config('DEBUG', default=True, cast=bool)
-SECURE_SSL_REDIRECT = config('DEBUG', default=False, cast=bool)
-CORS_ALLOW_ALL_ORIGINS = config('DEBUG', default=True, cast=bool)
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True, cast=bool)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=True, cast=bool)
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
