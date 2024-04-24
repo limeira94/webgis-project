@@ -4,28 +4,33 @@ from pathlib import Path
 
 from decouple import config
 
+import mimetypes
+mimetypes.add_type("text/css", ".css", True)
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='mydefaultsecretkey')
 DEBUG = config('DEBUG', default=False, cast=bool)
+
+TESTING = config('TEST', default=False)
+if TESTING:
+    print(TESTING)
+    print("DEBUG =",DEBUG)
 
 GDAL_LIBRARY_PATH = config('GDAL_LIBRARY_PATH', default='')
 GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH', default='')
 
 SETTINGS_MODULE = 'backend.settings'
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-# MEDIA_URL = '/build/' # para windowns
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'build')
-
 ALLOWED_HOSTS = [
     'webgis.site',
     'websig.com.br',
 ]
 
-if DEBUG:
+ALLOW_LOCAL = config("ALLOW_LOCAL",default=False,cast=bool)
+
+if ALLOW_LOCAL:
     ALLOWED_HOSTS.append('127.0.0.1')
     ALLOWED_HOSTS.append('localhost')
     ALLOWED_HOSTS.append('localhost:8000')
@@ -36,20 +41,20 @@ CORS_ALLOWED_ORIGINS = [
     'http://websig.com.br',
 ]
 
+if ALLOW_LOCAL:
+    CORS_ALLOWED_ORIGINS.append('http://127.0.0.1:3000')
+    CORS_ALLOWED_ORIGINS.append('http://localhost:3000')
+    CORS_ALLOWED_ORIGINS.append('http://localhost:8000')
+
 CSRF_TRUSTED_ORIGINS = [
     'https://webgis.site',
     'http://websig.com.br',
     ]
 
-if DEBUG:
-    CORS_ALLOWED_ORIGINS.append('http://127.0.0.1:3000')
-    CORS_ALLOWED_ORIGINS.append('http://localhost:3000')
-    CORS_ALLOWED_ORIGINS.append('http://localhost:8000')
-
-SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True, cast=bool)
-CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=True, cast=bool)
-SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
-CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
+# SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True, cast=bool)
+# CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=True, cast=bool)
+# SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+# CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
@@ -176,12 +181,12 @@ SIMPLE_JWT = {
 }
 
 
-GEOSERVER = {
-    'URL': config('GEOSERVER_URL_WG', default='http://localhost:8080/'),
-    'WORKSPACE': config('GEOSERVER_WORKSPACE_WG', default='webgis'),
-    'USERNAME': config('GEOSERVER_USERNAME_WG', default='admin'),
-    'PASSWORD': config('GEOSERVER_PASSWORD_WG', default='geoserver'),
-}
+# GEOSERVER = {
+#     'URL': config('GEOSERVER_URL_WG', default='http://localhost:8080/'),
+#     'WORKSPACE': config('GEOSERVER_WORKSPACE_WG', default='webgis'),
+#     'USERNAME': config('GEOSERVER_USERNAME_WG', default='admin'),
+#     'PASSWORD': config('GEOSERVER_PASSWORD_WG', default='geoserver'),
+# }
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
@@ -203,15 +208,60 @@ if USE_S3:
     AWS_S3_SIGNATURE_VERSION = "s3v4"
 
     AWS_LOCATION = 'static'
+#     S3_URL = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+#     STATIC_URL = f'https://{S3_URL}/{AWS_LOCATION}/'
+
+#     AWS_S3_ENDPOINT_URL = "https://s3.us-east-2.amazonaws.com"
+#     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+#     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# else:
+#     STATIC_URL = '/staticfiles/'
+#     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# STATIC_ROOT = f'https://{S3_URL}/{AWS_LOCATION}/' 
+
+
+
+
+
+
+
+
+AWS_QUERYSTRING_AUTH = True
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+
+if USE_S3:
+    STATICFILES_LOCATION = 'static'
+    MEDIAFILES_LOCATION = 'media'
+    MEDIA_ROOT = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/{MEDIAFILES_LOCATION}/'
     S3_URL = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
     STATIC_URL = f'https://{S3_URL}/{AWS_LOCATION}/'
+    STATIC_ROOT = 'https://%s/%s/static/' % (AWS_S3_CUSTOM_DOMAIN,STATICFILES_LOCATION)
 
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    AWS_S3_ENDPOINT_URL = "https://s3.us-east-2.amazonaws.com"
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    
+    STORAGES = {
+        "default": {"BACKEND": 'storages.backends.s3boto3.S3Boto3Storage'},
+        "staticfiles": {"BACKEND": 'storages.backends.s3boto3.S3Boto3Storage'},
+        "OPTIONS": {
+            "bucket_name": AWS_STORAGE_BUCKET_NAME,
+            "region_name": AWS_S3_REGION_NAME,
+            "signature_version": AWS_S3_SIGNATURE_VERSION,
+    },
+}
 else:
-    STATIC_URL = '/staticfiles/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATIC_URL = 'static/'
+    STATIC_ROOT = os.path.join(DATA_DIR, STATIC_URL)
+    MEDIA_URL = 'media/'
+    MEDIA_ROOT = os.path.join(DATA_DIR, MEDIA_URL) 
 
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 102400
+
+
+
+print(STATIC_URL,AWS_STORAGE_BUCKET_NAME)
+# MEDIA_URL = '/media/'
+
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'build')
+
+# DATA_UPLOAD_MAX_NUMBER_FIELDS = 102400
+

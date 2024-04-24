@@ -8,12 +8,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/main/', include('main.urls')),
     path('api/users/', include('users.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+]
 
 paths_react = [
     path('', TemplateView.as_view(template_name='index.html')),
-    path('map', TemplateView.as_view(template_name='index.html')),
+    path('map/', TemplateView.as_view(template_name='index.html'),name="map"),
     path('login/', TemplateView.as_view(template_name='index.html'), name='login'),
     path('register/', TemplateView.as_view(template_name='index.html'), name='register'),
     path('dashboard/', TemplateView.as_view(template_name='index.html'), name='dashboard'),
@@ -22,5 +21,9 @@ paths_react = [
     path('about/', TemplateView.as_view(template_name='index.html'), name='about'),
 ]
 
-
 urlpatterns += paths_react
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+print("URLS")
