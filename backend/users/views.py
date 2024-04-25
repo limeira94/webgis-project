@@ -147,41 +147,50 @@ class RegisterView(APIView):
         return Response(
             RegisterSerializer(user).data, status=status.HTTP_201_CREATED
         )
-
+    
 
 class RetrieveUserView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        info = {}
         try:
-            info["step1"] = "OK"
             user = request.user
-            info["step2"] = f"OK-> USER: {user}"
             user_serializer = UserSerializer(user)
-            info["step3"] = f"OK-> Serializer: {user_serializer}"
-            info["step4"] = f"OK -> DATA> {user_serializer.data}"
             return Response(user_serializer.data, status=status.HTTP_200_OK)
+        
         except Exception as e:
-            error_message = {"error": str(e),"info":info}
+            error_message = {
+                "error": str(e),
+                "info":{
+                    "headers":request.headers,
+                    "user":request.user,
+                }
+                }
             return Response(error_message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    
+        # # Print request headers
+        # print("Request Headers:", headers)
+        # try:
+        #     info["step1"] = f"OK -> {request.headers}"
+        #     user = request.user
+        #     info["step2"] = f"OK-> USER: {user}"
+        #     print("#"*199)
+        #     user_serializer = UserSerializer(user)
+        #     print("2"*199)
+        #     info["step3"] = f"OK-> Serializer: {user_serializer}"
+        #     print("3"*199)
+        #     info["step4"] = f"OK -> DATA> {user_serializer.data}"
+        #     print("4"*199)
+        #     return Response(user_serializer.data, status=status.HTTP_200_OK)
+        # except Exception as e:
+        #     error_message = {"error": str(e),"info":info}
+        #     return Response(error_message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-
-
-class DjangoLoginView(LoginView):
-    template_name = 'login.html'
-    form_class = AuthenticationForm
-
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, {})
-
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-    
-
 
 
 class UserRegistrarionView(generics.CreateAPIView):

@@ -19,6 +19,7 @@ mimetypes.add_type("text/css", ".css", True)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='mydefaultsecretkey')
+print("SECRETKEY:",SECRET_KEY)
 DEBUG = True#config('DEBUG', default=False, cast=bool)
 
 TESTING = config('TEST', default=False)

@@ -11,7 +11,7 @@ export const geojson = createAsyncThunk(
                     method: 'GET',
                     headers: {
                         Accept: 'application/json',
-                        Authorization: `Bearer ${Cookies.get('access_token')}`
+                        Authorization: `Bearer ${Cookies.get('access_token')}`,
                     },
                 });
             const data = await res.json();
@@ -37,7 +37,7 @@ export const raster = createAsyncThunk(
                     method: 'GET',
                     headers: {
                         Accept: 'application/json',
-                        Authorization: `Bearer ${Cookies.get('access_token')}`
+                        Authorization: `Bearer ${Cookies.get('access_token')}`,
                     },
                 });
             const data = await res.json();
@@ -161,7 +161,7 @@ export const upload_raster = createAsyncThunk(
                     method: 'POST',
                     headers: {
                         // Accept: 'application/json',
-                        Authorization: `Bearer ${Cookies.get('access_token')}`
+                        Authorization: `Bearer ${Cookies.get('access_token')}`,
                     },
                     // body,
                     body: formData,
@@ -192,7 +192,7 @@ export const delete_geojson = createAsyncThunk(
                     method: 'DELETE',
                     headers: {
                         Accept: 'application/json',
-                        Authorization: `Bearer ${Cookies.get('access_token')}`
+                        Authorization: `Bearer ${Cookies.get('access_token')}`,
                     },
                 });
 
@@ -220,7 +220,7 @@ export const delete_raster = createAsyncThunk(
                     method: 'DELETE',
                     headers: {
                         Accept: 'application/json',
-                        Authorization: `Bearer ${Cookies.get('access_token')}`
+                        Authorization: `Bearer ${Cookies.get('access_token')}`,
                     },
                 });
 

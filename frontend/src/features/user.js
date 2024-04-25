@@ -69,16 +69,18 @@ export const update = createAsyncThunk(
 
 
 const getUser = createAsyncThunk('users/me', 
-	async (_, thunkAPI) => {
+	async (thunkAPI) => {
 	try {
 		console.log(Cookies.get('access_token'),"COOKIESSS")
-		const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/me`,{
+		const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/me/`
+		,{
             method:'GET',
             headers: {
                 Accept: 'application/json',
-                Authorization: `Bearer ${Cookies.get('access_token')}`
+                Authorization: `Bearer ${Cookies.get('access_token')}`,
             },
-        });
+        }
+	);	
 		console.log("Get User 1",res)
 		const data = await res.json();
 		console.log("Get User 2")
@@ -90,7 +92,7 @@ const getUser = createAsyncThunk('users/me',
 			console.log("Get User Error1",data)
 			const { dispatch } = thunkAPI;
 				
-			dispatch(logout());
+			// dispatch(logout());
 			return thunkAPI.rejectWithValue(data);
 		}
 	} catch (err) {
@@ -192,7 +194,7 @@ export const deleteUser = createAsyncThunk(
 		// 	token:Cookies.get('access_token'),
 		// });
 
-		const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/delete/${userId}`, {
+		const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/delete/${userId}/`, {
 		  method: 'DELETE',
 		  headers: {
 			Accept: 'application/json',
