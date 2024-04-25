@@ -153,12 +153,17 @@ class RetrieveUserView(APIView):
     # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+        info = {}
         try:
+            info["step1"] = "OK"
             user = request.user
+            info["step2"] = f"OK-> USER: {user}"
             user_serializer = UserSerializer(user)
+            info["step3"] = f"OK-> Serializer: {user_serializer}"
+            info["step4"] = f"OK -> DATA> {user_serializer.data}"
             return Response(user_serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            error_message = {"error": str(e)}
+            error_message = {"error": str(e),"info":info}
             return Response(error_message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
