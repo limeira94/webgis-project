@@ -165,18 +165,17 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
 
-if DEBUG==True:
-    REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] += [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+# if DEBUG==True:
+#     REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] += [
+#         'rest_framework.authentication.SessionAuthentication',
+#         'rest_framework.authentication.BasicAuthentication',
+#     ]
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'ALGORITHM': 'HS256',
@@ -213,26 +212,8 @@ if USE_S3:
     AWS_S3_FILE_OVERWRITE = False
 
     AWS_S3_REGION_NAME = "us-east-2"
-    AWS_S3_SIGNATURE_VERSION = "s3v4"
 
     AWS_LOCATION = 'static'
-#     S3_URL = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-#     STATIC_URL = f'https://{S3_URL}/{AWS_LOCATION}/'
-
-#     AWS_S3_ENDPOINT_URL = "https://s3.us-east-2.amazonaws.com"
-#     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-#     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# else:
-#     STATIC_URL = '/staticfiles/'
-#     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# STATIC_ROOT = f'https://{S3_URL}/{AWS_LOCATION}/' 
-
-
-
-
-
-
 
 
 AWS_QUERYSTRING_AUTH = True

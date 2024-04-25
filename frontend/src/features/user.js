@@ -69,15 +69,9 @@ export const update = createAsyncThunk(
 
 
 const getUser = createAsyncThunk('users/me', 
-	// async (_, thunkAPI) => {
 	async (_, thunkAPI) => {
 	try {
-		// const res = await fetch('/api/users/me', {
-		// 	method: 'GET',
-		// 	headers: {
-		// 		Accept: 'application/json',
-		// 	},
-		// });
+		console.log(Cookies.get('access_token'),"COOKIESSS")
 		const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/me`,{
             method:'GET',
             headers: {
@@ -85,18 +79,22 @@ const getUser = createAsyncThunk('users/me',
                 Authorization: `Bearer ${Cookies.get('access_token')}`
             },
         });
-
+		console.log("Get User 1",res)
 		const data = await res.json();
+		console.log("Get User 2")
 
 		if (res.status === 200) {
+			console.log("Get User 3")
 			return data;
 		} else {
+			console.log("Get User Error1",data)
 			const { dispatch } = thunkAPI;
 				
 			dispatch(logout());
 			return thunkAPI.rejectWithValue(data);
 		}
 	} catch (err) {
+		console.log("Get User Error 2")
 		return thunkAPI.rejectWithValue(err.response.data);
 	}
 });

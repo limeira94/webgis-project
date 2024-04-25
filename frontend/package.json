@@ -49,7 +49,8 @@
     "eject": "react-scripts eject",
     "relocate": "react-scripts build && rm -rf ../backend/build && mv -f build ../backend",
     "build:prod": "cp .env.development.local .env && npm run relocate",
-    "build-ricardo:prod": "cp .env.production.ricardo .env && npm run relocate"
+    "build-ricardo": "cp .env.production.ricardo .env && npm run build",
+    "build:ricardo":"env-cmd -f ./.env.production.ricardo npm run-script build"
   },
   "eslintConfig": {
     "extends": [
@@ -68,5 +69,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
   }
 }

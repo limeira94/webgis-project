@@ -16,6 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, permissions, status, viewsets, views
+import sys
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -149,13 +150,16 @@ class RegisterView(APIView):
 
 
 class RetrieveUserView(APIView):
-    #   permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        user = UserSerializer(user)
-
-        return Response(user.data, status=status.HTTP_200_OK)
+        try:
+            user = request.user
+            user_serializer = UserSerializer(user)
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            error_message = {"error": str(e)}
+            return Response(error_message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
