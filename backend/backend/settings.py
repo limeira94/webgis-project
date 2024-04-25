@@ -8,10 +8,18 @@ import mimetypes
 mimetypes.add_type("text/css", ".css", True)
 
 
+# # Check these files:
+# backend/venv/lib/python3.10/site-packages/storages/backends/s3.py
+# backend/venv/lib/python3.10/site-packages/django/views/static.py
+# backend/venv/lib/python3.10/site-packages/django/views/generic/base.py
+# backend/venv/lib/python3.10/site-packages/storages/utils.py
+# https://docs.djangoproject.com/en/5.0/howto/static-files/deployment/
+# https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-STORAGES
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='mydefaultsecretkey')
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True#config('DEBUG', default=False, cast=bool)
 
 TESTING = config('TEST', default=False)
 if TESTING:
@@ -230,13 +238,17 @@ if USE_S3:
 AWS_QUERYSTRING_AUTH = True
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_SIGNATURE_VERSION = 's3v4'
-
+STATICFILES_DIRS = [
+    'build/static',
+]    
 if USE_S3:
     STATICFILES_LOCATION = 'static'
     MEDIAFILES_LOCATION = 'media'
-    MEDIA_ROOT = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/{MEDIAFILES_LOCATION}/'
+    # MEDIA_ROOT = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/{MEDIAFILES_LOCATION}/'
+    MEDIA_ROOT = "build"
+    MEDIA_URL = "/media/"
     S3_URL = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-    STATIC_URL = f'https://{S3_URL}/{AWS_LOCATION}/'
+    STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
     STATIC_ROOT = 'https://%s/%s/static/' % (AWS_S3_CUSTOM_DOMAIN,STATICFILES_LOCATION)
 
     STORAGES = {
@@ -259,7 +271,6 @@ else:
 
 print(STATIC_URL,AWS_STORAGE_BUCKET_NAME)
 # MEDIA_URL = '/media/'
-
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'build')
 
