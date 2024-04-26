@@ -154,16 +154,18 @@ class RetrieveUserView(APIView):
 
     def get(self, request):
         try:
+            headers = request.headers
             user = request.user
             user_serializer = UserSerializer(user)
             return Response(user_serializer.data, status=status.HTTP_200_OK)
         
         except Exception as e:
+            
             error_message = {
                 "error": str(e),
                 "info":{
-                    "headers":request.headers,
-                    "user":request.user,
+                    "headers":headers,
+                    "user":user,
                 }
                 }
             return Response(error_message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

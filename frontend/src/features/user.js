@@ -177,8 +177,9 @@ export const checkAuth = createAsyncThunk(
 
 export const logout = createAsyncThunk('users/logout', async (_, thunkAPI) => {
 	try {
-		Cookies.remove('access_token');
-      	Cookies.remove('refresh_token');
+		console.log("LOGOUT")
+		// Cookies.remove('access_token');
+      	// Cookies.remove('refresh_token');
 	} catch (err) {
 		return thunkAPI.rejectWithValue(err.response.data);
 	}
