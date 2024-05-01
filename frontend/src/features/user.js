@@ -12,7 +12,6 @@ export const register = createAsyncThunk(
         });
 
         try {
-			console.log("process.env.REACT_APP_API_URL",process.env.REACT_APP_API_URL)
             const res = await fetch(
 				`${process.env.REACT_APP_API_URL}api/users/register/`
 			,{
@@ -69,7 +68,7 @@ export const update = createAsyncThunk(
 
 
 const getUser = createAsyncThunk('users/me', 
-	async (thunkAPI) => {
+	async (_,thunkAPI) => {
 	try {
 		console.log(Cookies.get('access_token'),"COOKIESSS")
 		const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/me/`
@@ -81,22 +80,17 @@ const getUser = createAsyncThunk('users/me',
             },
         }
 	);	
-		console.log("Get User 1",res)
 		const data = await res.json();
-		console.log("Get User 2")
 
 		if (res.status === 200) {
-			console.log("Get User 3")
 			return data;
 		} else {
-			console.log("Get User Error1",data)
 			const { dispatch } = thunkAPI;
 				
 			// dispatch(logout());
 			return thunkAPI.rejectWithValue(data);
 		}
 	} catch (err) {
-		console.log("Get User Error 2")
 		return thunkAPI.rejectWithValue(err.response.data);
 	}
 });

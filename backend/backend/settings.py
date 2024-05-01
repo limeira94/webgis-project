@@ -19,13 +19,9 @@ mimetypes.add_type("text/css", ".css", True)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='mydefaultsecretkey')
-print("SECRETKEY:",SECRET_KEY)
-DEBUG = True#config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-TESTING = config('TEST', default=False)
-if TESTING:
-    print(TESTING)
-    print("DEBUG =",DEBUG)
+TESTING = config('TEST', default=False) # A ideia é mais pra frente colocar um "verbose" aqui, pra facilitar debugar.
 
 GDAL_LIBRARY_PATH = config('GDAL_LIBRARY_PATH', default='')
 GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH', default='')
@@ -251,7 +247,6 @@ else:
 
 
 
-print(STATIC_URL,AWS_STORAGE_BUCKET_NAME)
 # MEDIA_URL = '/media/'
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'build')

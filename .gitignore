@@ -6,3 +6,5 @@ tempfiles
 .env.deepforest
 .env.ricardo
 frontend/.env.production.ricardo
+# Local Netlify folder
+.netlify

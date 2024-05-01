@@ -72,8 +72,52 @@ export const handleRaster = async (event, setRasters, mapInstance, dispatch, pro
   }
 };
 
+export const handleDropGeojson = async (event, setGeoJSONs,mapInstance, dispatch, projectid, setUploading) => {
+  event.preventDefault();
+  const file = event.dataTransfer.files[0]; 
+  console.log(file.name)
+
+  if (file && file.name.toLowerCase().endsWith('.geojson')) {
+    try {
+      setUploading(true)
+      const response = await dispatch(upload_geojson({ file, projectid }));
+      
+      if (response.type === 'geojson/upload/fulfilled') {
+        const { payload } = response;
+        const { savedGeoJson } = payload;
+        const features = Array.isArray(savedGeoJson) ? savedGeoJson : [savedGeoJson];
+
+        const geojsons = createGeojsons(parseGeoJSON(features))
+        const calculatedBounds = bbox(geojsons[0].data);
+
+        if (mapInstance && calculatedBounds) {
+          const boundsLatLng = L.latLngBounds(
+            [calculatedBounds[1], calculatedBounds[0]],
+            [calculatedBounds[3], calculatedBounds[2]]
+          );
+          mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
+        }
+
+        setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...geojsons])
+        setUploading(false)
+      } else {
+        setUploading(false)
+        console.error('File upload failed with status:', response.type);
+        alert('There was an error uploading the file. Please try again.');
+      }
+    } catch (error) {
+      setUploading(false)
+      console.error('Error during upload:', error);
+      alert('There was an error uploading the file. Please try again.');
+    }
+  } else {
+    alert("File needs to be in '.geojson' format")
+  }
+}
+
 export const handleGeojson = async (event, setGeoJSONs,mapInstance, dispatch, projectid, setUploading) => {
   event.preventDefault();
+  console.log("DROP?")
   const file = event.target.files[0];
   event.target.value = null;
 

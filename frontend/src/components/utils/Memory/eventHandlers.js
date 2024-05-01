@@ -4,6 +4,42 @@ import { createGeojsons } from '../ProjectFunctions';
 import L from 'leaflet';
 
 
+export const UploadToMemoryDrop = (event,setGeoJSONs,mapInstance) => {
+  event.preventDefault();
+  const file = event.dataTransfer.files[0]; 
+  event.target.value = null;
+  if (file && file.name.toLowerCase().endsWith('.geojson')) {
+    try {
+      const fileName = file.name.split('.')[0];
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const geojsonData = JSON.parse(e.target.result);
+
+        const combinedFeature = createCombinedFeature(geojsonData, fileName);
+        const featuresCollection = {
+          type: "FeatureCollection",
+          features: [combinedFeature]
+        };
+
+        const calculatedBounds = bbox(featuresCollection);
+        updateMapAndView(calculatedBounds, mapInstance);
+
+        //TODO: verificar se isso aqui não pode dar bug. 
+
+        var geojson = createGeojsons([combinedFeature])  
+        setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, geojson[0]]);
+    };
+    reader.readAsText(file);
+    } catch (error) {
+        alert("There was a problem with the file")
+    }
+  } else {
+    alert("File needs to be in '.geojson' format")
+  }
+  
+};
+
 export const UploadToMemory = (event,setGeoJSONs,mapInstance) => {
     const file = event.target.files[0];
     event.target.value = null;

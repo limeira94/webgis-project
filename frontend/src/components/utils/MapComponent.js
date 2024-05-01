@@ -27,6 +27,9 @@ import { FullscreenControl } from 'react-leaflet-fullscreen';
 import 'leaflet.browser.print/dist/leaflet.browser.print.min.js';
 import 'leaflet-measure/dist/leaflet-measure.css';
 import 'leaflet-measure/dist/leaflet-measure.js';
+import { handleDropGeojson, handleGeojson } from './eventHandler';
+import { useDispatch } from 'react-redux';
+import { UploadToMemoryDrop } from './Memory/eventHandlers';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -79,7 +82,26 @@ export const MapComponent = ({
   const flattenedData = modalData.flat();
   const uniqueKeys = Array.from(new Set(flattenedData.flatMap(Object.keys)));
 
-  const MapItem = <>
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const dispatch = useDispatch()
+
+  const handleDrop = (e) => {
+    if (!savetomemory){
+      handleDropGeojson(e,setGeoJSONs,mapInstance, dispatch, projectid, setUploading)
+    } else {
+      UploadToMemoryDrop(e,setGeoJSONs,mapInstance)
+    }
+  }
+
+  const MapItem = <div
+      onDrop={handleDrop}//handleDropGeojson}//handleGeojson}
+      onDragOver={handleDragOver}
+      style={{ width: '100%', height: '500px' }}
+  >
     <MapContainer className='map-container'
       ref={(map) => {
         if (map) {
@@ -146,7 +168,7 @@ export const MapComponent = ({
       <FullscreenControl className="custom-fullscreen-control" position="bottomright" />
       <ZoomControl position="bottomright" />
     </MapContainer>
-  </>
+  </div>
 
 
   const loadingIcon = (
