@@ -1,18 +1,14 @@
 import React, { 
-    // useEffect, 
     useState 
 } from "react";
-// import { Navigate} from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import Navbar from './include/Navbar';
 import M from 'materialize-css';
 import '../styles/Login.css'
 import { 
-  useDispatch, 
-  // useSelector 
+  useDispatch
 } from 'react-redux';
 import {
-  // resetRegistered,
   login
 } from '../features/user';
 

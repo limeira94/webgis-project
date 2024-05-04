@@ -70,7 +70,6 @@ export const update = createAsyncThunk(
 const getUser = createAsyncThunk('users/me', 
 	async (_,thunkAPI) => {
 	try {
-		console.log(Cookies.get('access_token'),"COOKIESSS")
 		const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/me/`
 		,{
             method:'GET',
@@ -171,7 +170,6 @@ export const checkAuth = createAsyncThunk(
 
 export const logout = createAsyncThunk('users/logout', async (_, thunkAPI) => {
 	try {
-		console.log("LOGOUT")
 		// Cookies.remove('access_token');
       	// Cookies.remove('refresh_token');
 	} catch (err) {
@@ -282,15 +280,12 @@ const userSlice = createSlice({
 				state.loading = false;
 			})
 			.addCase(update.pending,state => {
-				// console.log(state)
 				state.loading = true;
 			})
 			.addCase(update.fulfilled,state =>{
-				// console.log(state)
 				state.loading = false
 			})
 			.addCase(update.rejected,state =>{
-				// console.log(state)
 				state.loading = false
 			})
 			;

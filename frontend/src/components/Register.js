@@ -49,7 +49,6 @@ function Register() {
           }        
         })
         .catch(error => {
-          console.log("ERROR",error);
           console.error('Login error:', error);
     });};
 

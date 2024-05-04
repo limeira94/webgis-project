@@ -60,9 +60,6 @@ export const upload_geojson = createAsyncThunk(
         const formData = new FormData();
         formData.append('geojson', file, file.name);
         formData.append('projectid', projectid)
-        // for (var key of formData.entries()) {
-        //     console.log("FORM",key[0] + ', ' + key[1]);
-        // }
 
         try {
             const res = await fetch(
@@ -74,7 +71,6 @@ export const upload_geojson = createAsyncThunk(
                         // 'Content-Type': 'application/json',
                         Authorization: `Bearer ${Cookies.get('access_token')}`,
                     },
-                    // body,
                     body: formData,
                 });
             const data = await res.json();
@@ -184,7 +180,6 @@ export const upload_raster = createAsyncThunk(
 export const delete_geojson = createAsyncThunk(
     'geojson/delete',
     async (id, thunkAPI) => {
-        // console.log("AAAAAAa",id)
         try {
             const res = await fetch(
                 `${process.env.REACT_APP_API_URL}api/main/geojson/${id}`

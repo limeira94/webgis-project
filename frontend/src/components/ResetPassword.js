@@ -1,4 +1,3 @@
-// import React from 'react';
 import React, { useState,useEffect } from 'react';
 import NavbarComponent from './include/Navbar';
 import axios from 'axios';
@@ -21,7 +20,6 @@ function ResetPassword() {
     const { isAuthenticated, user, loading } = useSelector(state => state.user);
     
     useEffect(() => {
-      // Initialize Materialize CSS toast
       M.AutoInit();
     }, []);
 
@@ -45,7 +43,6 @@ function ResetPassword() {
         classes: 'green rounded',
         displayLength:5000});
 
-        console.log(response.data);
         navigate("/");
 
         } catch (error) {
@@ -53,7 +50,6 @@ function ResetPassword() {
         classes: 'red rounded',
         displayLength:5000});
           
-        // console.error(error); 
         }
 };
 
