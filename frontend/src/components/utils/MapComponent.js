@@ -30,6 +30,7 @@ import 'leaflet-measure/dist/leaflet-measure.js';
 import { handleDropGeojson, handleGeojson } from './eventHandler';
 import { useDispatch } from 'react-redux';
 import { UploadToMemoryDrop } from './Memory/eventHandlers';
+import MouseCoordinates from './MouseCoordinates';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -46,6 +47,7 @@ export const MapComponent = ({
     setRasters,
     setGeoJSONs,
     projectid = null,
+    project=null,
     savetomemory = true
   }) => {
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
@@ -57,8 +59,11 @@ export const MapComponent = ({
   const [uploading, setUploading] = useState(false)
 
   const geojsonLayerRefs = useRef({});
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef(null); 
 
+  const defaultCenter = [50.640, 10.553];  // Coordenadas iniciais do mapa
+  const defaultZoom = 5;  // Zoom inicial do mapa
+  
   useEffect(() => {
     M.AutoInit();
     const elems = document.querySelectorAll('.modal');
@@ -73,6 +78,21 @@ export const MapComponent = ({
     });
   }, [mapInstance, buttonsCreated, setButtonsCreated]);
 
+  useEffect(() => {
+    if (project && mapInstance) {
+      let center = defaultCenter;
+      let zoom = defaultZoom;
+
+      if (project.centerCoordinate && !(project.bounds.minLat === Infinity || project.bounds.maxLat === -Infinity)) {
+        const { minLat, maxLat, minLng, maxLng } = project.bounds;
+        center = [(minLat + maxLat) / 2, (minLng + maxLng) / 2];
+        mapInstance.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
+        zoom = mapInstance.getBoundsZoom([[minLat, minLng], [maxLat, maxLng]]);
+      }
+
+      mapInstance.setView(center, zoom);  // Atualiza o centro e o zoom do mapa
+    }
+  }, [project, mapInstance]);
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
@@ -102,17 +122,19 @@ export const MapComponent = ({
       onDragOver={handleDragOver}
       style={{ width: '100%', height: '500px' }}
   >
-    <MapContainer className='map-container'
-      ref={(map) => {
-        if (map) {
-          setMapInstance(map);
-        }
-      }}
-      center={[51.505, -0.09]}
-      zoom={5}
-      zoomControl={false}
-      maxZoom={18}
-      minZoom={2}>
+    <MapContainer
+        className='map-container'
+        ref={(map) => {
+          if (map && !mapInstance) {
+            setMapInstance(map);
+          }
+        }}
+        center={defaultCenter} 
+        zoom={defaultZoom}
+        zoomControl={false}
+        maxZoom={18}
+        minZoom={2}
+      >
 
       <TileLayer url={selectedTileLayer} />
 
@@ -167,9 +189,9 @@ export const MapComponent = ({
       <ScaleControl position="bottomleft" />
       <FullscreenControl className="custom-fullscreen-control" position="bottomright" />
       <ZoomControl position="bottomright" />
+      <MouseCoordinates />
     </MapContainer>
   </div>
-
 
   const loadingIcon = (
     <div className="loading-container">
@@ -241,9 +263,7 @@ export const MapComponent = ({
           <a href="#!" className="modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
       </div>
-      
       {MapItem}
-
     </>
   );
 };

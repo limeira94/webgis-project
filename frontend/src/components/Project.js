@@ -29,7 +29,7 @@ const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs}) => {
             hoverEnabled: false
         });
     }, []);
-
+    // console.log("333333333333333333", project)
     return ( //ERROR HERE:Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
         <>
             <MapComponent
@@ -38,6 +38,7 @@ const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs}) => {
                 setRasters={setRasters}
                 setGeoJSONs={setGeoJSONs}
                 projectid={project.id}
+                project={project}
                 savetomemory={false}
             />
         </>
@@ -61,8 +62,10 @@ function Project() {
         M.AutoInit();
         if (project_id && projects && project === null) {
             setData(setProject,setGeoJSONs,setRasters,project_id,projects,navigate)
+            // console.log("1111111111111111111111111111111111")
         }
         else{
+            // console.log("222222222222222222222222222222222")
             getProjects(setProjects);
         }
     }, [project_id, project]);
