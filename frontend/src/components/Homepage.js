@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import 'materialize-css';
 import Navbar from './include/Navbar';
 import Footer from './include/Footer';
 import M from 'materialize-css';
 import axios from 'axios'
+import { Navigate } from 'react-router-dom';
 import Project from './Project';
 import '../styles/Homepage.css'
 
@@ -13,6 +15,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 const Homepage = () => {
     const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
+    const { isAuthenticated, user, loading } = useSelector(state => state.user);
 
     useEffect(() => {
 
@@ -43,6 +46,14 @@ const Homepage = () => {
     const handleAddProject = (projectId) => {
         navigate(`/project/${projectId}`);
     };
+
+    if (!isAuthenticated && !loading && user === null){
+        return <Navigate to='/login' />;
+    }
+
+    if (isAuthenticated) {
+        return <Navigate to='/project' />
+    }
 
 
     return (
