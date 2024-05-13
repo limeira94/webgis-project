@@ -19,3 +19,9 @@
     /* background-color: olive; */
   }
   
+
+  .text-input-adjust{
+    width: 30%; 
+    margin: 0 auto; 
+    text-align: center;
+  }

@@ -25,7 +25,7 @@ export const getProjects = async (setProjects) => {
             };
         });
 
-        console.log("response data", projects)
+        // console.log("response data", projects)
         setProjects(projects)
     } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
@@ -111,8 +111,8 @@ export const handleNewProject = async (setProjects, inputValue, navigate) => {
             });
         console.log("RESPONSE", response)
 
-        const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
-        modalInstance.close();
+        // const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
+        // modalInstance.close();
 
         await getProjects(setProjects);
 
@@ -126,8 +126,8 @@ export const handleNewProject = async (setProjects, inputValue, navigate) => {
 export const handleChooseOption = (id, navigate) => {
     const selectedProjectId = parseInt(id, 10);
     navigate(`/project/${selectedProjectId}`);
-    const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
-    modalInstance.close();
+    // const modalInstance = M.Modal.getInstance(document.getElementById('modal1'));
+    // modalInstance.close();
 }
 
 
