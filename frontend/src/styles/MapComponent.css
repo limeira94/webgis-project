@@ -419,6 +419,15 @@
   /* Opcionalmente, um z-index mais alto se você precisar que este botão sobreponha os outros */
 }
 
+.fixed-action-btn ul {
+  position: absolute;
+  bottom: 40px; /* Adjust this value as needed */
+  right: 0; /* Aligns the buttons to the right */
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
 .leaflet-draw-toolbar {
   position: fixed;
   bottom: 70px;

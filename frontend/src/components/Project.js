@@ -23,13 +23,7 @@ import Navbar from './include/Navbar';
 
 const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs}) => {
 
-    useEffect(() => {
-        M.AutoInit();
-        var elems = document.querySelectorAll('.fixed-action-btn');
-        M.FloatingActionButton.init(elems, {
-            hoverEnabled: false
-        });
-    }, []);
+    
     // console.log("333333333333333333", project)
     return ( //ERROR HERE:Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
         <>

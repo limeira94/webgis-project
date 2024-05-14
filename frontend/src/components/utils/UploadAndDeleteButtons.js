@@ -46,7 +46,7 @@ const UpDelButttons = ({
         const editableLayers = new L.FeatureGroup().addTo(mapInstance);
 
         const drawControl = new L.Control.Draw({
-            
+
             draw: {
                 polygon: true,
                 polyline: true,
@@ -109,7 +109,7 @@ const UpDelButttons = ({
             layers.eachLayer((layer) => {
                 const updateGeometryAsync = async () => {
                     const geometryJson = layer.toGeoJSON();
-                    
+
                     // Supondo que você tenha o ID e uma função updateGeometry para chamar
                     const geometryId = layer.feature?.properties?.id;
                     if (geometryId) {
@@ -125,7 +125,7 @@ const UpDelButttons = ({
             });
         });
 
-        
+
 
         return () => {
             if (mapInstance) {
