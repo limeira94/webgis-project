@@ -13,7 +13,7 @@ const AboutWeb = () => {
             <div className='container'>
                 <h1 className="center-title"></h1>
 
-                <div className="row center-align">
+                <div className="row center-align row-about">
                     <div className="col s12 m6">
                         <div className="card card-flat">
                             <div className="card-image">

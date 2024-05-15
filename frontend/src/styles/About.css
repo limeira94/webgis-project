@@ -44,15 +44,13 @@
     
 }
 
-/* Ensures the row acts as a flex container */
-.row {
+.row-about {
     display: flex;
-    align-items: center; /* Align items vertically in the center */
+    align-items: center; 
 }
 
-/* Adjustments for the image card to align it properly */
 .card-image {
     display: flex;
-    align-items: center; /* Center the image inside its card */
+    align-items: center; 
     justify-content: center;
 }
