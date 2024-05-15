@@ -60,7 +60,8 @@ const Homepage = () => {
         <>
             <Navbar />
             <div className='section container center'>
-                <img className="img-logo" src={url + "/logo.png"} alt="Web GIS Logo" />
+                {/* <img className="img-logo" src={url + "/logo.png"} alt="Web GIS Logo" /> */}
+                <img className="img-logo" src={url + "/websig.png"} alt="Web GIS Logo" />
             </div>
 
             <div className="container">
