@@ -19,6 +19,7 @@ paths_react = [
     path('reset/', TemplateView.as_view(template_name='index.html'), name='reset'),
     path('project/', TemplateView.as_view(template_name='index.html'), name='project'),
     path('about/', TemplateView.as_view(template_name='index.html'), name='about'),
+    path('aboutweb/', TemplateView.as_view(template_name='index.html'), name='aboutweb'),
 ]
 
 urlpatterns += paths_react
