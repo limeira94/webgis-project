@@ -3,6 +3,10 @@ import os
 
 from django.contrib.gis.geos import GEOSGeometry
 from django.shortcuts import get_object_or_404
+from django.db import transaction
+from django.db.models import Max
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
@@ -249,6 +253,8 @@ class GeoJSONListView(APIView):
             status=status.HTTP_204_NO_CONTENT,
         )
 
+#TODO: Olhar no Geojson model 
+@method_decorator(csrf_exempt, name='dispatch')
 class GeoJSONFileUploadViewSet(viewsets.ViewSet):
     def create(self, request):
         try:
@@ -259,12 +265,15 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
                 raise ValueError('Invalid GeoJSON format')
             
             project = get_object_or_404(Project, pk=projectid)
-            assert request.user == project.user
+            if request.user != project.user:
+                return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
             
             geojson_file = request.FILES.get('geojson')
             filename = geojson_file.name if geojson_file else 'Uploaded_File'
             
-            next_group_id = GeoJSONFile.objects.latest('id').id + 1 if GeoJSONFile.objects.exists() else 1
+            max_id = GeoJSONFile.objects.aggregate(max_id=Max('id'))['max_id']
+            next_group_id = (max_id or 0) + 1
+            
             all_geo_instances = []
             for feature in geojson_data['features']:
                 geometry = feature.get('geometry')
@@ -279,21 +288,21 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
                     attributes=properties,
                     group_id=next_group_id
                 )
-                geo_instance.save()
-                project.geojson.add(geo_instance.id)
                 all_geo_instances.append(geo_instance)
             
-            project.save()
+            with transaction.atomic():
+                GeoJSONFile.objects.bulk_create(all_geo_instances)
+                project.geojson.add(*[geo.id for geo in all_geo_instances])
+                project.save()
             serializer = GeoJsonFileSerializer(all_geo_instances, many=True)
             
             return Response(
                 {
                     'message': 'Data saved successfully', 
                     'group_id': next_group_id,
-                    # "savedGeoJson": GeoJsonFileSerializer(geo_instance).data
-                    "savedGeoJson": serializer.data  #TODO: resolver esse problema aqui, adicionar todas as geometrias, não uma só
+                    'savedGeoJson': serializer.data
                 },
-                    status=status.HTTP_201_CREATED,
+                status=status.HTTP_201_CREATED,
             )
             
         except Exception as e:
@@ -301,8 +310,6 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
             return Response(
                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
-
-
 class LeafletDrawUploadViewSet(viewsets.ViewSet):
     def create(self, request):
         try:

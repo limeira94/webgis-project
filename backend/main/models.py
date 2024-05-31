@@ -13,6 +13,25 @@ from PIL import Image
 
 from .utils import *
 
+
+#TODO: 
+#Adicionar o arquivo que foi feito o upload de repente.
+# models.FileField()
+# É bom que podemos agrupar os dados baseado nisso, ao invés do "group_id"
+# Da pra fazer um model novo tipo esse:
+
+class VectorFileModel(models.Model):
+    file = models.FileField(blank=True,null=True)
+    name = models.CharField(max_length=100,unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+
+
+class Geojson(models.Model):
+    geometry = models.GeometryField()
+    attributes = JSONField(blank=True, null=True)
+    vector = models.ForeignKey(VectorFileModel,on_delete=models.CASCADE)
+
+
 class GeoJSONFile(models.Model):
     name = models.CharField(max_length=255)
     user = models.ForeignKey(
@@ -23,6 +42,9 @@ class GeoJSONFile(models.Model):
     group_id = models.IntegerField(default=0)
 
 
+#TODO: 
+# Substituir overwrite do save
+# colocar em um view.
 class RasterFile(models.Model):
     name = models.CharField(max_length=100)
     raster = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['tif', 'tiff']),validate_file_size])

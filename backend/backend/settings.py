@@ -205,33 +205,30 @@ if USE_S3:
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-
     AWS_S3_FILE_OVERWRITE = False
-
     AWS_S3_REGION_NAME = "us-east-2"
-
     AWS_LOCATION = 'static'
 
+    AWS_QUERYSTRING_AUTH = True
+    AWS_S3_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
+    STATICFILES_DIRS = [
+        'build/static',
+    ]    
 
-AWS_QUERYSTRING_AUTH = True
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-STATICFILES_DIRS = [
-    'build/static',
-]    
-if USE_S3:
-    STATICFILES_LOCATION = 'static'
-    MEDIAFILES_LOCATION = 'media'
-    # MEDIA_ROOT = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/{MEDIAFILES_LOCATION}/'
-    MEDIA_ROOT = "build"
-    MEDIA_URL = "/media/"
-    S3_URL = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-    STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
-    STATIC_ROOT = 'https://%s/%s/static/' % (AWS_S3_CUSTOM_DOMAIN,STATICFILES_LOCATION)
+    # MEDIA_ROOT = "build"
+    # MEDIA_URL = "/media/"
+    # S3_URL = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    STATIC_URL = 'https://%s/%s/static/' % (AWS_S3_DOMAIN, AWS_LOCATION)
+    # STATIC_ROOT = '/static/' #% (AWS_S3_CUSTOM_DOMAIN,STATICFILES_LOCATION)
 
     STORAGES = {
-        "default": {"BACKEND": 'storages.backends.s3boto3.S3Boto3Storage'},
-        "staticfiles": {"BACKEND": 'storages.backends.s3boto3.S3Boto3Storage'},
+        "default": {
+            "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
+            },
+        "staticfiles": {
+            "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
+            },
         "OPTIONS": {
             "bucket_name": AWS_STORAGE_BUCKET_NAME,
             "region_name": AWS_S3_REGION_NAME,
@@ -243,13 +240,6 @@ else:
     STATIC_ROOT = os.path.join(DATA_DIR, STATIC_URL)
     MEDIA_URL = 'media/'
     MEDIA_ROOT = os.path.join(DATA_DIR, MEDIA_URL) 
-
-
-
-
-# MEDIA_URL = '/media/'
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'build')
 
 # DATA_UPLOAD_MAX_NUMBER_FIELDS = 102400
 
