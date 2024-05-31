@@ -93,8 +93,8 @@ const Navbar = () => {
         <nav className='nav-wg'>
             <div className="nav-wrapper">
             <a href="/#" className="brand-logo">
-                {/* <img className="img-logo" src={url + "/logo2.png"} alt="Web GIS Logo" height={60} /> */}
-                <img className="img-logo" src={url + "/websig.png"} alt="Web GIS Logo" height={60} />
+                <img className="img-logo" src={url + "/logo2.png"} alt="Web GIS Logo" height={60} />
+                {/* <img className="img-logo" src={url + "/websig.png"} alt="Web GIS Logo" height={60} /> */}
                 {/* <img className="img-logo" src={url + "/logomk.png"} alt="Web GIS Logo" height={65} /> */}
             </a>
             <a href="#" data-target="mobile-demo" className="sidenav-trigger black-text">

@@ -12,7 +12,7 @@ import ResetPassword from './components/ResetPassword';
 import Project from './components/Project';
 // import NewProject from './components/NewProject';
 import About from './components/About';
-import AboutWeb from './components/AboutWeb';
+// import AboutWeb from './components/AboutWeb';
 
 // import Upload from './components/Upload'
 
@@ -48,8 +48,8 @@ function App() {
         <Route path="/project" element={<Project />}/>
         <Route path="/project/:project_id" element={<Project />} />
         {/* <Route path="/new-project" element={<NewProject />}/> */}
-        {/* <Route path="/about" element={<About/>}/> */}
-        <Route path="/aboutweb" element={<AboutWeb/>}/>
+        <Route path="/about" element={<About/>}/>
+        {/* <Route path="/aboutweb" element={<AboutWeb/>}/> */}
       </Routes>
     </Router>
   );

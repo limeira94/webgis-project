@@ -6,8 +6,9 @@ import Navbar from './include/Navbar';
 import Footer from './include/Footer';
 import M from 'materialize-css';
 import axios from 'axios'
+import { getProjects } from './utils/ProjectFunctions';
 import { Navigate } from 'react-router-dom';
-import Project from './Project';
+// import Project from './Project';
 import '../styles/Homepage.css'
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
@@ -23,15 +24,15 @@ const Homepage = () => {
         // remove this function and use this one instead:
         // import { getProjects } from './utils/get_infos';
 
-        const getProjects = async () => {
-            try {
-                const response = await axios.get(`${API_URL}api/main/projects/`);
-                setProjects(response.data)
-            } catch (error) {
-                console.error('Error fetching GeoJSON data:', error);
-            }
-        }
-        getProjects();
+        // const getProjects = async () => {
+        //     try {
+        //         const response = await axios.get(`${API_URL}api/main/projects/`);
+        //         setProjects(response.data)
+        //     } catch (error) {
+        //         console.error('Error fetching GeoJSON data:', error);
+        //     }
+        // }
+        getProjects(setProjects);
     }, []);
 
     useEffect(() => {
@@ -47,21 +48,13 @@ const Homepage = () => {
         navigate(`/project/${projectId}`);
     };
 
-    if (!isAuthenticated && !loading && user === null){
-        return <Navigate to='/login' />;
-    }
-
-    if (isAuthenticated) {
-        return <Navigate to='/project' />
-    }
-
-
+    console.log(projects)
     return (
         <>
             <Navbar />
             <div className='section container center'>
-                {/* <img className="img-logo" src={url + "/logo.png"} alt="Web GIS Logo" /> */}
-                <img className="img-logo" src={url + "/websig.png"} alt="Web GIS Logo" />
+                <img className="img-logo" src={url + "/logo.png"} alt="Web GIS Logo" />
+                {/* <img className="img-logo" src={url + "/websig.png"} alt="Web GIS Logo" /> */}
             </div>
 
             <div className="container">
@@ -147,7 +140,6 @@ const Homepage = () => {
             </section>
 
             <div className="custom-shape-divider-top-1701366195 card-section">
-
                 <div className='container section'>
                     <div className="row">
                         {projects.map((project, index) => (
