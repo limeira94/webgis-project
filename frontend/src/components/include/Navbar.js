@@ -62,7 +62,7 @@ const Navbar = () => {
 
     var link_itens = 
     <>
-        <li><a className='black-text' href="/aboutweb">About</a></li>
+        <li><a className='black-text' href="/about">About</a></li>
         <li><a className='black-text' href="/map">Go to Map</a></li>
     </>
 
