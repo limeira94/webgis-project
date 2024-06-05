@@ -30,13 +30,8 @@ class ProjectList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # return Response({'detail': 'Authentication credentials were not provided.'},status=status.HTTP_401_UNAUTHORIZED)
 
-
     def get(self, request):
         #TODO: Return with public projects
-        # if request.user.is_authenticated:
-        #     projects = Project.objects.filter(user=request.user)
-        # else:
-        #     projects = Project.objects.filter(public=True)
         projects = Project.objects.filter(user=request.user)
         project_serializer = ProjectSerializer(projects, many=True)
         return Response(project_serializer.data, status=status.HTTP_200_OK)
@@ -54,6 +49,12 @@ class ProjectList(APIView):
             return Response({'detail': 'Project not found.'}, status=status.HTTP_404_NOT_FOUND)
 
 
+class ProjectGetList(APIView):
+
+    def get(self, request, pk):
+        projects = get_object_or_404(Project,pk=pk)
+        project_serializer = ProjectPkSerializer(projects)
+        return Response(project_serializer.data, status=status.HTTP_200_OK)
 
 class RasterPostView(APIView):
     serializer_class = RasterFileSerializer

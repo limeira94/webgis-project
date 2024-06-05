@@ -34,6 +34,31 @@ class RasterFileSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    # raster = RasterFileSerializer(many=True, read_only=True)
+    # geojson = GeoJsonFileSerializer(many=True, read_only=True)
+    created_at = serializers.SerializerMethodField()
+    updated_at = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+    def get_created_at(self, obj):
+        return obj.get_create_at()
+
+    def get_updated_at(self, obj):
+        return obj.get_updated_at()
+    
+    def create(self, validated_data):
+        name = validated_data['name']
+        user = validated_data['user']
+
+        project = Project.objects.create(name=name, user=user)
+        return project
+
+
+
+class ProjectPkSerializer(serializers.ModelSerializer):
     raster = RasterFileSerializer(many=True, read_only=True)
     geojson = GeoJsonFileSerializer(many=True, read_only=True)
     created_at = serializers.SerializerMethodField()
@@ -55,4 +80,3 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         project = Project.objects.create(name=name, user=user)
         return project
-

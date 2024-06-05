@@ -20,6 +20,7 @@ import { MapComponent } from './utils/MapComponent';
 
 import "../styles/Project.css"
 import Navbar from './include/Navbar';
+import { loadingPage } from './utils/Loading'; 
 
 const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs}) => {
 
@@ -50,17 +51,22 @@ function Project() {
     const [inputValue, setInputValue] = useState("");
     const [rasters, setRasters] = useState([]);
     const [geojsons, setGeoJSONs] = useState([]);
+    const [isLoading,setIsLoading] = useState(false)
 
     const { project_id } = useParams();
 
     useEffect(() => {
         M.AutoInit();
-        if (project_id && projects && project === null) {
-            setData(setProject,setGeoJSONs,setRasters,project_id,projects,navigate)
-        }
-        else{
-            getProjects(setProjects);
-        }
+        const fetchData = async () => {
+            setIsLoading(true);
+            if (project_id && projects && project === null) {
+                setData(setProject, setGeoJSONs, setRasters, project_id, projects, navigate);
+            } else {
+                await getProjects(setProjects);
+            }
+            setIsLoading(false);
+        };
+        fetchData();
     }, [project_id, project]);
 
     var url = process.env.PUBLIC_URL
@@ -72,7 +78,7 @@ function Project() {
     const chooseProject = <>
     <Navbar/>
     <h3 className='center'>Choose your project</h3>
-    <div>
+    <div id="chooseProject">
         <div className="row">
             {projects.map((project, index) => (
                 <div key={index} className="col s12 m3">
@@ -100,7 +106,6 @@ function Project() {
             ))}
         </div>
     </div>
-
     <div className='center'>
         {projectTextInput ? (
             <div className="input-group text-input-adjust">
@@ -131,17 +136,15 @@ function Project() {
     
     return (
     <>
-    
-        {project ? 
-        <Map 
-            project={project}
-            rasters={rasters}
-            setRasters={setRasters}
-            geojsons={geojsons}
-            setGeoJSONs={setGeoJSONs}
-            /> : 
-        chooseProject
-        }
+        {isLoading ? loadingPage() : project ? (
+                <Map 
+                    project={project}
+                    rasters={rasters}
+                    setRasters={setRasters}
+                    geojsons={geojsons}
+                    setGeoJSONs={setGeoJSONs}
+                />
+            ) : chooseProject}
     </>
 );
 }

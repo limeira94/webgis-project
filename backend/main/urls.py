@@ -14,6 +14,7 @@ urlpatterns = [
     
     path('geojson/<int:pk>/', views.GeoJSONDetailView.as_view(), name='get_geojson'),
     path('geojson/', views.GeoJSONListView.as_view(), name='get_all_geojson'),
+    path('project/<int:pk>/', views.ProjectGetList.as_view(), name='get-project'),
     path('projects/', views.ProjectList.as_view(), name='get_projects'),
     path('projects/<int:pk>/', views.ProjectList.as_view(), name='delete-project'),
     path("raster/change-visual/<int:pk>",views.RasterVisualization.as_view(),name="raster-visual"),

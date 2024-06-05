@@ -125,7 +125,9 @@ export const handleGeojson = async (event, setGeoJSONs,mapInstance, dispatch, pr
     setUploading(true)
     const response = await dispatch(upload_geojson({ file, projectid }));
     
-    //TODO?: Aqui vai ser preciso verificar essa questão, porque ta usando redux do jeito errado.
+    //TODO?: Aqui vai ser preciso verificar essa questão,
+    // porque ta usando redux do jeito errado.
+    
     if (response.type === 'geojson/upload/fulfilled') {
       const { payload } = response;
       const { savedGeoJson } = payload;

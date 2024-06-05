@@ -28,7 +28,8 @@ const BasemapSelector = (
       >
         <div className="dialog-titlebar">
           <h3>Basemap Gallery</h3>
-          <IconButton className="close-button" onClick={toggleMapStyleDrawer(false)}>
+          <IconButton className="close-button" onClick={
+            toggleMapStyleDrawer(false)}>
             <CloseIcon />
           </IconButton>
         </div>

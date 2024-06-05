@@ -14,19 +14,40 @@ export const getProjects = async (setProjects) => {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-
-        const projects = response.data.map(project => {
-            const center = calculateCenter(project.geojson);
-            const bounds = calculateBoundingBox(project.geojson);
-            return {
-                ...project,
-                centerCoordinate: center,
-                bounds: bounds,
-            };
-        });
+        // const projects = response.data.map(project => {
+        //     const center = calculateCenter(project.geojson);
+        //     const bounds = calculateBoundingBox(project.geojson);
+        //     return {
+        //         ...project,
+        //         centerCoordinate: center,
+        //         bounds: bounds,
+        //     };
+        // });
 
         // console.log("response data", projects)
+        const projects = response.data
         setProjects(projects)
+    } catch (error) {
+        console.error('Error fetching GeoJSON data:', error);
+    }
+}
+
+export const getProject = async (projectId) => {
+    try {
+        const accessToken = Cookies.get('access_token');
+        const response = await axios.get(`${API_URL}api/main/project/${projectId}/`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+        console.log(response.data)
+        const center = calculateCenter(response.data.geojson);
+        const bounds = calculateBoundingBox(response.data.geojson);
+        return {
+            ...response.data,
+                centerCoordinate: center,
+                bounds: bounds,
+        }  
     } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
     }
@@ -185,16 +206,35 @@ export const createGeojsons = (geojsons) => {
     return result
 }
 
-export const setData = (setProject, setGeoJSONs, setRasters, project_id, projects, navigate) => {
-    const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
-    if (selectedProject) {
-        setProject(selectedProject);
-        setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)))
-        setRasters(createRasters(selectedProject.raster));
-    }
-    else {
+// export const setData = (setProject, setGeoJSONs, setRasters, project_id, projects, navigate) => {
+//     // const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
+//     const selectedProject = getProject(project_id)
+    
+//     if (selectedProject) {
+//         console.log("SELECTED",selectedProject)
+//         setProject(selectedProject);
+//         setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)))
+//         setRasters(createRasters(selectedProject.raster));
+//     }
+//     else {
+//         navigate(`/project`);
+//     }
+// }
+
+
+export const setData = async (setProject, setGeoJSONs, setRasters, project_id, projects, navigate) => {
+    try {
+        const selectedProject = await getProject(project_id); // Wait for the project data to be fetched
+        if (selectedProject) {
+            console.log("SELECTED", selectedProject);
+            setProject(selectedProject);
+            setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)));
+            setRasters(createRasters(selectedProject.raster));
+        } else {
+            navigate(`/project`);
+        }
+    } catch (error) {
+        console.error('Error setting project data:', error);
         navigate(`/project`);
     }
-}
-
-
+};
