@@ -41,7 +41,8 @@ class ProjectSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Project
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ("geojson","raster")
 
     def get_created_at(self, obj):
         return obj.get_create_at()
