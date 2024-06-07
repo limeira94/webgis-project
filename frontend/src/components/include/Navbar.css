@@ -17,3 +17,20 @@
 .icon-nav-lan{
     max-height: 64px;
 }
+
+
+
+.nav-wg .nav-wrapper .brand-logo .logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.nav-wg .nav-wrapper .brand-logo .logo-text {
+    margin-left: 10px; 
+    
+}
+
+.nav-wg .nav-wrapper .brand-logo .img-logo {
+    display: inline-block;
+    height: 60px;
+}

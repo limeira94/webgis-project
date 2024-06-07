@@ -112,11 +112,7 @@ class UserUpdateView(APIView):
 
 class RegisterView(APIView):
     def post(self, request):
-        print("A")
         serializer = RegisterSerializer(data=request.data)
-        # TODO:
-        ### Colocar um jeito de verificar erro
-        ### Verificar questão de senha e email atualmente não aceitar email com . e senha curtas
 
         if not serializer.is_valid():
             print("ERROR",serializer.errors)
@@ -169,27 +165,6 @@ class RetrieveUserView(APIView):
                 }
                 }
             return Response(error_message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-    
-        # # Print request headers
-        # print("Request Headers:", headers)
-        # try:
-        #     info["step1"] = f"OK -> {request.headers}"
-        #     user = request.user
-        #     info["step2"] = f"OK-> USER: {user}"
-        #     print("#"*199)
-        #     user_serializer = UserSerializer(user)
-        #     print("2"*199)
-        #     info["step3"] = f"OK-> Serializer: {user_serializer}"
-        #     print("3"*199)
-        #     info["step4"] = f"OK -> DATA> {user_serializer.data}"
-        #     print("4"*199)
-        #     return Response(user_serializer.data, status=status.HTTP_200_OK)
-        # except Exception as e:
-        #     error_message = {"error": str(e),"info":info}
-        #     return Response(error_message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer

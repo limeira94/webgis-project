@@ -52,3 +52,21 @@ ul {
 .card {
     flex: 1 0 auto;
 }
+
+
+.homepage-style{
+    background-color: #eceaea;
+}
+
+.note-style{
+    color:#555;
+    font-size: 10px;
+    font-style: italic;
+    
+    /* font-size: 14px; */
+}
+
+
+.card-style{
+    border-radius: 25px;
+}
