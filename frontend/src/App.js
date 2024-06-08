@@ -11,6 +11,7 @@ import Dashboard from './components/Dashboard';
 import ResetPassword from './components/ResetPassword';
 import Project from './components/Project';
 import About from './components/About';
+import Sidebar from './components/Sidebar';
 
 import { checkAuth } from './features/user';
 
@@ -44,6 +45,7 @@ function App() {
         <Route path="/project" element={<Project />}/>
         <Route path="/project/:project_id" element={<Project />} />
         <Route path="/about" element={<About/>}/>
+        <Route path="/sidebar" element={<Sidebar/>}/>
       </Routes>
     </Router>
   );
