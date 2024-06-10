@@ -38,7 +38,23 @@ export const handleRaster = async (event, setRasters, mapInstance, dispatch, pro
 
       var newCenter = L.latLng(lat, lon);
 
-      setRasters(prevRasters => [...prevRasters, raster]);
+
+      const tileCoordinates = raster.tiles.split(',').map(Number);
+      const [xmin, ymin, xmax, ymax] = tileCoordinates;
+      const bounds = [[ymin, xmin], [ymax, xmax]];
+
+
+      let rasterDict = {
+          "data": raster,
+          "visible": true,
+          "bounds": bounds,
+          "style": {
+              "opacity": 1
+          }
+      };
+
+      setRasters(prevRasters => [...prevRasters, rasterDict]);
+      // setRasters(prevRasters => [...prevRasters, raster]);
 
       M.toast(
         {

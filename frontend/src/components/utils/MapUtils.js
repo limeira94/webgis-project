@@ -189,14 +189,21 @@ const changeVisual = async (rasters, setRasters, raster_id, visual_type, params)
       }
     );
 
+    // const updatedRasters = rasters.map(raster => {
+    //   if (raster.id === raster_id) {
+    //     return { ...raster, png: response.data.png };
+    //   }
+    //   return raster;
+    // });
+    // setRasters(updatedRasters)
     const updatedRasters = rasters.map(raster => {
-      if (raster.id === raster_id) {
-        return { ...raster, png: response.data.png };
-      }
+      if (raster.data.id === raster_id) {
+        return {...raster,data: { ...raster.data, png: response.data.png }}
+      } 
       return raster;
     });
     setRasters(updatedRasters)
-    console.log(response)
+    // // console.log(response)
 
     if (response.status === 201) {
       M.toast(
@@ -584,7 +591,8 @@ export const ListItemWithStyleAll = ({
       // dispatch={dispatch}
       // zoomToLayerRaster={zoomToLayer}
       raster_id={dataset_id}
-      bands={dataset.bands}
+      // bands={dataset.bands}
+      bands={dataset.data.bands}
       zoomanddelete={zoomanddelete}
     />
   }
