@@ -86,7 +86,7 @@ const getUser = createAsyncThunk('users/me',
 		} else {
 			const { dispatch } = thunkAPI;
 				
-			// dispatch(logout());
+			dispatch(logout());
 			return thunkAPI.rejectWithValue(data);
 		}
 	} catch (err) {
@@ -170,8 +170,8 @@ export const checkAuth = createAsyncThunk(
 
 export const logout = createAsyncThunk('users/logout', async (_, thunkAPI) => {
 	try {
-		// Cookies.remove('access_token');
-      	// Cookies.remove('refresh_token');
+		Cookies.remove('access_token');
+      	Cookies.remove('refresh_token');
 	} catch (err) {
 		return thunkAPI.rejectWithValue(err.response.data);
 	}
