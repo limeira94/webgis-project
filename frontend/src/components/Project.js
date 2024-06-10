@@ -58,15 +58,15 @@ function Project() {
     useEffect(() => {
         M.AutoInit();
         const fetchData = async () => {
-            setIsLoading(true);
             if (project_id && projects && project === null) {
                 setData(setProject, setGeoJSONs, setRasters, project_id, projects, navigate);
             } else {
                 await getProjects(setProjects);
             }
-            setIsLoading(false);
         };
+        setIsLoading(true);
         fetchData();
+        setIsLoading(false);
     }, [project_id, project]);
 
     var url = process.env.PUBLIC_URL
