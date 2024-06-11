@@ -111,7 +111,7 @@ export const MapComponent = ({
 
   const handleDrop = (e) => {
     if (!savetomemory){
-      handleDropGeojson(e,setGeoJSONs,mapInstance, dispatch, projectid, setUploading)
+      handleDropGeojson(e,setGeoJSONs,setRasters,mapInstance, dispatch, projectid, setUploading)
     } else {
       UploadToMemoryDrop(e,setGeoJSONs,mapInstance)
     }
@@ -132,7 +132,7 @@ export const MapComponent = ({
         center={defaultCenter} 
         zoom={defaultZoom}
         zoomControl={false}
-        maxZoom={18}
+        maxZoom={22}
         minZoom={2}
       >
 

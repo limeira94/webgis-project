@@ -88,7 +88,7 @@ export const handleRaster = async (event, setRasters, mapInstance, dispatch, pro
   }
 };
 
-export const handleDropGeojson = async (event, setGeoJSONs,mapInstance, dispatch, projectid, setUploading) => {
+export const handleDropGeojson = async (event, setGeoJSONs,setRasters,mapInstance, dispatch, projectid, setUploading) => {
   event.preventDefault();
   const file = event.dataTransfer.files[0]; 
   console.log(file.name)
