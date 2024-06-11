@@ -126,10 +126,46 @@ export const handleDropGeojson = async (event, setGeoJSONs,mapInstance, dispatch
       console.error('Error during upload:', error);
       alert('There was an error uploading the file. Please try again.');
     }
-  } else {
-    alert("File needs to be in '.geojson' format")
+  } else if(file && file.name.toLowerCase().endsWith('.tif')) {
+    try {
+      setUploading(true)
+      const response = await dispatch(upload_raster({ file, projectid }));
+      
+      if (response.type === 'rasters/upload/fulfilled') {
+        const { payload } = response;
+        const { raster } = payload;
+        
+        const tileCoordinates = raster.tiles.split(',').map(Number);
+        const [xmin, ymin, xmax, ymax] = tileCoordinates;
+        const bounds = [[ymin, xmin], [ymax, xmax]];
+
+        let rasterDict = {
+            "data": raster,
+            "visible": true,
+            "bounds": bounds,
+            "style": {
+                "opacity": 1
+            }
+        };
+
+        setRasters(prevRasters => [...prevRasters, rasterDict])
+        mapInstance.flyToBounds(bounds, { maxZoom: 16 });
+
+        setUploading(false)
+      } else {
+        setUploading(false)
+        console.error('File upload failed with status:', response.type);
+        alert('There was an error uploading the file. Please try again.');
+      }
+    } catch (error) {
+      setUploading(false)
+      console.error('Error during upload:', error);
+      alert('There was an error uploading the file. Please try again.');
+    }
+    } else {
+      alert("File needs to be in '.geojson' format for vector and '.tif' for rasters.")
+    }
   }
-}
 
 export const handleGeojson = async (event, setGeoJSONs,mapInstance, dispatch, projectid, setUploading) => {
   event.preventDefault();
