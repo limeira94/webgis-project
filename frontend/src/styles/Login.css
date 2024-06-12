@@ -1,165 +1,103 @@
-.login-position{
-    display: inline-block; 
-    padding: 32px 48px 0px 48px; 
+/* Add this to your CSS file */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #ffffff;
+  flex-direction: column;
 }
 
-.label-forgot{
-    float: right;
+.login-title {
+  font-size: 45px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.room-login{
-    background-color: rgb(20, 9, 82);
-    /* background-color: blueviolet; */
-    background-size: cover;
+.login-card {
+  display: flex;
+  width: 80%;
+  height: 70%;
+  max-width: 1400px;
+  max-height: 1400px;
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.rounded-card-login{
-  /* border: 1px solid #000; */
-  max-width: 500px;
-  border-radius: 15px;
+.login-image {
+  flex: 2;
+  background: url('../../public/map_login2.svg') no-repeat center center;
+  background-size: cover;
+  transition: background 0.3s ease-in-out;
 }
 
-.overlay{
-    background-color: #0a4466 !important;
-    position:fixed;
-    width:100%;
-    height:100%;
-    top:0px;
-    left:0px;
-    z-index:1000;
+.login-form-container {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.centered-element {
-    /* margin: 0; */
-    /* position: absolute; */
-    top: 10%;
-    left: 0%;
-
-    /* transform: translateY(50%);
-    transform: translateX(50%); */
-  }
-
-  .back-color {
-    /* background: linear-gradient(-45deg, rgb(108, 0, 112), #e73c7e, #23a6d5, #110072); */
-    /* background: linear-gradient(-45deg,#e73c7e, rgb(108, 0, 112),   #110072); */
-    background: linear-gradient(-45deg,#bdbabb, rgb(85, 85, 112),   #000000);
-    background-size: 400% 400%;
-    box-shadow: 5px 5px 5px 2px ;
-    animation: gradient 15s ease infinite;
-    
+.login-form-container h4 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
-
-
-.home-button{
-  background: linear-gradient(90deg, rgb(10, 0, 9), rgb(0, 81, 255));
-    /* background: linear-gradient(90deg, rgb(5, 7, 136), rgb(255, 0, 234)); */
-}
-
-@keyframes gradient {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-
-
 
 .input-field {
-    position: relative;
-    margin: 15px 0;
-  }
-  
-  .input-field input[type="text"],
-  .input-field input[type="password"],
-  .input-field input[type="email"] {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 25px; 
-    background-color: #19346e; 
-    color: #fff;
-    box-sizing: border-box;
-  }
-  .input-register{
-    width: 90% !important;
-  }
-  
-  .input-field label {
-    position: absolute;
-    top: 0px;
-    left: 0px; 
-    padding-top: 15px;
-    padding-left: 15px;
-    color: #fff; 
-    pointer-events: none;
-    transition: 0.2s ease-out;
-  }
-  
-  .input-field input:focus,
-  .input-field input:valid,
-  .input-field textarea:focus,
-  .input-field textarea:valid {
-    border-color: #2b2763; 
-    box-shadow: 0 0 5px rgba(41, 129, 187, 0.7);
-  }
-  
-  .input-field input:focus + label,
-  .input-field input:valid + label,
-  .input-field textarea:focus + label,
-  .input-field textarea:valid + label {
-    transform: translateY(-3px);
-    font-size: 14px; 
-  }
-
-
-
-  /* .login-button{
-    background: linear-gradient(90deg, rgb(136, 5, 125), rgb(255, 0, 106));
-} */
-  .login-button {
-    background-color: #04AA6D;
-    border: none;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    border-radius: 8px;
-    background-color:#19346e;
-    /* background: linear-gradient(90deg, rgb(10, 0, 9), rgb(0, 81, 255)); */
-  }
-
-
-
-  .card-login{
-    background-color: white;
-  }
-
-
-  /* .card-login{
-    background-color: white;
-    position:fixed;
-    width:40%;
-    height:100%;
-    top:0px;
-    left:0px;
-    z-index:1000;
-} */
-
-
-.card-login {
-  background-color: white;
-  transition: transform 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 10px;
 }
 
-.card-login:hover {
-  transform: translateY(-5px);
+.input-field i {
+  margin-right: 10px;
+  color: #888;
+}
+
+.input-field input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 16px;
+  padding-left: 40px;
+  border-radius: 20px;
+}
+
+.login-button {
+  background-color: red;
+  color: white;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 20px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.login-button:hover~.login-image {
+  background: url('../../public/map_login.svg') no-repeat center center;
+  background-size: cover;
+}
+
+.login-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.login-links a {
+  color: gray;
+  text-decoration: none;
+}
+
+.login-links a:hover {
+  text-decoration: underline;
 }
