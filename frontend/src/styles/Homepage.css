@@ -70,3 +70,10 @@ ul {
 .card-style{
     border-radius: 25px;
 }
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+

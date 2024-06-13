@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef,Text } from 'react';
+import React, { useState, useEffect, useRef, Text } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import 'materialize-css';
@@ -9,7 +9,10 @@ import axios from 'axios'
 import { getProjects } from './utils/ProjectFunctions';
 import { Navigate } from 'react-router-dom';
 // import Project from './Project';
-import '../styles/Homepage.css'
+import '../styles/Homepage.css';
+import iconFull from '../assets/icone-acesso-completo.svg';
+import iconSimple from '../assets/icone-acesso-simplificado.svg';
+
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
@@ -39,32 +42,32 @@ This project is a open-source platform to visualize and analyse geographic data.
 Below you can find information about how to use this website.
     `
     const listItens = [
-        {"type":"simple" ,"text":"Add vector layers (GeoJSON)"},
-        {"type":"simple" ,"text":"Edit layer styles"},
-        {"type":"simple" ,"text":"Access multiple basemaps"},
-        {"type":"simple" ,"text":"Area Measurement"},
-        {"type":"simple" ,"text":"Print maps"},
-        {"type":"complex","text":"Add raster layers"},
-        {"type":"complex","text":"Edit layers"},
-        {"type":"complex","text":"Create and edit Projects"},
+        { "type": "simple", "text": "Add vector layers (GeoJSON)" },
+        { "type": "simple", "text": "Edit layer styles" },
+        { "type": "simple", "text": "Access multiple basemaps" },
+        { "type": "simple", "text": "Area Measurement" },
+        { "type": "simple", "text": "Print maps" },
+        { "type": "complex", "text": "Add raster layers" },
+        { "type": "complex", "text": "Edit layers" },
+        { "type": "complex", "text": "Create and edit Projects" },
     ]
 
     const simplifiedText = () => {
         return (
-            <> 
-                {listItens.map((item)=>(
+            <>
+                {listItens.map((item) => (
                     <p>
                         <i className={`material-icons ${item["type"] === "simple" ? "red" : "grey"}-text`}>check_circle</i> {item["text"]}
                     </p>
-    ))}
+                ))}
             </>
         );
     };
-    
+
     const fullText = () => {
         return (
             <>
-                {listItens.map((item)=>(
+                {listItens.map((item) => (
                     <p>
                         <i className={"material-icons red-text"}>check_circle</i> {item["text"]}
                     </p>
@@ -88,7 +91,10 @@ Below you can find information about how to use this website.
                     <div class="row">
                         <div class="col s12 m6">
                             <div class="card-panel white card-style">
-                                <h5 className='center'>Simplified</h5>
+                                <div className="header-container center">
+                                    <img src={iconSimple} alt="custom icon" style={{ marginRight: '10px' }} />
+                                    <h5>Simplified</h5>
+                                </div>
                                 <div className='container'>
                                     <span class="black-text">
                                         {simplifiedText()}
@@ -100,7 +106,10 @@ Below you can find information about how to use this website.
                         </div>
                         <div class="col s12 m6">
                             <div class="card-panel white card-style">
-                                <h5 className='center'>Full</h5>
+                                <div className="header-container center">
+                                    <img src={iconFull} alt="custom icon" style={{ marginRight: '10px' }} />
+                                    <h5>Full</h5>
+                                </div>
                                 <div className='container'>
                                     <span class="black-text">
                                         {fullText()}
@@ -110,9 +119,9 @@ Below you can find information about how to use this website.
                                 <p className='note-style center'>Note: After registering, you will be able to create projects and save your data in the database.</p>
                             </div>
                         </div>
-                    </div>  
+                    </div>
                 </div>
-                
+
                 <div className="custom-shape-divider-top-1701366195 card-section">
                     <div className='container section'>
                         <div className="row">
