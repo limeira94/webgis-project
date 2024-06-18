@@ -42,14 +42,14 @@ L.Icon.Default.mergeOptions({
 });
 
 export const MapComponent = ({
-    rasters,
-    geojsons,
-    setRasters,
-    setGeoJSONs,
-    projectid = null,
-    project=null,
-    savetomemory = true
-  }) => {
+  rasters,
+  geojsons,
+  setRasters,
+  setGeoJSONs,
+  projectid = null,
+  project = null,
+  savetomemory = true
+}) => {
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
   const [buttonsCreated, setButtonsCreated] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
@@ -59,11 +59,11 @@ export const MapComponent = ({
   const [uploading, setUploading] = useState(false)
 
   const geojsonLayerRefs = useRef({});
-  const fileInputRef = useRef(null); 
+  const fileInputRef = useRef(null);
 
   const defaultCenter = [50.640, 10.553];  // Coordenadas iniciais do mapa
   const defaultZoom = 5;  // Zoom inicial do mapa
-  
+
   useEffect(() => {
     M.AutoInit();
     const elems = document.querySelectorAll('.modal');
@@ -97,7 +97,7 @@ export const MapComponent = ({
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
-  
+
   // Identificar todas as chaves únicas
   const flattenedData = modalData.flat();
   const uniqueKeys = Array.from(new Set(flattenedData.flatMap(Object.keys)));
@@ -110,31 +110,31 @@ export const MapComponent = ({
   const dispatch = useDispatch()
 
   const handleDrop = (e) => {
-    if (!savetomemory){
-      handleDropGeojson(e,setGeoJSONs,setRasters,mapInstance, dispatch, projectid, setUploading)
+    if (!savetomemory) {
+      handleDropGeojson(e, setGeoJSONs, setRasters, mapInstance, dispatch, projectid, setUploading)
     } else {
-      UploadToMemoryDrop(e,setGeoJSONs,mapInstance)
+      UploadToMemoryDrop(e, setGeoJSONs, mapInstance)
     }
   }
 
   const MapItem = <div
-      onDrop={handleDrop}//handleDropGeojson}//handleGeojson}
-      onDragOver={handleDragOver}
-      style={{ width: '100%', height: '500px' }}
+    onDrop={handleDrop}//handleDropGeojson}//handleGeojson}
+    onDragOver={handleDragOver}
+    style={{ width: '100%', height: '500px' }}
   >
     <MapContainer
-        className='map-container'
-        ref={(map) => {
-          if (map && !mapInstance) {
-            setMapInstance(map);
-          }
-        }}
-        center={defaultCenter} 
-        zoom={defaultZoom}
-        zoomControl={false}
-        maxZoom={22}
-        minZoom={2}
-      >
+      className='map-container'
+      ref={(map) => {
+        if (map && !mapInstance) {
+          setMapInstance(map);
+        }
+      }}
+      center={defaultCenter}
+      zoom={defaultZoom}
+      zoomControl={false}
+      maxZoom={22}
+      minZoom={2}
+    >
 
       <TileLayer url={selectedTileLayer} />
 
@@ -220,22 +220,22 @@ export const MapComponent = ({
         tileLayersData={tileLayersData}
       />
 
-      {savetomemory ? 
+      {savetomemory ?
         <MemoryButton
           handleButtonClick={handleButtonClick}
           fileInputRef={fileInputRef}
           setGeojsons={setGeoJSONs}
           mapInstance={mapInstance}
         />
-      : (
-        <UpDelButttons
-          setGeoJSONs={setGeoJSONs}
-          setRasters={setRasters}
-          mapInstance={mapInstance}
-          projectid={projectid}
-          setUploading={setUploading}
-        />
-      )}
+        : (
+          <UpDelButttons
+            setGeoJSONs={setGeoJSONs}
+            setRasters={setRasters}
+            mapInstance={mapInstance}
+            projectid={projectid}
+            setUploading={setUploading}
+          />
+        )}
 
       <div className='home-button-map'>
         <a href="/" className="btn-floating waves-effect waves-light black">

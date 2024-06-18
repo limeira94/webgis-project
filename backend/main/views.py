@@ -40,6 +40,8 @@ class ProjectList(APIView):
         try:
             project = Project.objects.get(pk=pk)
             if request.user == project.user:
+                geojson_file = GeoJSONFile.objects.filter(project=project)
+                geojson_file.delete()
                 project.delete()
                 return Response({'detail': 'Project deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
             else:
