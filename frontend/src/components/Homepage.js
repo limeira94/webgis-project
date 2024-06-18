@@ -56,8 +56,8 @@ Below you can find information about how to use this website.
         return (
             <>
                 {listItens.map((item) => (
-                    <p>
-                        <i className={`material-icons ${item["type"] === "simple" ? "red" : "grey"}-text`}>check_circle</i> {item["text"]}
+                    <p style={{ display: 'flex', alignItems: 'center' }}>
+                        <img src={`${url}/${item["type"] === "simple" ? "inclusa" : "nao-inclusa"}.svg`} alt="icon" style={{ marginRight: '10px' }} /> {item["text"]}
                     </p>
                 ))}
             </>
@@ -68,8 +68,8 @@ Below you can find information about how to use this website.
         return (
             <>
                 {listItens.map((item) => (
-                    <p>
-                        <i className={"material-icons red-text"}>check_circle</i> {item["text"]}
+                    <p style={{ display: 'flex', alignItems: 'center' }}>
+                        <img src={`${url}/inclusa.svg`} alt="icon" style={{ marginRight: '10px' }} /> {item["text"]}
                     </p>
                 ))}
             </>
@@ -91,7 +91,7 @@ Below you can find information about how to use this website.
                     <div class="row">
                         <div class="col s12 m6">
                             <div class="card-panel white card-style">
-                                <div className="header-container center">
+                                <div className="header-container center" >
                                     <img src={iconSimple} alt="custom icon" style={{ marginRight: '10px' }} />
                                     <h5>Simplified</h5>
                                 </div>
@@ -100,7 +100,7 @@ Below you can find information about how to use this website.
                                         {simplifiedText()}
                                     </span>
                                 </div>
-                                <p className='center'><a href="/map" className='btn btn-small red center'>Take a tour</a></p>
+                                <p className='center'><a href="/map" className='btn btn-small red center rounded-button'>Take a tour</a></p>
                                 <p className='note-style center'>Note: The data is temporary here, it will be deleted after reloading the page. All data will be lost.</p>
                             </div>
                         </div>
@@ -115,7 +115,7 @@ Below you can find information about how to use this website.
                                         {fullText()}
                                     </span>
                                 </div>
-                                <p className='center'><a href="/register" className='btn btn-small red'>Register</a></p>
+                                <p className='center'><a href="/register" className='btn btn-small red rounded-button'>Register</a></p>
                                 <p className='note-style center'>Note: After registering, you will be able to create projects and save your data in the database.</p>
                             </div>
                         </div>

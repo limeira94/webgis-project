@@ -63,8 +63,8 @@ const Navbar = () => {
                 <div className="nav-wrapper">
                     <a href="/#" className="brand-logo">
                         <div className='logo-container black-text'>
-                            <img className="img-logo" src={url + "/logo-world.svg"} alt="Web GIS Logo" height={60} />
-                            <span className='logo-text'>WebGIS Project</span>
+                            <img className="img-logo" src={url + "/logo-world.svg"} alt="Web GIS Logo" style={{height: '50px'}} />
+                            <span className='logo-text' style={{ fontSize: '25px' }}>WebGIS</span>
                         </div>
                     </a>
                     <a href="#" data-target="mobile-demo" className="sidenav-trigger black-text">
