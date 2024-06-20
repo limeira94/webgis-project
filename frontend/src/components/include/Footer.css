@@ -1,16 +1,17 @@
-footer {
-    background-color:bisque; 
-    color: black;
-    margin-top: auto;
-    padding: 20px 0;
-  }
-
-li.inline {
-  display: inline-block;
-  margin-right: 10px; 
+.footer-color {
+  background-color: #000;
+  padding: 20px 0;
 }
 
+.footer-content {
+  display: flex;
+  justify-content: left;
+  gap: 20px;
+}
 
-.footer-color{
-    background-color: black;
+.footer-content a,
+.footer-content p {
+  margin: 0;
+  color: #fff;
+  text-decoration: none;
 }
