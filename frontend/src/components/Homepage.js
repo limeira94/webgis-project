@@ -125,7 +125,7 @@ Below you can find information about how to use this website.
                 <div className="custom-shape-divider-top-1701366195 card-section">
                     <div className='container section'>
                         <div className="row">
-                            <h4 className='center'>My projects</h4>
+                            {/* <h4 className='center'>My projects</h4> */}
                             {projects.map((project, index) => (
                                 <div key={index} className="col s12 m3">
                                     <div className="card">
@@ -147,7 +147,42 @@ Below you can find information about how to use this website.
                         </div>
                     </div>
                 </div>
+
+                <div className='section container' >
+                    <div className='tech-section-container'>
+                        <div className='tech-stack'>
+                            <div className='tech-section'>
+                                <h5 className='center'>Backend</h5>
+                                <div className='tech-icons'>
+                                    <img src={`${url}/python-icon.svg`} alt='Python' />
+                                    <img src={`${url}/flask-icon.svg`} alt='Flask' />
+                                    <img src={`${url}/django-icon.svg`} alt='Django' />
+                                    <img src={`${url}/fastapi-icon.svg`} alt='FastAPI' />
+                                </div>
+                            </div>
+                            <div className='tech-section'>
+                                <h5 className='center'>Frontend</h5>
+                                <div className='tech-icons'>
+                                    <img src={`${url}/devicon_javascript.svg`} alt='JavaScript' />
+                                    <img src={`${url}/logos_react.svg`} alt='React' />
+                                    <img src={`${url}/logos_openlayers.svg`} alt='OpenLayers' />
+                                    <img src={`${url}/logos_leaflet.svg`} alt='Leaflet' />
+                                </div>
+                            </div>
+                            <div className='tech-section'>
+                                <h5 className='center'>Deploy</h5>
+                                <div className='tech-icons'>
+                                    <img src={`${url}/logos_heroku.svg`} alt='Heroku' />
+                                    <img src={`${url}/logos_aws.svg`} alt='AWS' />
+                                    <img src={`${url}/simple-icons_pythonanywhere.svg`} alt='Pythonanywhere' />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+
             <Footer />
         </>
     );

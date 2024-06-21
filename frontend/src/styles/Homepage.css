@@ -77,3 +77,34 @@ ul {
     justify-content: center;
 }
 
+.tech-stack {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 20px;
+    
+}
+
+.tech-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.tech-icons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.tech-icons img {
+    margin: 10px;
+    width: 50px;
+    height: 50px;
+}
+
+.tech-section-container {
+    background-color: #eceaea;
+    padding: 20px;
+}
