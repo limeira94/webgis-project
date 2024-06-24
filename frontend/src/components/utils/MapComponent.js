@@ -31,6 +31,7 @@ import { handleDropGeojson, handleGeojson } from './eventHandler';
 import { useDispatch } from 'react-redux';
 import { UploadToMemoryDrop } from './Memory/eventHandlers';
 import MouseCoordinates from './MouseCoordinates';
+import SidebarNew from './SidebarNew';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -204,6 +205,7 @@ export const MapComponent = ({
       {
         uploading
           ? loadingIcon : null}
+      <SidebarNew />
       <ToggleLayersSelector
         rasters={rasters}
         setRasters={setRasters}
