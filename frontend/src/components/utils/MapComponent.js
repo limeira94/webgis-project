@@ -165,9 +165,7 @@ export const MapComponent = ({
               type: 'FeatureCollection',
               features: [geojson],
             }}
-            style={
-              geojsondata.style
-            }
+            style={geojsondata.style}
 
             onEachFeature={(feature, layer) => {
               // if (feature.geometry.type !== 'Point') {

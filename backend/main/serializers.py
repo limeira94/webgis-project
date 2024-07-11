@@ -7,7 +7,7 @@ from .models import *
 class GeoJsonFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeoJSONFile
-        fields = ('id', 'name', 'geojson', 'attributes', 'group_id')
+        fields = "__all__"#('id', 'name', 'geojson', 'attributes', 'group_id')
 
 
 class RasterFileSerializer(serializers.ModelSerializer):

@@ -98,6 +98,7 @@ export const parseGeoJSON = (data) => {
           id: item.id,
           group_id: groupId,
           name: item.name,
+          style:item.style,
           attributes: item.attributes,
         },
       };
@@ -109,6 +110,7 @@ export const parseGeoJSON = (data) => {
         id: item.id,
         group_id: groupId,
         name: item.name,
+        style:item.style,
         attributes: item.attributes,
       },
     });

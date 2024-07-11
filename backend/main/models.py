@@ -31,16 +31,21 @@ class Geojson(models.Model):
     attributes = JSONField(blank=True, null=True)
     vector = models.ForeignKey(VectorFileModel,on_delete=models.CASCADE)
 
+def get_default_style():
+    return {
+        "color": "#ff7800",
+        "weight": 3,
+        "fillOpacity": 0.65,
+        "fillColor": "#ff7800"
+    }
 
 class GeoJSONFile(models.Model):
     name = models.CharField(max_length=255)
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, blank=True, null=True
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     geojson = models.GeometryField()
     attributes = JSONField(blank=True, null=True)
     group_id = models.IntegerField(default=0)
-
+    style = models.JSONField(default=get_default_style,blank=True,null=True)
 
 #TODO: 
 # Substituir overwrite do save

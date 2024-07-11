@@ -193,6 +193,7 @@ const createRasters = (rasters) => {
 export const createGeojsons = (geojsons) => {
     let result = [];
     geojsons.forEach(geojson => {
+        console.log("GEOJSON",geojson)
 
         let geojsonDict = {
             "data": geojson,
