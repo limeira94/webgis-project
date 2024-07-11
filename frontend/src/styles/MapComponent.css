@@ -2,6 +2,7 @@
   position: relative;
   height: 100vh;
   width: 100%;
+  transition: width 0.5s ease-out; 
 }
 
 .btn-menu {
@@ -439,3 +440,24 @@
   z-index: 1001;
   /* Garante que o controle fique acima da maioria dos elementos */
 }
+
+
+.sidenav-toolbar {
+  width: 300px;
+  height: 100%;
+  background-color: white;
+  left: 0px;
+  position: fixed;
+  z-index: 500;
+  transition: transform 0.5s ease-out;
+  transform: translateX(-500px);
+  overflow-y: hidden; /* Prevent the whole toolbar from scrolling */
+}
+
+.sidenav-toolbar.active {
+  transform: translateX(0);
+}
+
+/* .map-container.shrink {
+  width: calc(100% - 400px); 
+} */

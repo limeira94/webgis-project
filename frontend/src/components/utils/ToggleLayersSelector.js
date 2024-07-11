@@ -42,18 +42,18 @@ const ToggleLayersSelector = (
 },[])
   
 
-  const toggleDrawer = (open) => () => {
-    var elems = document.querySelectorAll('.sidenav');
-    var instance = M.Sidenav.getInstance(elems[0]);
+  // const toggleDrawer = (open) => () => {
+  //   var elems = document.querySelectorAll('.sidenav');
+  //   var instance = M.Sidenav.getInstance(elems[0]);
 
-    if (open){
-      instance.close();
-    }
-    else{
-      instance.open();
-    }
-    setIsDrawerOpen(!open);
-  };
+  //   if (open){
+  //     instance.close();
+  //   }
+  //   else{
+  //     instance.open();
+  //   }
+  //   setIsDrawerOpen(!open);
+  // };
 
   const zoomToLayer = (geojsonId) => {  
     const layer = geojsonLayerRefs.current[geojsonId];
@@ -78,25 +78,23 @@ const ToggleLayersSelector = (
 
   return (
     <>
-      <ul id="slide-out" className="sidenav">
+    <div className={`sidenav-toolbar ${isDrawerOpen ? 'active' : ''}`}>
+        <ul>
         <div className="sidebar-title">Your dataset:</div>
-        {geojsons.map((geojson) => {
-          return (
-          <ListItemWithStyleAll
-          key={`$geojson-item-${geojson.data.properties.id}`}
-          datasets={geojsons}
-          setDatasets={setGeojsons}
-          polygonStyles={geojson.style}
-          dataset={geojson}
-          datatype={"geojson"}
-          zoomToLayer={zoomToLayer}
-          updateStyle={updateStyle}
-          selectedFeatureAttributes={selectedFeatureAttributes}
-          inmemory={inmemory}
+        {geojsons.map((geojson) =>  (
+            <ListItemWithStyleAll
+            key={`$geojson-item-${geojson.data.properties.id}`}
+            datasets={geojsons}
+            setDatasets={setGeojsons}
+            polygonStyles={geojson.style}
+            dataset={geojson}
+            datatype={"geojson"}
+            zoomToLayer={zoomToLayer}
+            updateStyle={updateStyle}
+            selectedFeatureAttributes={selectedFeatureAttributes}
+            inmemory={inmemory}
           />
-          )
-
-          })}
+          ))}
         
         {rasters.map((raster) => (
               <ListItemWithStyleAll
@@ -110,20 +108,79 @@ const ToggleLayersSelector = (
               />
           ))}
       </ul>
-      <div className='btn-menu'>
-        <a 
-          href="#" 
-          data-target="slide-out"
-          //TODO: Create way to avoid the problem when clicking outside the sidenav, without this button.
-          // className="sidenav-trigger btn-floating waves-effect waves-light black"
-          className="btn-floating waves-effect waves-light black"
-          onClick={toggleDrawer(isDrawerOpen)}
-          >
-            <i className="material-icons">menu</i>
-        </a>
-      </div> 
+    </div>
+
+    <div className='btn-menu'>
+      <a 
+        href="#" 
+        className="btn-floating waves-effect waves-light black"
+        onClick={()=>setIsDrawerOpen(!isDrawerOpen)}
+        >
+          <i className="material-icons">menu</i>
+      </a>
+    </div>  
+
     </>
   );
 };
 
 export default ToggleLayersSelector;
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // <>
+    //   <ul id="slide-out" className="sidenav">
+    //     <div className="sidebar-title">Your dataset:</div>
+    //     {geojsons.map((geojson) => {
+    //       return (
+    //       <ListItemWithStyleAll
+    //       key={`$geojson-item-${geojson.data.properties.id}`}
+    //       datasets={geojsons}
+    //       setDatasets={setGeojsons}
+    //       polygonStyles={geojson.style}
+    //       dataset={geojson}
+    //       datatype={"geojson"}
+    //       zoomToLayer={zoomToLayer}
+    //       updateStyle={updateStyle}
+    //       selectedFeatureAttributes={selectedFeatureAttributes}
+    //       inmemory={inmemory}
+    //       />
+    //       )
+
+    //       })}
+        
+    //     {rasters.map((raster) => (
+    //           <ListItemWithStyleAll
+    //           key={`$raster-item-${raster.data.id}`}
+    //           datasets={rasters}
+    //           setDatasets={setRasters}
+    //           dataset={raster}
+    //           datatype={"raster"}
+    //           zoomToLayer={zoomToLayerRaster}
+    //           inmemory={inmemory}
+    //           />
+    //       ))}
+    //   </ul>
+    //   <div className='btn-menu'>
+    //     <a 
+    //       href="#" 
+    //       data-target="slide-out"
+    //       //TODO: Create way to avoid the problem when clicking outside the sidenav, without this button.
+    //       // className="sidenav-trigger btn-floating waves-effect waves-light black"
+    //       className="btn-floating waves-effect waves-light black"
+    //       onClick={toggleDrawer(isDrawerOpen)}
+    //       >
+    //         <i className="material-icons">menu</i>
+    //     </a>
+    //   </div> 
+    // </>

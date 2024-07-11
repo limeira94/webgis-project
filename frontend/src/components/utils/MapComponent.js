@@ -123,7 +123,7 @@ export const MapComponent = ({
     style={{ width: '100%', height: '500px' }}
   >
     <MapContainer
-      className='map-container'
+      className='map-container shrink'
       ref={(map) => {
         if (map && !mapInstance) {
           setMapInstance(map);
@@ -170,7 +170,7 @@ export const MapComponent = ({
             }
 
             onEachFeature={(feature, layer) => {
-              if (feature.geometry.type !== 'Point') {
+              // if (feature.geometry.type !== 'Point') {
                 layer.on('click', () => {
                   const attributes = feature.properties.attributes;
                   if (attributes) {
@@ -180,8 +180,9 @@ export const MapComponent = ({
                     const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
                     modalInstance.open();
                   }
-                });
-              }
+                }
+              );
+              // }
             }}
           />
         )
