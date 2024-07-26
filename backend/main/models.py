@@ -22,23 +22,29 @@ from .utils import *
 
 def get_default_style():
     return {
-        "color": "#ff7800",
-        "weight": 3,
-        "fillOpacity": 0.65,
-        "fillColor": "#ff7800"
+        "color": "#01579b",
+        "weight": 1,
+        "fillOpacity": 1.0,
+        "fillColor": "#00ff55"
+        # "color": "#ff7800",
+        # "weight": 3,
+        # "fillOpacity": 0.65,
+        # "fillColor": "#ff7800"
     }
 
 class Geojson(models.Model):
     geometry = models.GeometryField()
     attributes = JSONField(blank=True, null=True)
     # vector = models.ForeignKey(VectorFileModel,on_delete=models.CASCADE)
-    style = models.JSONField(default=get_default_style)
+    # style = models.JSONField(default=get_default_style)
+    style = models.JSONField(default=dict)
 
 class VectorFileModel(models.Model):
-    file = models.FileField(blank=True,null=True)
+    file = models.FileField(upload_to="",blank=True,null=True)
     format_name = models.CharField(max_length=20,blank=True,null=True)
     name = models.CharField(max_length=100,unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    style = models.JSONField(default=get_default_style)
     geoms = models.ManyToManyField(Geojson)
 
     # def save(self, *args, **kwargs):

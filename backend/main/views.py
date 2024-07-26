@@ -17,6 +17,28 @@ from .serializers import *
 
 from shapely.geometry import box
 
+
+class UpdateVectorStyle(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        vector = get_object_or_404(VectorFileModel, pk=pk)
+        style = request.data.get('style')
+
+        if not style:
+            return Response({"error": "Style data is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # print(style,type(style))
+        # for i,j in vector.style.items():
+        #     print(i,j)
+        vector.style = style
+        vector.save()
+
+        # print(vector.style)
+
+        # serializer = VectorFileModelSerializer(vector)
+        return Response({"message":"Success updating style"}, status=status.HTTP_200_OK)
+
 class ProjectList(APIView):
     permissions = [permissions.IsAuthenticated]
     def post(self, request):
@@ -145,7 +167,7 @@ class RasterViewSet(viewsets.ModelViewSet):
         serial = RasterFileSerializer(raster)
         polygon = box(*bounds)
 
-        print(polygon.centroid.x, polygon.centroid.y)
+        # print(polygon.centroid.x, polygon.centroid.y)
         return Response(
             {
                 'message': 'Data saved successfully',

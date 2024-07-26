@@ -7,10 +7,15 @@
 
 .btn-menu {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 10px;
+  left: 20px;
   z-index: 1000;
+  transition: transform 0.5s ease-out;
   /* border-radius: 50%; */
+}
+
+.btn-menu.active {
+  transform: translateX(300px);
 }
 
 .btn-color {
@@ -450,7 +455,7 @@
   position: fixed;
   z-index: 500;
   transition: transform 0.5s ease-out;
-  transform: translateX(-500px);
+  transform: translateX(-300px);
   overflow-y: hidden; /* Prevent the whole toolbar from scrolling */
 }
 

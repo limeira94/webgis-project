@@ -46,6 +46,8 @@ export const MapComponent = ({
   geojsons,
   setRasters,
   setGeoJSONs,
+  vectors,
+  setVectors,
   projectid = null,
   project = null,
   savetomemory = true
@@ -117,6 +119,37 @@ export const MapComponent = ({
     }
   }
 
+  const getFeatureStyle = (feature) => {
+    return {
+      color: feature.style.color || "blue",
+      weight: feature.style.weight || 2,
+      // opacity: feature.properties.style.opacity || 1
+      fillOpacity: feature.style.fillOpacity || 1.0,
+      fillColor: feature.style.fillColor || "#00ff55"
+    };
+  };
+
+  const onEachFeatureVector = (vector) => (feature, layer) => {
+    if (feature){
+      // const style = getFeatureStyle(feature);
+      // layer.setStyle(style);
+
+      layer.on('click', () => {
+        const attributes = feature.properties.attributes;
+        if (attributes) {
+          setSelectedFeatureAttributes(attributes);
+          setModalData([attributes]);
+          const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
+          modalInstance.open();
+          }
+        }
+      )
+        
+      
+      layer.style = feature.properties.style
+    }
+  }
+
   const MapItem = <div
     onDrop={handleDrop}//handleDropGeojson}//handleGeojson}
     onDragOver={handleDragOver}
@@ -149,6 +182,17 @@ export const MapComponent = ({
             key={index}
           />
         );
+      })}
+
+      {vectors.map((vector,index)=>{
+        return vector.visible && 
+        (<GeoJSON
+          key={`vector-${index}`}
+          data={vector.data}
+          style={vector.data.properties.style}
+          onEachFeature={onEachFeatureVector(vector.data)}
+        >
+        </GeoJSON>)
       })}
 
       {geojsons.map((geojsondata, index) => {
@@ -208,6 +252,8 @@ export const MapComponent = ({
         setRasters={setRasters}
         geojsons={geojsons}
         setGeojsons={setGeoJSONs}
+        vectors={vectors}
+        setVectors={setVectors}
         geojsonLayerRefs={geojsonLayerRefs}
         mapInstance={mapInstance}
         selectedFeatureAttributes={selectedFeatureAttributes}

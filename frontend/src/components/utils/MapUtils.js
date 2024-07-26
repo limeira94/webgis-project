@@ -2,7 +2,7 @@
 import parse from 'wellknown';
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import data, { delete_geojson, delete_raster } from '../../features/data';
+import data, { delete_geojson, delete_raster, geojson } from '../../features/data';
 import '../../styles/MapUtils.css'
 import M from 'materialize-css';
 import Cookies from 'js-cookie'
@@ -80,7 +80,7 @@ const handleDeleteFiles = (fileId, dispatch, datasets, setDatasets, functionDele
 }
 
 export const parseGeoJSON = (data) => {
-  console.log("DATA",data)
+  // console.log("DATA",data)
   const grouped = data.reduce((acc, item) => {
     const parts = item.geojson.split(';');
 
@@ -120,6 +120,45 @@ export const parseGeoJSON = (data) => {
 };
 
 
+export const parseVector = (vector) => {
+
+  const parsed = vector.map((data)=>{
+    const dataInfo = {
+      type: 'FeatureCollection',
+      features: [],
+      properties: {
+        id: data.id,
+        visible:false,
+        name: data.name,
+        format:data.format_name,
+        style:data.style,
+        // attributes: item.attributes,
+      },
+    };
+
+    data.geoms.map((geojson)=>{
+      const parts = geojson.geometry.split(';');
+      const geom = parts.length > 1 ? parse(parts[1]) : null;
+
+      const feature = {
+        type: 'Feature',
+        id: geojson.id,
+        geometry: geom,
+        properties: {
+          attributes: geojson.attributes,
+        },
+        style:geojson.style,
+      }
+    dataInfo.features.push(feature)
+
+    })
+    return dataInfo
+  })
+
+  return parsed
+}
+
+
 
 export const extractCoordsFromPoint = (coords, lats, longs) => {
   let [long, lat] = coords;
@@ -143,6 +182,7 @@ const extractCoordsFromPolygonOrMultiLine = (coordinates, lats, longs) => {
 
 export const getCenterOfGeoJSON = (geojson) => {
   let lats = [], longs = [];
+  // console.log("GEOJSON",geojson)
 
   geojson.features.forEach((feature) => {
     switch (feature.geometry.type) {
@@ -464,14 +504,18 @@ const get_item_table = (title, inputType, value, name, geojson, updateStyle) => 
 }
 var maxCharacters = 15
 
+// {"color": "#01579b", "weight": 1, "fillColor": "#00ff55", "fillOpacity": 1}
+
 export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
 
   let isPoint = false;
   let isLine = false;
   
-  const geojson = geojsondata.data.features === undefined ? geojsondata.data: geojsondata.data.features[0]
+  const geojson = geojsondata.data.features === undefined ? 
+        geojsondata.data: 
+        geojsondata.data//.features[0]
 
-  if (geojson.type === 'FeatuteCollection') {
+  if (geojson.type === 'FeatureCollection') {
     isPoint = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
     isLine = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString"));
   } else {
@@ -479,20 +523,55 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
     isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
   }
 
+  const handleSaveStyle = async (geojson) => {
+    try {
+      const style = geojson.properties.style;
+      const vectorId = geojson.properties.id;  
+      const token = Cookies.get('access_token');
+
+      const response = await axios.post(
+        `${API_URL}api/main/vectors/${vectorId}/save-style/`, {
+        style: style
+      }, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+  
+      if (response.status === 200) {
+        console.log('Style saved successfully!');
+      } else {
+        console.error('Unexpected response:', response);
+      }
+    } catch (error) {
+      console.error('Error saving style:', error);
+    }
+  };
+
+  const saveStyle = <>
+    <tr>
+      <td><span>Save style</span></td>
+      <td className='alnright'>
+        <a onClick={()=>handleSaveStyle(geojson)} className='btn blue'><i className='material-icons'>save</i></a>
+      </td>
+    </tr>
+  </>
+
   // const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
   // const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
 
-  
-  const colorValue = geojsondata.style.fillColor//polygonStyles[geojson.properties.id]?.fillColor || "#ff0000"
+  // const colorValue = geojsondata.style.fillColor
+  const colorValue = geojsondata.data.properties.style.fillColor
   const colorRow = get_item_table("Color", "color", colorValue, "fillColor", geojson, updateStyle);
 
-  const lineColorValue = geojsondata.style.color//polygonStyles[geojson.properties.id]?.color || "#ff0000"
+  const lineColorValue = geojsondata.data.properties.style.color
   const lineColorRow = get_item_table("Line Color", "color", lineColorValue, "color", geojson, updateStyle);
 
-  const widthValue = geojsondata.style.weight//polygonStyles[geojson.properties.id]?.weight || 3
+  const widthValue = geojsondata.data.properties.style.weight
   const widthRow = get_item_table("Line Size", "range", widthValue, "weight", geojson, updateStyle);
 
-  const opacityValue = geojsondata.style.fillOpacity//polygonStyles[geojson.properties.id]?.fillOpacity || 0.65
+  const opacityValue = geojsondata.data.properties.style.fillOpacity
   const opacityRow = get_item_table("Opacity", "range", opacityValue, "fillOpacity", geojson, updateStyle);
 
   return (
@@ -504,6 +583,7 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
           {!isPoint && lineColorRow}
           {!isPoint && !isLine && opacityRow}
           {!isPoint && widthRow}
+          {saveStyle}
         </tbody>
       </table>
     </div>
@@ -537,8 +617,10 @@ export const ListItemWithStyleAll = ({
     const updatedDataset = { ...dataset, visible: !dataset.visible };
     setDatasets(prevDatasets => {
         return prevDatasets.map(item => {
-            
-            const comp = dataset.data.properties==undefined ? item.data.id === dataset.data.id : item.data.properties.id === dataset.data.properties.id 
+            const comp = dataset.data.properties==undefined ? 
+                  item.data.id === dataset.data.id : 
+                  item.data.properties.id === dataset.data.properties.id 
+            // const comp = item.properties.id===dataset.properties.id
 
             if (comp) {
                 return updatedDataset;
@@ -546,7 +628,7 @@ export const ListItemWithStyleAll = ({
             return item;
         });
     });
-};
+  };
 
   const handleToggleClick = () => {
     setShowStyleControls(!showStyleControls);
@@ -555,12 +637,10 @@ export const ListItemWithStyleAll = ({
   var url = process.env.PUBLIC_URL
 
   let handleDelete, img_icon, styleControlItem,dataset_name
-
   const deleteFunction = datatype === "raster" ? delete_raster : delete_geojson;
   const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id ;
 
   handleDelete = () => handleDeleteFiles(dataset_id, dispatch, datasets, setDatasets, deleteFunction, inmemory = inmemory, datatype = datatype)
-
   const zoomanddelete = <>
     <tr>
       <td>Zoom to</td>
@@ -601,6 +681,7 @@ export const ListItemWithStyleAll = ({
   else {
     // isPoint = dataset.geometry.type === "Point" || dataset.geometry.type === "MultiPoint";
     dataset_name = dataset.data.properties.name
+    // dataset_name = dataset.properties.name
     img_icon = "/vector.png"
     styleControlItem = <StyleControls
       geojsondata={dataset}//dataset.data.features[0]}
@@ -608,7 +689,6 @@ export const ListItemWithStyleAll = ({
       zoomanddelete={zoomanddelete}
     />
   }
-
   return (
     <li
       key={`${datatype}-${dataset_id}`}

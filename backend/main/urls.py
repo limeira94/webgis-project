@@ -17,7 +17,8 @@ urlpatterns = [
     path('project/<int:pk>/', views.ProjectGetList.as_view(), name='get-project'),
     path('projects/', views.ProjectList.as_view(), name='get_projects'),
     path('projects/<int:pk>/', views.ProjectList.as_view(), name='delete-project'),
-    path("raster/change-visual/<int:pk>",views.RasterVisualization.as_view(),name="raster-visual"),
+    path("raster/change-visual/<int:pk>/",views.RasterVisualization.as_view(),name="raster-visual"),
     # path('upload_geojson/', views.GeoJSONUploadView.as_view(), name='upload-geojson'),
     # path('upload_shapefile/', views.ShapefileUploadView.as_view(), name='upload-shapefile'),    
+    path("vectors/<int:pk>/save-style/",views.UpdateVectorStyle.as_view(),name="update-style-vector"),
 ]

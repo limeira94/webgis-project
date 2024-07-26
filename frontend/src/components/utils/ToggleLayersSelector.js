@@ -10,6 +10,8 @@ const ToggleLayersSelector = (
     setRasters,
     geojsons,
     setGeojsons,
+    vectors,
+    setVectors,
     geojsonLayerRefs,
     mapInstance,
     selectedFeatureAttributes,
@@ -17,23 +19,47 @@ const ToggleLayersSelector = (
   }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  // const updateStyle = (polygonId, styleKey, value) => {
+  //   // setGeojsons(prevGeojsons => {
+  //   setVectors(prevGeojsons => {
+  //     return prevGeojsons.map(geojson => {
+  //       if (geojson.data.properties.id === polygonId) {
+  //         const updatedStyle = {
+  //           ...geojson.style,
+  //           [styleKey]: value
+  //         };
+  //         return {
+  //           ...geojson,
+  //           style: updatedStyle
+  //         };
+  //       }
+  //       return geojson;
+  //     });
+  //   });
+  // };
   const updateStyle = (polygonId, styleKey, value) => {
-    setGeojsons(prevGeojsons => {
-      return prevGeojsons.map(geojson => {
-        if (geojson.data.properties.id === polygonId) {
-          const updatedStyle = {
-            ...geojson.style,
-            [styleKey]: value
-          };
-          return {
-            ...geojson,
-            style: updatedStyle
-          };
-        }
-        return geojson;
-      });
+    setVectors(prevGeojsons => {
+        return prevGeojsons.map(geojson => {
+            if (geojson.data.properties.id === polygonId) {
+                const updatedProperties = {
+                    ...geojson.data.properties,
+                    style: {
+                        ...geojson.data.properties.style,
+                        [styleKey]: value
+                    }
+                };
+                return {
+                    ...geojson,
+                    data: {
+                        ...geojson.data,
+                        properties: updatedProperties
+                    }
+                };
+            }
+            return geojson;
+        });
     });
-  };
+};
 
   useEffect(()=>{
     var options = {}
@@ -81,7 +107,7 @@ const ToggleLayersSelector = (
     <div className={`sidenav-toolbar ${isDrawerOpen ? 'active' : ''}`}>
         <ul>
         <div className="sidebar-title">Your dataset:</div>
-        {geojsons.map((geojson) =>  (
+        {/* {geojsons.map((geojson) =>  (
             <ListItemWithStyleAll
             key={`$geojson-item-${geojson.data.properties.id}`}
             datasets={geojsons}
@@ -94,7 +120,22 @@ const ToggleLayersSelector = (
             selectedFeatureAttributes={selectedFeatureAttributes}
             inmemory={inmemory}
           />
-          ))}
+          ))} */}
+        {vectors.map((geojson) =>  (
+
+            <ListItemWithStyleAll
+            key={`$geojson-item-${geojson.data.properties.id}`}
+            datasets={vectors}
+            setDatasets={setVectors}
+            polygonStyles={geojson.style}
+            dataset={geojson}
+            datatype={"geojson"}
+            zoomToLayer={zoomToLayer}
+            updateStyle={updateStyle}
+            selectedFeatureAttributes={selectedFeatureAttributes}
+            inmemory={inmemory}
+          />
+        ))}
         
         {rasters.map((raster) => (
               <ListItemWithStyleAll
@@ -110,13 +151,15 @@ const ToggleLayersSelector = (
       </ul>
     </div>
 
-    <div className='btn-menu'>
+    <div className={`btn-menu ${isDrawerOpen ? 'active' : ''}`}>
       <a 
         href="#" 
         className="btn-floating waves-effect waves-light black"
         onClick={()=>setIsDrawerOpen(!isDrawerOpen)}
         >
-          <i className="material-icons">menu</i>
+          <i className="material-icons">
+            {isDrawerOpen ? 'keyboard_arrow_left' : 'keyboard_arrow_right'}
+          </i>
       </a>
     </div>  
 

@@ -4,6 +4,19 @@ from rest_framework import serializers
 from .models import *
 
 
+class GeomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Geojson
+        fields = "__all__"
+
+class VectorFileSerializer(serializers.ModelSerializer):
+    geoms = GeomSerializer(many=True,read_only=True)
+
+    class Meta:
+        model = VectorFileModel
+        fields = "__all__"
+
+
 class GeoJsonFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeoJSONFile
@@ -62,6 +75,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 class ProjectPkSerializer(serializers.ModelSerializer):
     raster = RasterFileSerializer(many=True, read_only=True)
     geojson = GeoJsonFileSerializer(many=True, read_only=True)
+    vector = VectorFileSerializer(many=True, read_only=True)
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
     

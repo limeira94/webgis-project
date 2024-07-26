@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 import axios from 'axios'
 import M from 'materialize-css';
-import { parseGeoJSON } from './MapUtils';
+import { parseGeoJSON,parseVector } from './MapUtils';
 import defaultStyle from "../../configs/defaultStyle.json";
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
@@ -40,7 +40,7 @@ export const getProject = async (projectId) => {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        console.log(response.data)
+        // console.log(response.data)
         const center = calculateCenter(response.data.geojson);
         const bounds = calculateBoundingBox(response.data.geojson);
         return {
@@ -193,13 +193,9 @@ const createRasters = (rasters) => {
 export const createGeojsons = (geojsons) => {
     let result = [];
     geojsons.forEach(geojson => {
-        console.log("GEOJSON",geojson)
-
         let geojsonDict = {
             "data": geojson,
-            "visible": true,
-            // "bounds":bounds,
-            "style": defaultStyle
+            "visible": true
         };
         result.push(geojsonDict);
     });
@@ -207,28 +203,21 @@ export const createGeojsons = (geojsons) => {
     return result
 }
 
-// export const setData = (setProject, setGeoJSONs, setRasters, project_id, projects, navigate) => {
-//     // const selectedProject = projects.find(project => project.id === parseInt(project_id, 10));
-//     const selectedProject = getProject(project_id)
-    
-//     if (selectedProject) {
-//         console.log("SELECTED",selectedProject)
-//         setProject(selectedProject);
-//         setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)))
-//         setRasters(createRasters(selectedProject.raster));
-//     }
-//     else {
-//         navigate(`/project`);
-//     }
-// }
 
-
-export const setData = async (setProject, setGeoJSONs, setRasters, project_id, projects, navigate) => {
+export const setData = async (
+    setProject, 
+    setGeoJSONs, 
+    setRasters, 
+    project_id, 
+    projects, 
+    navigate,
+    setVectors
+) => {
     try {
         const selectedProject = await getProject(project_id); // Wait for the project data to be fetched
         if (selectedProject) {
-            console.log("SELECTED", selectedProject);
             setProject(selectedProject);
+            setVectors(createGeojsons(parseVector(selectedProject.vector)))
             setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)));
             setRasters(createRasters(selectedProject.raster));
         } else {

@@ -22,7 +22,7 @@ import "../styles/Project.css"
 import Navbar from './include/Navbar';
 import { loadingPage } from './utils/Loading'; 
 
-const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs}) => {
+const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs,vectors,setVectors}) => {
 
     
     // console.log("333333333333333333", project)
@@ -33,6 +33,8 @@ const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs}) => {
                 geojsons={geojsons}
                 setRasters={setRasters}
                 setGeoJSONs={setGeoJSONs}
+                vectors={vectors}
+                setVectors={setVectors}
                 projectid={project.id}
                 project={project}
                 savetomemory={false}
@@ -51,6 +53,7 @@ function Project() {
     const [inputValue, setInputValue] = useState("");
     const [rasters, setRasters] = useState([]);
     const [geojsons, setGeoJSONs] = useState([]);
+    const [vectors, setVectors] = useState([]);
     const [isLoading,setIsLoading] = useState(false)
 
     const { project_id } = useParams();
@@ -59,7 +62,7 @@ function Project() {
         M.AutoInit();
         const fetchData = async () => {
             if (project_id && projects && project === null) {
-                setData(setProject, setGeoJSONs, setRasters, project_id, projects, navigate);
+                setData(setProject, setGeoJSONs, setRasters, project_id, projects, navigate,setVectors);
             } else {
                 await getProjects(setProjects);
             }
@@ -143,6 +146,8 @@ function Project() {
                     setRasters={setRasters}
                     geojsons={geojsons}
                     setGeoJSONs={setGeoJSONs}
+                    vectors={vectors}
+                    setVectors={setVectors}
                 />
             ) : chooseProject}
     </>
