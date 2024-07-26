@@ -54,6 +54,7 @@ if ALLOW_LOCAL:
 CSRF_TRUSTED_ORIGINS = [
     'https://webgis.site',
     'http://websig.com.br',
+    'http://localhost:3000'
     ]
 
 # SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True, cast=bool)

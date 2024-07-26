@@ -260,6 +260,9 @@ class GeoJSONListView(APIView):
 #TODO: Olhar no Geojson model 
 @method_decorator(csrf_exempt, name='dispatch')
 class GeoJSONFileUploadViewSet(viewsets.ViewSet):
+    
+    permission_classes = [permissions.IsAuthenticated]
+
     def create(self, request):
         try:
             geojson_data = json.loads(request.data['geojson'].read())
@@ -273,12 +276,16 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
                 return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
             
             geojson_file = request.FILES.get('geojson')
-            filename = geojson_file.name if geojson_file else 'Uploaded_File'
+            # filename = geojson_file.name if geojson_file else 'Uploaded_File'
+            name = os.path.splitext(geojson_file.name)
+            filename = name[0]
+            format_name = name[-1] 
             
             max_id = GeoJSONFile.objects.aggregate(max_id=Max('id'))['max_id']
             next_group_id = (max_id or 0) + 1
             
             all_geo_instances = []
+            geoms = []
             for feature in geojson_data['features']:
                 geometry = feature.get('geometry')
                 properties = feature.get('properties', {})
@@ -293,13 +300,36 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
                     group_id=next_group_id
                 )
                 all_geo_instances.append(geo_instance)
-            
+
+                ########################################
+                #### NEW #####
+                geom = Geojson(
+                    geometry = geos_geometry,
+                    attributes = properties
+                )
+                geoms.append(geom)
+                ########################################
+
             with transaction.atomic():
                 GeoJSONFile.objects.bulk_create(all_geo_instances)
+                Geojson.objects.bulk_create(geoms)
                 project.geojson.add(*[geo.id for geo in all_geo_instances])
+
+                ########################################
+                #### NEW
+                vector = VectorFileModel.objects.create(
+                    file=geojson_file,
+                    format_name=format_name,
+                    name = filename,
+                    user = request.user,
+                    )
+                vector.geoms.set(geoms)
+                vector.save()
+                project.vector.add(vector)
+                ########################################
                 project.save()
             serializer = GeoJsonFileSerializer(all_geo_instances, many=True)
-            
+
             return Response(
                 {
                     'message': 'Data saved successfully', 
@@ -314,6 +344,8 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
             return Response(
                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
+        
+
 class LeafletDrawUploadViewSet(viewsets.ViewSet):
     def create(self, request):
         try:

@@ -182,7 +182,7 @@ export const delete_geojson = createAsyncThunk(
     async (id, thunkAPI) => {
         try {
             const res = await fetch(
-                `${process.env.REACT_APP_API_URL}api/main/geojson/${id}`
+                `${process.env.REACT_APP_API_URL}api/main/geojson/${id}/`
                 , {
                     method: 'DELETE',
                     headers: {
@@ -210,7 +210,7 @@ export const delete_raster = createAsyncThunk(
     async (id, thunkAPI) => {
         try {
             const res = await fetch(
-                `${process.env.REACT_APP_API_URL}api/main/rasters/${id}`
+                `${process.env.REACT_APP_API_URL}api/main/rasters/${id}/`
                 , {
                     method: 'DELETE',
                     headers: {

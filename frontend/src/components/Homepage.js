@@ -55,8 +55,8 @@ Below you can find information about how to use this website.
     const simplifiedText = () => {
         return (
             <>
-                {listItens.map((item) => (
-                    <p style={{ display: 'flex', alignItems: 'center' }}>
+                {listItens.map((item,n) => (
+                    <p key={n} style={{ display: 'flex', alignItems: 'center' }}>
                         <img src={`${url}/${item["type"] === "simple" ? "inclusa" : "nao-inclusa"}.svg`} alt="icon" style={{ marginRight: '10px' }} /> {item["text"]}
                     </p>
                 ))}
@@ -67,8 +67,8 @@ Below you can find information about how to use this website.
     const fullText = () => {
         return (
             <>
-                {listItens.map((item) => (
-                    <p style={{ display: 'flex', alignItems: 'center' }}>
+                {listItens.map((item,n) => (
+                    <p key={n} style={{ display: 'flex', alignItems: 'center' }}>
                         <img src={`${url}/inclusa.svg`} alt="icon" style={{ marginRight: '10px' }} /> {item["text"]}
                     </p>
                 ))}
@@ -88,15 +88,15 @@ Below you can find information about how to use this website.
                         <h4 className='center'>Welcome to WebGIS</h4>
                         <p className='center' style={textStyle}>{topText}</p>
                     </div>
-                    <div class="row">
-                        <div class="col s12 m6">
-                            <div class="card-panel white card-style">
+                    <div className="row">
+                        <div className="col s12 m6">
+                            <div className="card-panel white card-style">
                                 <div className="header-container center" >
                                     <img src={iconSimple} alt="custom icon" style={{ marginRight: '10px' }} />
                                     <h5>Simplified</h5>
                                 </div>
                                 <div className='container'>
-                                    <span class="black-text">
+                                    <span className="black-text">
                                         {simplifiedText()}
                                     </span>
                                 </div>
@@ -104,14 +104,14 @@ Below you can find information about how to use this website.
                                 <p className='note-style center'>Note: The data is temporary here, it will be deleted after reloading the page. All data will be lost.</p>
                             </div>
                         </div>
-                        <div class="col s12 m6">
-                            <div class="card-panel white card-style">
+                        <div className="col s12 m6">
+                            <div className="card-panel white card-style">
                                 <div className="header-container center">
                                     <img src={iconFull} alt="custom icon" style={{ marginRight: '10px' }} />
                                     <h5>Full</h5>
                                 </div>
                                 <div className='container'>
-                                    <span class="black-text">
+                                    <span className="black-text">
                                         {fullText()}
                                     </span>
                                 </div>

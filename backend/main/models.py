@@ -20,17 +20,6 @@ from .utils import *
 # É bom que podemos agrupar os dados baseado nisso, ao invés do "group_id"
 # Da pra fazer um model novo tipo esse:
 
-class VectorFileModel(models.Model):
-    file = models.FileField(blank=True,null=True)
-    name = models.CharField(max_length=100,unique=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-
-
-class Geojson(models.Model):
-    geometry = models.GeometryField()
-    attributes = JSONField(blank=True, null=True)
-    vector = models.ForeignKey(VectorFileModel,on_delete=models.CASCADE)
-
 def get_default_style():
     return {
         "color": "#ff7800",
@@ -39,13 +28,32 @@ def get_default_style():
         "fillColor": "#ff7800"
     }
 
+class Geojson(models.Model):
+    geometry = models.GeometryField()
+    attributes = JSONField(blank=True, null=True)
+    # vector = models.ForeignKey(VectorFileModel,on_delete=models.CASCADE)
+    style = models.JSONField(default=get_default_style)
+
+class VectorFileModel(models.Model):
+    file = models.FileField(blank=True,null=True)
+    format_name = models.CharField(max_length=20,blank=True,null=True)
+    name = models.CharField(max_length=100,unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    geoms = models.ManyToManyField(Geojson)
+
+    # def save(self, *args, **kwargs):
+    #     NAME = self.file.name
+    #     super().save(*args, **kwargs)
+    #     self.name = os.path.splitext(NAME)[0]
+        
+
 class GeoJSONFile(models.Model):
     name = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     geojson = models.GeometryField()
     attributes = JSONField(blank=True, null=True)
     group_id = models.IntegerField(default=0)
-    style = models.JSONField(default=get_default_style,blank=True,null=True)
+    style = models.JSONField(default=get_default_style)
 
 #TODO: 
 # Substituir overwrite do save
@@ -126,6 +134,7 @@ class RasterVisual(models.Model):
 class Project(models.Model):
     name = models.CharField(max_length=100)
     thumbnail = models.ImageField(null=True, blank=True)
+    vector = models.ManyToManyField(VectorFileModel, blank=True)
     geojson = models.ManyToManyField(GeoJSONFile, blank=True)
     raster = models.ManyToManyField(RasterFile, blank=True)
     public = models.BooleanField(default=False)
