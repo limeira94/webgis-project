@@ -188,6 +188,11 @@ export const MapComponent = ({
         return vector.visible && 
         (<GeoJSON
           key={`vector-${index}`}
+          ref={(el) => {
+            if (el) {
+              geojsonLayerRefs.current[vector.data.properties.id] = el;
+            }
+          }}
           data={vector.data}
           style={vector.data.properties.style}
           onEachFeature={onEachFeatureVector(vector.data)}
@@ -195,7 +200,7 @@ export const MapComponent = ({
         </GeoJSON>)
       })}
 
-      {geojsons.map((geojsondata, index) => {
+      {/* {geojsons.map((geojsondata, index) => {
         const geojson = geojsondata.data
         return geojsondata.visible && (
           <GeoJSON
@@ -228,7 +233,7 @@ export const MapComponent = ({
             }}
           />
         )
-      })}
+      })} */}
       <ScaleControl position="bottomleft" />
       <FullscreenControl className="custom-fullscreen-control" position="bottomright" />
       <ZoomControl position="bottomright" />
