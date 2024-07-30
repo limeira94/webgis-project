@@ -5,16 +5,16 @@ from django.views.generic import TemplateView
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
-from . import views
+from . import views1
 
 app_name = 'main'
 # TODO:
 # IF NEEDED:
 # change all routes to be used inside the router
 router = routers.DefaultRouter()
-router.register('rasters', views.RasterViewSet, basename='rasters')
-router.register('upload', views.GeoJSONFileUploadViewSet, basename='upload_geojson_api')
-router.register('upload_draw', views.LeafletDrawUploadViewSet, basename='upload_draw_api')
+router.register('rasters', views1.RasterViewSet, basename='rasters')
+router.register('upload', views1.GeoJSONFileUploadViewSet, basename='upload_geojson_api')
+router.register('upload_draw', views1.LeafletDrawUploadViewSet, basename='upload_draw_api')
 # router.register('delete_all_rasters', views.DeleteAllRasterViewSet, basename='delete_all_rasters')
 # router.register('rasters/delete_all', views.DeleteAllRasterViewSet, basename='delete_all_rasters')
 
@@ -25,27 +25,27 @@ urlpatterns = [
     # path('api/main/rasters/upload/', views.RasterPostView.as_view(), name='raster-upload'),
     
     # Rotas específicasda API
-    path('api/main/geojson/<int:pk>/', views.GeoJSONDetailView.as_view(), name='get_geojson'),
-    path('api/main/geojson/', views.GeoJSONListView.as_view(), name='get_all_geojson'),
-    path('api/main/vector/', views.VectorList.as_view(), name='get_vector'),
-    path('api/main/vector/geojson', views.ExportGeoJSON.as_view(), name='get_vector_geojson'),
-    path('api/main/projects/', views.ProjectList.as_view(), name='get_projects'),
-    path('api/main/projects/<int:pk>/', views.ProjectList.as_view(), name='delete-project'),
-    path('upload_geojson/', views.GeoJSONUploadView.as_view(), name='upload-geojson'),
-    path('upload_shapefile/', views.ShapefileUploadView.as_view(), name='upload-shapefile'),
-    path("api/main/raster/change-visual/<int:pk>",views.RasterVisualization.as_view(),name="raster-visual"),
+    path('api/main/geojson/<int:pk>/', views1.GeoJSONDetailView.as_view(), name='get_geojson'),
+    path('api/main/geojson/', views1.GeoJSONListView.as_view(), name='get_all_geojson'),
+    path('api/main/vector/', views1.VectorList.as_view(), name='get_vector'),
+    path('api/main/vector/geojson', views1.ExportGeoJSON.as_view(), name='get_vector_geojson'),
+    path('api/main/projects/', views1.ProjectList.as_view(), name='get_projects'),
+    path('api/main/projects/<int:pk>/', views1.ProjectList.as_view(), name='delete-project'),
+    path('upload_geojson/', views1.GeoJSONUploadView.as_view(), name='upload-geojson'),
+    path('upload_shapefile/', views1.ShapefileUploadView.as_view(), name='upload-shapefile'),
+    path("api/main/raster/change-visual/<int:pk>",views1.RasterVisualization.as_view(),name="raster-visual"),
     
     # Rotas de autenticação
-    path('api/main/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/main/token/', views1.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/main/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/main/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     
     # Rotas de Grenciamento de Usuários
-    path('api/users/register/', views.RegisterView.as_view()),
-    path('api/users/me/', views.RetrieveUserView.as_view()),
-    path('api/users/update/', views.UserUpdateView.as_view()),
-    path('api/users/delete/<int:pk>/', views.UserDeleteView.as_view(), name='user-delete'),
-    path('api/users/reset-password/', views.ResetPasswordView.as_view(), name='reset-password'),
+    path('api/users/register/', views1.RegisterView.as_view()),
+    path('api/users/me/', views1.RetrieveUserView.as_view()),
+    path('api/users/update/', views1.UserUpdateView.as_view()),
+    path('api/users/delete/<int:pk>/', views1.UserDeleteView.as_view(), name='user-delete'),
+    path('api/users/reset-password/', views1.ResetPasswordView.as_view(), name='reset-password'),
     path('api/users/password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='password_reset_confirm.html'),name='password_reset_confirm'),
     path('api/users/password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'),name='password_reset_complete'),
     

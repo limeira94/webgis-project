@@ -3,7 +3,7 @@ import { createGeojsons } from './ProjectFunctions';
 import L from 'leaflet';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
-import { parseGeoJSON } from './MapUtils';
+import { parseGeoJSON,parseVector } from './MapUtils';
 import M from 'materialize-css';
 import parse from 'wellknown';
 
@@ -230,7 +230,8 @@ export const handleGeojson = async (event, setGeoJSONs,mapInstance, dispatch, pr
 
 export const handleDrawUpload = async (
   geometryJson,
-  setGeoJSONs,
+  // setGeoJSONs,
+  setVectors,
   mapInstance,
   dispatch,
   projectid,
@@ -253,28 +254,29 @@ export const handleDrawUpload = async (
       name: name,
     }));
     if (response.type === 'draw/upload/fulfilled') {
-
       const { payload } = response;
       const savedGeometry = payload.savedGeometry;
+      const savedDraw = savedGeometry.geojson
+      // const feature = {
+      //   type: "Feature",
+      //   geometry: savedGeometry.geojson,
+      //   properties: {
+      //     id: savedGeometry.id,
+      //     name: name,
+      //     attributes: savedGeometry.attributes,
+      //   },
+      // };
 
-      const feature = {
-        type: "Feature",
-        geometry: savedGeometry.geojson,
-        properties: {
-          id: savedGeometry.id,
-          name: name,
-          attributes: savedGeometry.attributes,
-        },
-      };
+      // const geojson = createGeojsons([feature])
+      // setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...geojson]);
+      const parsed = parseVector([savedDraw])
+      const geojson = createGeojsons(parsed)
+      setVectors(prevGeoJSONs => [...prevGeoJSONs, ...geojson]);
 
-      const geojson = createGeojsons([feature])
-
-      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...geojson]);
-
-      if (mapInstance) {
-        const bounds = L.geoJSON(feature).getBounds();
-        mapInstance.fitBounds(bounds, { maxZoom: 16 });
-      }
+      // if (mapInstance) {
+      //   const bounds = L.geoJSON(feature).getBounds();
+      //   mapInstance.fitBounds(bounds, { maxZoom: 16 });
+      // }
       setUploading(false);
 
     } else {

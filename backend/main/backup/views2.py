@@ -247,35 +247,18 @@ class GeoJSONDetailView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-    # def delete(self, request, pk):
-    #     try:
-    #         geojson_file= GeoJSONFile.objects.get(pk=pk)
-    #         group_id = geojson_file.group_id
-    #         filter_groupid = GeoJSONFile.objects.filter(group_id=group_id)
-
-    #         filter_groupid.delete()
-    #         return Response(
-    #             {'message': 'GeoJSON file deleted successfully'},
-    #             status=status.HTTP_204_NO_CONTENT,
-    #         )
-    #     except GeoJSONFile.DoesNotExist:
-    #         return Response(
-    #             {'error': 'GeoJSON file not found'},
-    #             status=status.HTTP_404_NOT_FOUND,
-    #         )
     def delete(self, request, pk):
         try:
-            
-            geojson = VectorFileModel.objects.get(pk=pk)
-            
-            if request.user==geojson.user:
-                geojson.delete()
+            geojson_file= GeoJSONFile.objects.get(pk=pk)
+            group_id = geojson_file.group_id
+            filter_groupid = GeoJSONFile.objects.filter(group_id=group_id)
 
+            filter_groupid.delete()
             return Response(
                 {'message': 'GeoJSON file deleted successfully'},
                 status=status.HTTP_204_NO_CONTENT,
             )
-        except VectorFileSerializer.DoesNotExist:
+        except GeoJSONFile.DoesNotExist:
             return Response(
                 {'error': 'GeoJSON file not found'},
                 status=status.HTTP_404_NOT_FOUND,
@@ -467,15 +450,13 @@ class LeafletDrawUploadViewSet(viewsets.ViewSet):
             # project.geojson.add(geometry_instance.id)
             project.vector.add(vector)
             project.save()
-
-            serializer = VectorFileSerializer(vector)
             
             return Response(
                 {
                     'message': 'Data saved successfully',
                     'savedGeometry': {
                         'id': vector.id,#geometry_instance.id,
-                        'geojson': serializer.data,#json.loads(geo.geometry.geojson),#geometry_instance.geojson.geojson),
+                        'geojson': json.loads(geo.geometry.geojson),#geometry_instance.geojson.geojson),
                         'properties': properties,
                     }
                 },

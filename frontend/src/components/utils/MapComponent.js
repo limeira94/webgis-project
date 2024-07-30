@@ -146,7 +146,7 @@ export const MapComponent = ({
       )
         
       
-      layer.style = feature.properties.style
+      // layer.style = feature.properties.style
     }
   }
 
@@ -284,6 +284,7 @@ export const MapComponent = ({
             mapInstance={mapInstance}
             projectid={projectid}
             setUploading={setUploading}
+            setVectors={setVectors}
           />
         )}
 

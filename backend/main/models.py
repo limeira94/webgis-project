@@ -42,7 +42,7 @@ class Geojson(models.Model):
 class VectorFileModel(models.Model):
     file = models.FileField(upload_to="",blank=True,null=True)
     format_name = models.CharField(max_length=20,blank=True,null=True)
-    name = models.CharField(max_length=100,unique=True)
+    name = models.CharField(max_length=100)#,unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     style = models.JSONField(default=get_default_style)
     geoms = models.ManyToManyField(Geojson)

@@ -640,7 +640,12 @@ export const ListItemWithStyleAll = ({
   const deleteFunction = datatype === "raster" ? delete_raster : delete_geojson;
   const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id ;
 
-  handleDelete = () => handleDeleteFiles(dataset_id, dispatch, datasets, setDatasets, deleteFunction, inmemory = inmemory, datatype = datatype)
+  handleDelete = () => handleDeleteFiles(
+    dataset_id, 
+    dispatch, 
+    datasets, 
+    setDatasets, 
+    deleteFunction, inmemory = inmemory, datatype = datatype)
   const zoomanddelete = <>
     <tr>
       <td>Zoom to</td>

@@ -13,7 +13,8 @@ const UpDelButttons = ({
     setRasters,
     mapInstance,
     projectid,  //TODO: Change the way to do this, maybe running two different routes
-    setUploading
+    setUploading,
+    setVectors,
 }) => {
     const rasterInputRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -83,7 +84,8 @@ const UpDelButttons = ({
 
                 await handleDrawUpload(
                     geometryJson,
-                    setGeoJSONs,
+                    // setGeoJSONs,
+                    setVectors,
                     mapInstance,
                     dispatch,
                     projectid,
@@ -95,7 +97,8 @@ const UpDelButttons = ({
 
                 await handleDrawUpload(
                     geometryJson,
-                    setGeoJSONs,
+                    // setGeoJSONs,
+                    setVectors,
                     mapInstance,
                     dispatch,
                     projectid,
