@@ -202,7 +202,10 @@ export const handleGeojson = async (event, setGeoJSONs,mapInstance, dispatch, pr
       //   })
       // }));
 
-      const geojsons = createGeojsons(parseGeoJSON(features))
+      const geojsons = createGeojsons(
+        // parseGeoJSON(features)
+        parseVector(features)
+      )
       const calculatedBounds = bbox(geojsons[0].data);
 
       if (mapInstance && calculatedBounds) {

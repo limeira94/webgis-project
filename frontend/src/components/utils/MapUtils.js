@@ -558,6 +558,17 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
     </tr>
   </>
 
+  // const changeStyleButton = <>
+  //   <tr>
+  //     <td><span>Change style</span></td>
+  //     <td className='alnright'>
+  //       <a onClick={()=>openStyleModal(geojson)} className='btn blue'>
+  //         <i className='material-icons'>save</i>
+  //       </a>
+  //     </td>
+  //   </tr>
+  // </>
+
   // const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
   // const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
 
@@ -579,6 +590,9 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
       <table>
         <tbody>
           {zoomanddelete}
+          {/* <p className='center'>
+            <a className='btn btn-large'>Change style</a>
+          </p> */}
           {!isPoint && !isLine && colorRow}
           {!isPoint && lineColorRow}
           {!isPoint && !isLine && opacityRow}
