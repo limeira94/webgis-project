@@ -241,7 +241,7 @@ const changeVisual = async (rasters, setRasters, raster_id, visual_type, params)
     const updatedRasters = rasters.map(raster => {
       if (raster.data.id === raster_id) {
         return {...raster,data: { ...raster.data, png: response.data.png }}
-      } 
+      }
       return raster;
     });
     setRasters(updatedRasters)
@@ -334,8 +334,8 @@ export const StyleRasterControls = ({
   const selectItems = (key) => {
     return (
       <select
-        // ref={key} 
-        // value={} 
+        // ref={key}
+        // value={}
         onChange={(e) => setSelectedValues({ ...selectedValues, [key]: e.target.value })}
         defaultValue={selectedValues[key]}
       >
@@ -510,9 +510,9 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
 
   let isPoint = false;
   let isLine = false;
-  
-  const geojson = geojsondata.data.features === undefined ? 
-        geojsondata.data: 
+
+  const geojson = geojsondata.data.features === undefined ?
+        geojsondata.data:
         geojsondata.data//.features[0]
 
   if (geojson.type === 'FeatureCollection') {
@@ -526,7 +526,7 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
   const handleSaveStyle = async (geojson) => {
     try {
       const style = geojson.properties.style;
-      const vectorId = geojson.properties.id;  
+      const vectorId = geojson.properties.id;
       const token = Cookies.get('access_token');
 
       const response = await axios.post(
@@ -538,7 +538,7 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
           Authorization: `Bearer ${token}`
         }
       });
-  
+
       if (response.status === 200) {
         console.log('Style saved successfully!');
       } else {
@@ -558,16 +558,18 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
     </tr>
   </>
 
-  // const changeStyleButton = <>
-  //   <tr>
-  //     <td><span>Change style</span></td>
-  //     <td className='alnright'>
-  //       <a onClick={()=>openStyleModal(geojson)} className='btn blue'>
-  //         <i className='material-icons'>save</i>
-  //       </a>
-  //     </td>
-  //   </tr>
-  // </>
+  const openStyleModal = ()=>{}
+
+  const changeStyleButton = <>
+    <tr>
+      <td><span>Change style</span></td>
+      <td className='alnright'>
+        <a onClick={()=>openStyleModal(geojson)} className='btn blue'>
+          <i className='material-icons'>save</i>
+        </a>
+      </td>
+    </tr>
+  </>
 
   // const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
   // const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
@@ -585,19 +587,19 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
   const opacityValue = geojsondata.data.properties.style.fillOpacity
   const opacityRow = get_item_table("Opacity", "range", opacityValue, "fillOpacity", geojson, updateStyle);
 
+
+
   return (
     <div className='side-nav-item-dropdown-style z-depth-5'>
       <table>
         <tbody>
           {zoomanddelete}
-          {/* <p className='center'>
-            <a className='btn btn-large'>Change style</a>
-          </p> */}
-          {!isPoint && !isLine && colorRow}
+          {changeStyleButton}
+          {/* {!isPoint && !isLine && colorRow}
           {!isPoint && lineColorRow}
           {!isPoint && !isLine && opacityRow}
           {!isPoint && widthRow}
-          {saveStyle}
+          {saveStyle} */}
         </tbody>
       </table>
     </div>
@@ -631,9 +633,9 @@ export const ListItemWithStyleAll = ({
     const updatedDataset = { ...dataset, visible: !dataset.visible };
     setDatasets(prevDatasets => {
         return prevDatasets.map(item => {
-            const comp = dataset.data.properties==undefined ? 
-                  item.data.id === dataset.data.id : 
-                  item.data.properties.id === dataset.data.properties.id 
+            const comp = dataset.data.properties==undefined ?
+                  item.data.id === dataset.data.id :
+                  item.data.properties.id === dataset.data.properties.id
             // const comp = item.properties.id===dataset.properties.id
 
             if (comp) {
@@ -655,10 +657,10 @@ export const ListItemWithStyleAll = ({
   const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id ;
 
   handleDelete = () => handleDeleteFiles(
-    dataset_id, 
-    dispatch, 
-    datasets, 
-    setDatasets, 
+    dataset_id,
+    dispatch,
+    datasets,
+    setDatasets,
     deleteFunction, inmemory = inmemory, datatype = datatype)
   const zoomanddelete = <>
     <tr>

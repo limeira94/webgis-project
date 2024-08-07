@@ -8,3 +8,5 @@ tempfiles
 frontend/.env.production.ricardo
 # Local Netlify folder
 .netlify
+
+.vscode
