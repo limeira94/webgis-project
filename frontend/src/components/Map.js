@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { MapComponent } from './utils/MapComponent';
+import { MapMemory } from './utils/MapMemory';
 
 function Map() {
   const [rasters, setRasters] = useState([]);
   const [geojsons, setGeoJSONs] = useState([]);
+  const [vectors, setVectors] = useState([]);
   
   return (
     <>
-      <MapComponent rasters={rasters} geojsons={geojsons} setRasters={setRasters} setGeoJSONs={setGeoJSONs} />
+      <MapMemory rasters={rasters} geojsons={geojsons} setRasters={setRasters} setGeoJSONs={setGeoJSONs} vectors={vectors} setVectors={setVectors}/>
     </>
   )
 
