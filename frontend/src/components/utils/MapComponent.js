@@ -11,7 +11,8 @@ import {
   ScaleControl,
 } from 'react-leaflet';
 import BasemapSelector from './BasemapSelector';
-import ToggleLayersSelector from './ToggleLayersSelector'
+// import ToggleLayersSelector from './ToggleLayersSelector'
+import ToggleLayersSelector from '../sidenav/ToggleLayersSelector';
 // import UpDelButttons from './UploadAndDeleteButtons2';
 import UpDelButttons from './UploadAndDeleteButtons';
 import MemoryButton from './Memory/component';
@@ -252,11 +253,21 @@ export const MapComponent = ({
       {
         uploading
           ? loadingIcon : null}
-      <ToggleLayersSelector
+      {/* <ToggleLayersSelector
         rasters={rasters}
         setRasters={setRasters}
         geojsons={geojsons}
         setGeojsons={setGeoJSONs}
+        vectors={vectors}
+        setVectors={setVectors}
+        geojsonLayerRefs={geojsonLayerRefs}
+        mapInstance={mapInstance}
+        selectedFeatureAttributes={selectedFeatureAttributes}
+        inmemory={savetomemory}
+      /> */}
+      <ToggleLayersSelector
+        rasters={rasters}
+        setRasters={setRasters}
         vectors={vectors}
         setVectors={setVectors}
         geojsonLayerRefs={geojsonLayerRefs}

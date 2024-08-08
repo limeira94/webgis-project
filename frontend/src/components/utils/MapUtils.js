@@ -68,7 +68,7 @@ const handleDeleteFiles = (fileId, dispatch, datasets, setDatasets, functionDele
               classes: 'green rounded',
               displayLength: 5000
             });
-          
+
         } else {
           console.error(`Failed to delete ${datatype}`);
         }
@@ -98,7 +98,7 @@ export const parseGeoJSON = (data) => {
           id: item.id,
           group_id: groupId,
           name: item.name,
-          style:item.style,
+          style: item.style,
           attributes: item.attributes,
         },
       };
@@ -110,7 +110,7 @@ export const parseGeoJSON = (data) => {
         id: item.id,
         group_id: groupId,
         name: item.name,
-        style:item.style,
+        style: item.style,
         attributes: item.attributes,
       },
     });
@@ -122,21 +122,21 @@ export const parseGeoJSON = (data) => {
 
 export const parseVector = (vector) => {
 
-  const parsed = vector.map((data)=>{
+  const parsed = vector.map((data) => {
     const dataInfo = {
       type: 'FeatureCollection',
       features: [],
       properties: {
         id: data.id,
-        visible:false,
+        visible: false,
         name: data.name,
-        format:data.format_name,
-        style:data.style,
+        format: data.format_name,
+        style: data.style,
         // attributes: item.attributes,
       },
     };
 
-    data.geoms.map((geojson)=>{
+    data.geoms.map((geojson) => {
       const parts = geojson.geometry.split(';');
       const geom = parts.length > 1 ? parse(parts[1]) : null;
 
@@ -147,9 +147,9 @@ export const parseVector = (vector) => {
         properties: {
           attributes: geojson.attributes,
         },
-        style:geojson.style,
+        style: geojson.style,
       }
-    dataInfo.features.push(feature)
+      dataInfo.features.push(feature)
 
     })
     return dataInfo
@@ -240,7 +240,7 @@ const changeVisual = async (rasters, setRasters, raster_id, visual_type, params)
     // setRasters(updatedRasters)
     const updatedRasters = rasters.map(raster => {
       if (raster.data.id === raster_id) {
-        return {...raster,data: { ...raster.data, png: response.data.png }}
+        return { ...raster, data: { ...raster.data, png: response.data.png } }
       }
       return raster;
     });
@@ -512,8 +512,8 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
   let isLine = false;
 
   const geojson = geojsondata.data.features === undefined ?
-        geojsondata.data:
-        geojsondata.data//.features[0]
+    geojsondata.data :
+    geojsondata.data//.features[0]
 
   if (geojson.type === 'FeatureCollection') {
     isPoint = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
@@ -553,18 +553,18 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
     <tr>
       <td><span>Save style</span></td>
       <td className='alnright'>
-        <a onClick={()=>handleSaveStyle(geojson)} className='btn blue'><i className='material-icons'>save</i></a>
+        <a onClick={() => handleSaveStyle(geojson)} className='btn blue'><i className='material-icons'>save</i></a>
       </td>
     </tr>
   </>
 
-  const openStyleModal = ()=>{}
+  const openStyleModal = () => { }
 
   const changeStyleButton = <>
     <tr>
       <td><span>Change style</span></td>
       <td className='alnright'>
-        <a onClick={()=>openStyleModal(geojson)} className='btn blue'>
+        <a onClick={() => openStyleModal(geojson)} className='btn blue'>
           <i className='material-icons'>save</i>
         </a>
       </td>
@@ -610,10 +610,10 @@ export const StyleControlsMemory = ({ geojsondata, updateStyle, zoomanddelete })
 
   let isPoint = false;
   let isLine = false;
-  
-  const geojson = geojsondata.data.features === undefined ? 
-        geojsondata.data: 
-        geojsondata.data//.features[0]
+
+  const geojson = geojsondata.data.features === undefined ?
+    geojsondata.data :
+    geojsondata.data//.features[0]
 
   if (geojson.type === 'FeatureCollection') {
     isPoint = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
@@ -626,7 +626,7 @@ export const StyleControlsMemory = ({ geojsondata, updateStyle, zoomanddelete })
   const handleSaveStyle = async (geojson) => {
     try {
       const style = geojson.properties.style;
-      const vectorId = geojson.properties.id;  
+      const vectorId = geojson.properties.id;
       const token = Cookies.get('access_token');
 
       const response = await axios.post(
@@ -638,7 +638,7 @@ export const StyleControlsMemory = ({ geojsondata, updateStyle, zoomanddelete })
           Authorization: `Bearer ${token}`
         }
       });
-  
+
       if (response.status === 200) {
         console.log('Style saved successfully!');
       } else {
@@ -653,7 +653,7 @@ export const StyleControlsMemory = ({ geojsondata, updateStyle, zoomanddelete })
     <tr>
       <td><span>Save style</span></td>
       <td className='alnright'>
-        <a onClick={()=>handleSaveStyle(geojson)} className='btn blue'><i className='material-icons'>save</i></a>
+        <a onClick={() => handleSaveStyle(geojson)} className='btn blue'><i className='material-icons'>save</i></a>
       </td>
     </tr>
   </>
@@ -678,7 +678,7 @@ export const StyleControlsMemory = ({ geojsondata, updateStyle, zoomanddelete })
     weight: 1, // default line weight
     fillOpacity: 1 // default opacity
   };
-  
+
   const style = styleDefaults;
 
   const colorValue = style.fillColor
@@ -738,17 +738,17 @@ export const ListItemWithStyleAll = ({
   const handleVisibilityChange = (dataset) => {
     const updatedDataset = { ...dataset, visible: !dataset.visible };
     setDatasets(prevDatasets => {
-        return prevDatasets.map(item => {
-            const comp = dataset.data.properties==undefined ?
-                  item.data.id === dataset.data.id :
-                  item.data.properties.id === dataset.data.properties.id
-            // const comp = item.properties.id===dataset.properties.id
+      return prevDatasets.map(item => {
+        const comp = dataset.data.properties == undefined ?
+          item.data.id === dataset.data.id :
+          item.data.properties.id === dataset.data.properties.id
+        // const comp = item.properties.id===dataset.properties.id
 
-            if (comp) {
-                return updatedDataset;
-            }
-            return item;
-        });
+        if (comp) {
+          return updatedDataset;
+        }
+        return item;
+      });
     });
   };
 
@@ -758,9 +758,9 @@ export const ListItemWithStyleAll = ({
 
   var url = process.env.PUBLIC_URL
 
-  let handleDelete, img_icon, styleControlItem,dataset_name
+  let handleDelete, img_icon, styleControlItem, dataset_name
   const deleteFunction = datatype === "raster" ? delete_raster : delete_geojson;
-  const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id ;
+  const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id;
 
   handleDelete = () => handleDeleteFiles(
     dataset_id,
@@ -924,17 +924,17 @@ export const ListItemWithStyleMemory = ({
   const handleVisibilityChange = (dataset) => {
     const updatedDataset = { ...dataset, visible: !dataset.visible };
     setDatasets(prevDatasets => {
-        return prevDatasets.map(item => {
-            
-            const comp = dataset.data.properties==undefined ? item.data.id === dataset.data.id : item.data.properties.id === dataset.data.properties.id 
+      return prevDatasets.map(item => {
 
-            if (comp) {
-                return updatedDataset;
-            }
-            return item;
-        });
+        const comp = dataset.data.properties == undefined ? item.data.id === dataset.data.id : item.data.properties.id === dataset.data.properties.id
+
+        if (comp) {
+          return updatedDataset;
+        }
+        return item;
+      });
     });
-};
+  };
 
   const handleToggleClick = () => {
     setShowStyleControls(!showStyleControls);
@@ -942,10 +942,10 @@ export const ListItemWithStyleMemory = ({
 
   var url = process.env.PUBLIC_URL
 
-  let handleDelete, img_icon, styleControlItem,dataset_name
+  let handleDelete, img_icon, styleControlItem, dataset_name
 
   const deleteFunction = datatype === "raster" ? delete_raster : delete_geojson;
-  const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id ;
+  const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id;
 
   handleDelete = () => handleDeleteFiles(dataset_id, dispatch, datasets, setDatasets, deleteFunction, inmemory = inmemory, datatype = datatype)
 
