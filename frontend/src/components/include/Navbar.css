@@ -15,7 +15,9 @@
 }
 
 .icon-nav-lan{
-    max-height: 64px;
+    width: 40px;
+    display: block;
+    margin: 0 auto;
 }
 
 
@@ -33,4 +35,14 @@
 .nav-wg .nav-wrapper .brand-logo .img-logo {
     display: inline-block;
     height: 60px;
+}
+
+
+.center-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    list-style: none; /* Remova os marcadores de lista */
+    padding: 0; /* Remova o padding padrão */
+    margin: 0; /* Remova a margem padrão */
 }

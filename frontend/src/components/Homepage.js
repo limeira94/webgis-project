@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useRef, Text } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import 'materialize-css';
 import Navbar from './include/Navbar';
 import Footer from './include/Footer';
 import M from 'materialize-css';
-import axios from 'axios'
 import { getProjects } from './utils/ProjectFunctions';
-import { Navigate } from 'react-router-dom';
-// import Project from './Project';
 import '../styles/Homepage.css';
 import iconFull from '../assets/icone-acesso-completo.svg';
 import iconSimple from '../assets/icone-acesso-simplificado.svg';
+import { useTranslation } from 'react-i18next';
 
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
@@ -19,7 +17,8 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 const Homepage = () => {
     const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
-    const { isAuthenticated, user, loading } = useSelector(state => state.user);
+
+    const { t } = useTranslation()
 
     useEffect(() => {
         getProjects(setProjects);
@@ -55,7 +54,7 @@ Below you can find information about how to use this website.
     const simplifiedText = () => {
         return (
             <>
-                {listItens.map((item,n) => (
+                {listItens.map((item, n) => (
                     <p key={n} style={{ display: 'flex', alignItems: 'center' }}>
                         <img src={`${url}/${item["type"] === "simple" ? "inclusa" : "nao-inclusa"}.svg`} alt="icon" style={{ marginRight: '10px' }} /> {item["text"]}
                     </p>
@@ -67,7 +66,7 @@ Below you can find information about how to use this website.
     const fullText = () => {
         return (
             <>
-                {listItens.map((item,n) => (
+                {listItens.map((item, n) => (
                     <p key={n} style={{ display: 'flex', alignItems: 'center' }}>
                         <img src={`${url}/inclusa.svg`} alt="icon" style={{ marginRight: '10px' }} /> {item["text"]}
                     </p>
@@ -85,7 +84,7 @@ Below you can find information about how to use this website.
             <div className='homepage-style'>
                 <div className='section container'>
                     <div>
-                        <h4 className='center'>Welcome to WebGIS</h4>
+                        <h4 className='center'>{t('welcome')}</h4>
                         <p className='center' style={textStyle}>{topText}</p>
                     </div>
                     <div className="row">
@@ -93,7 +92,7 @@ Below you can find information about how to use this website.
                             <div className="card-panel white card-style">
                                 <div className="header-container center" >
                                     <img src={iconSimple} alt="custom icon" style={{ marginRight: '10px' }} />
-                                    <h5>Simplified</h5>
+                                    <h5>{t('simplified')}</h5>
                                 </div>
                                 <div className='container'>
                                     <span className="black-text">
@@ -108,14 +107,14 @@ Below you can find information about how to use this website.
                             <div className="card-panel white card-style">
                                 <div className="header-container center">
                                     <img src={iconFull} alt="custom icon" style={{ marginRight: '10px' }} />
-                                    <h5>Full</h5>
+                                    <h5>{t('full')}</h5>
                                 </div>
                                 <div className='container'>
                                     <span className="black-text">
                                         {fullText()}
                                     </span>
                                 </div>
-                                <p className='center'><a href="/register" className='btn btn-small red rounded-button'>Register</a></p>
+                                <p className='center'><a href="/register" className='btn btn-small red rounded-button'>{t('register')}</a></p>
                                 <p className='note-style center'>Note: After registering, you will be able to create projects and save your data in the database.</p>
                             </div>
                         </div>

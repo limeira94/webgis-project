@@ -5,16 +5,21 @@ import M from 'materialize-css';
 import './Navbar.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../features/user';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../i18n/i18n';
 
 var url = process.env.PUBLIC_URL
 
 const languages = {
-    "en": <img className='icon-nav-lan' src={url + "/united-states-of-america-flag-png-large.png"} />,
-    "pt-br": <img className='icon-nav-lan' src={url + "/brazil-flag-png-large.png"} />,
+    "en-US": <img className='icon-nav-lan' src={url + "/estados-unidos.png"} />,
+    "pt-BR": <img className='icon-nav-lan' src={url + "/brasil.png"} />,
 }
+
 
 const Navbar = () => {
     const dispatch = useDispatch();
+
+    const { t } = useTranslation()
 
     useEffect(() => {
         var options = {}
@@ -33,26 +38,42 @@ const Navbar = () => {
 
     const { isAuthenticated } = useSelector(state => state.user);
 
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+    };
+
+    var Language =
+        <>
+            <div className="center-content">
+                <li><a className='black-text' onClick={() => changeLanguage('en-US')}>{languages["en-US"]}</a></li>
+                <li><a className='black-text' onClick={() => changeLanguage('pt-BR')}>{languages["pt-BR"]}</a></li>
+            </div>
+
+        </>
+
+
     var link_itens =
         <>
-            <li><a className='black-text' href="/about">About</a></li>
+            <li><a className='black-text' href="/about">{t('about')}</a></li>
         </>
 
     var guest_links =
         <>
-            <li><a className='black-text' href="/map">Take a tour</a></li>
-            <li><a className='black-text' href="/login">Login</a></li>
-            <li><a className='black-text' href="/register">Register</a></li>
+            <li><a className='black-text' href="/map">{t('take_tour')}</a></li>
+            <li><a className='black-text' href="/login">{t('login')}</a></li>
+            <li><a className='black-text' href="/register">{t('register')}</a></li>
             {link_itens}
+            {Language}
         </>
 
 
     var auth_links =
         <>
-            <li><a className='black-text' href="/project">Projects</a></li>
-            <li><a className='black-text' href="/dashboard">Profile</a></li>
-            <li><a className='black-text' href='#!' onClick={() => dispatch(logout())}>Logout</a></li>
+            <li><a className='black-text' href="/project">{t('projects')}</a></li>
+            <li><a className='black-text' href="/dashboard">{t('profile')}</a></li>
+            <li><a className='black-text' href='#!' onClick={() => dispatch(logout())}>{t('sign_out')}</a></li>
             {link_itens}
+            {Language}
         </>
 
 
