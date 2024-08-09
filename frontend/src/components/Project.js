@@ -22,10 +22,9 @@ import "../styles/Project.css"
 import Navbar from './include/Navbar';
 import { loadingPage } from './utils/Loading'; 
 
-const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs,vectors,setVectors}) => {
+const Map = ({ project, rasters, setRasters,vectors,setVectors}) => {
 
     
-    // console.log("333333333333333333", project)
     return ( //ERROR HERE:Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
         <>
             <MapComponent

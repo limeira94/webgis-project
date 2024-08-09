@@ -15,6 +15,8 @@ const ToggleLayersSelector = (
     geojsonLayerRefs,
     mapInstance,
     selectedFeatureAttributes,
+    changeStyleData,
+    setChangeStyleData,
     inmemory=false
   }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -69,6 +71,8 @@ const ToggleLayersSelector = (
               updateStyle={updateStyle}
               selectedFeatureAttributes={selectedFeatureAttributes}
               inmemory={inmemory}
+              changeStyleData={changeStyleData}
+              setChangeStyleData={setChangeStyleData}
           />
         ))}
         

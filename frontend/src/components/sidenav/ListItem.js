@@ -48,6 +48,7 @@ export const handleDeleteFiles = (
             });
     }
 }
+
 var maxCharacters = 15
 export const ListItem = ({
     datasets,
@@ -58,6 +59,8 @@ export const ListItem = ({
     updateStyle,
     geojsonLayerRefs,
     mapInstance,
+    changeStyleData,
+    setChangeStyleData,
     inmemory = false
 }) => {
 
@@ -150,6 +153,8 @@ export const ListItem = ({
                 geojsondata={dataset}
                 updateStyle={updateStyle}
                 zoomanddelete={zoomanddelete}
+                changeStyleData={changeStyleData}
+                setChangeStyleData={setChangeStyleData}
             />
     }
     return (

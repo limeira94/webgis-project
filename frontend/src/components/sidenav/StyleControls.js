@@ -54,9 +54,15 @@ export const get_item_table = (title, inputType, value, name, geojson, updateSty
 }
 
 
-export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
+export const StyleControls = ({ 
+  geojsondata, 
+  updateStyle, 
+  zoomanddelete,
+  changeStyleData,
+  setChangeStyleData
+ }) => {
 
-    const [isModalOpen,setIsModalOpen] = useState(false)
+    // const [isModalOpen,setIsModalOpen] = useState(false)
 
     let isPoint = false;
     let isLine = false;
@@ -99,45 +105,8 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
         }
     };
 
-    const saveStyle = <>
-        <tr>
-            <td><span>Save style</span></td>
-            <td className='alnright'>
-                <a onClick={() => handleSaveStyle(geojson)} className='btn blue'><i className='material-icons'>save</i></a>
-            </td>
-        </tr>
-    </>
 
-    // const openStyleModal = () => { }
-    const openStyleModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const closeStyleModal = () => {
-        setIsModalOpen(false);
-    };
-
-
-    // const changeStyleButton = <>
-    //     <tr>
-    //         <td><span>Change style</span></td>
-    //         <td className='alnright'>
-    //             <a onClick={() => openStyleModal(geojson)} className='btn blue'>
-    //                 <i className='material-icons'>save</i>
-    //             </a>
-    //         </td>
-    //     </tr>
-    // </>
-    const changeStyleButton = <>
-        <tr>
-            <td><span>Change style</span></td>
-            <td className='alnright'>
-                <a onClick={openStyleModal} className='btn blue'>
-                    <i className='material-icons'>edit</i>
-                </a>
-            </td>
-        </tr>
-    </>
+    
 
     // const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
     // const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
@@ -155,6 +124,52 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
     const opacityValue = geojsondata.data.properties.style.fillOpacity
     const opacityRow = get_item_table("Opacity", "range", opacityValue, "fillOpacity", geojson, updateStyle);
 
+    const saveStyle = <>
+      <tr>
+          <td><span>Save style</span></td>
+          <td className='alnright'>
+              <a onClick={() => handleSaveStyle(geojson)} className='btn blue'><i className='material-icons'>save</i></a>
+          </td>
+      </tr>
+    </>
+
+    const data = <>
+        <h4>Change Style</h4>
+        <p>Use the controls below to change the style of the layers.</p>
+        <table>
+          <tbody>
+            {!isPoint && !isLine && colorRow}
+            {!isPoint && lineColorRow}
+            {!isPoint && !isLine && opacityRow}
+            {!isPoint && widthRow}
+            {saveStyle}
+          </tbody>
+        </table>
+        
+      </>
+
+
+    const openStyleModal = () => {
+      setChangeStyleData(data)
+      // setIsModalOpen(true);
+  };
+
+  const closeStyleModal = () => {
+      // setIsModalOpen(false);
+  };
+
+
+    const changeStyleButton = <>
+        <tr>
+            <td><span>Change style</span></td>
+            <td className='alnright'>
+                {/* <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a> */}
+                <a onClick={openStyleModal} className='btn blue modal-trigger' href="#change-style-modal">
+                    <i className='material-icons'>edit</i>
+                </a>
+            </td>
+        </tr>
+    </>
 
 
     return (
@@ -175,14 +190,13 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
 
 
 
-            {isModalOpen && (
+            {/* {isModalOpen && (
                 <div className='modal modal-change-style' 
                 style={{ display: 'block' }}
                 >
                     <div className='modal-content'>
                         <h4>Change Style</h4>
                         <p>Use the controls below to change the style of the layers.</p>
-                        {/* Add the style controls here */}
                         {!isPoint && !isLine && colorRow}
                         {!isPoint && lineColorRow}
                         {!isPoint && !isLine && opacityRow}
@@ -193,7 +207,7 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
                         <a onClick={() => handleSaveStyle(geojson)} className='modal-close btn blue'>Save</a>
                     </div>
                 </div>
-            )}
+            )} */}
 
         </>
 

@@ -132,41 +132,107 @@ export const login = createAsyncThunk(
     }
 );
 
-export const checkAuth = createAsyncThunk(
-	'users/verify',
-	async (_, thunkAPI) => {
+export const refreshToken = createAsyncThunk(
+	'user/refreshToken',
+	async (_, { rejectWithValue }) => {
 		try {
-
 			const body = JSON.stringify({
-				token:Cookies.get('refresh_token'),//access
+				refresh: Cookies.get('refresh_token'),
 			});
 
-			const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/token/verify/`,{
+			const response = await fetch(`${process.env.REACT_APP_API_URL}api/users/token/refresh/`, {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
 					'Content-Type': 'application/json',
-					// Authorization: `Bearer ${Cookies.get('access_token')}`
 				},
 				body,
 			});
 
-			const data = await res.json();
-
-			if (res.status === 200) {
-				const { dispatch } = thunkAPI;
-
-				dispatch(getUser());
-
-				return data;
-			} else {
-				return thunkAPI.rejectWithValue(data);
+			if (!response.ok) {
+				// dispatch(logout())
+				throw new Error('Failed to refresh token');
 			}
-		} catch (err) {
-			return thunkAPI.rejectWithValue(err.response.data);
+
+			const data = await response.json();
+			Cookies.set('access_token', data.access);
+
+			return data;
+		} catch (error) {
+			// dispatch(logout())
+			return rejectWithValue(error.message);
 		}
 	}
 );
+
+
+export const checkAuth = createAsyncThunk(
+	'users/verify',
+	async (_, { dispatch, rejectWithValue }) => {
+		try {
+			const body = JSON.stringify({
+				token: Cookies.get('access_token'),
+			});
+
+			const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/token/verify/`, {
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json',
+				},
+				body,
+			});
+
+			if (res.status === 200) {
+				dispatch(getUser());
+				return await res.json();
+			} else {
+				await dispatch(refreshToken());
+				dispatch(getUser());
+				return await res.json();
+			}
+		} catch (err) {
+			dispatch(logout());
+			return rejectWithValue(err.message);
+		}
+	}
+);
+
+// export const checkAuth = createAsyncThunk(
+// 	'users/verify',
+// 	async (_, thunkAPI) => {
+// 		try {
+
+// 			const body = JSON.stringify({
+// 				token:Cookies.get('refresh_token'),//access
+// 			});
+
+// 			const res = await fetch(`${process.env.REACT_APP_API_URL}api/users/token/verify/`,{
+// 				method: 'POST',
+// 				headers: {
+// 					Accept: 'application/json',
+// 					'Content-Type': 'application/json',
+// 					// Authorization: `Bearer ${Cookies.get('access_token')}`
+// 				},
+// 				body,
+// 			});
+
+// 			const data = await res.json();
+
+// 			if (res.status === 200) {
+// 				const { dispatch } = thunkAPI;
+
+// 				dispatch(getUser());
+
+// 				return data;
+// 			} else {
+// 				return thunkAPI.rejectWithValue(data);
+// 			}
+// 		} catch (err) {
+// 			return thunkAPI.rejectWithValue(err.response.data);
+// 		}
+// 	}
+// );
 
 export const logout = createAsyncThunk('users/logout', async (_, thunkAPI) => {
 	try {

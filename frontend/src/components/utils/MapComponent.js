@@ -11,9 +11,7 @@ import {
   ScaleControl,
 } from 'react-leaflet';
 import BasemapSelector from './BasemapSelector';
-// import ToggleLayersSelector from './ToggleLayersSelector'
 import ToggleLayersSelector from '../sidenav/ToggleLayersSelector';
-// import UpDelButttons from './UploadAndDeleteButtons2';
 import UpDelButttons from './UploadAndDeleteButtons';
 import MemoryButton from './Memory/component';
 import { leafletDefaultButtons } from './LeafletButtons';
@@ -56,14 +54,15 @@ export const MapComponent = ({
   const [mapInstance, setMapInstance] = useState(null);
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] = useState(null);
   const [modalData, setModalData] = useState([]);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false)
+
+  const [changeStyleData,setChangeStyleData] = useState(null)
 
   const geojsonLayerRefs = useRef({});
   const fileInputRef = useRef(null);
 
-  const defaultCenter = [50.640, 10.553];  // Coordenadas iniciais do mapa
-  const defaultZoom = 5;  // Zoom inicial do mapa
+  const defaultCenter = [50.640, 10.553]; 
+  const defaultZoom = 5;
 
   useEffect(() => {
     M.AutoInit();
@@ -80,22 +79,21 @@ export const MapComponent = ({
   }, [mapInstance, buttonsCreated, setButtonsCreated]);
 
   useEffect(() => {
+
+    //TODO: Fix zoom to layer when open project
+
     if (project && mapInstance) {
       let center = defaultCenter;
       let zoom = defaultZoom;
-      console.log("STARTING")
-      console.log(project.centerCoordinate)
-      console.log(project.bounds.minLat)
 
       if (project.centerCoordinate && !(project.bounds.minLat === Infinity || project.bounds.maxLat === -Infinity)) {
-        console.log(project)
         const { minLat, maxLat, minLng, maxLng } = project.bounds;
         center = [(minLat + maxLat) / 2, (minLng + maxLng) / 2];
         mapInstance.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
         zoom = mapInstance.getBoundsZoom([[minLat, minLng], [maxLat, maxLng]]);
       }
 
-      mapInstance.setView(center, zoom);  // Atualiza o centro e o zoom do mapa
+      mapInstance.setView(center, zoom);  
     }
   }, [project, mapInstance]);
 
@@ -103,10 +101,8 @@ export const MapComponent = ({
     fileInputRef.current.click();
   };
 
-  // Identificar todas as chaves únicas
   const flattenedData = modalData.flat();
   const uniqueKeys = Array.from(new Set(flattenedData.flatMap(Object.keys)));
-
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -116,28 +112,14 @@ export const MapComponent = ({
 
   const handleDrop = (e) => {
     if (!savetomemory) {
-      // handleDropGeojson(e, setGeoJSONs, setRasters, mapInstance, dispatch, projectid, setUploading)
       handleDropGeojson(e, setVectors, setRasters, mapInstance, dispatch, projectid, setUploading)
     } else {
-      // UploadToMemoryDrop(e, setGeoJSONs, mapInstance)
       UploadToMemoryDrop(e, setVectors, mapInstance)
     }
   }
 
-  // const getFeatureStyle = (feature) => {
-  //   return {
-  //     color: feature.style.color || "blue",
-  //     weight: feature.style.weight || 2,
-  //     // opacity: feature.properties.style.opacity || 1
-  //     fillOpacity: feature.style.fillOpacity || 1.0,
-  //     fillColor: feature.style.fillColor || "#00ff55"
-  //   };
-  // };
-
   const onEachFeatureVector = (vector) => (feature, layer) => {
     if (feature){
-      // const style = getFeatureStyle(feature);
-      // layer.setStyle(style);
 
       layer.on('click', () => {
         const attributes = feature.properties.attributes;
@@ -149,14 +131,11 @@ export const MapComponent = ({
           }
         }
       )
-        
-      
-      // layer.style = feature.properties.style
     }
   }
 
   const MapItem = <div
-    onDrop={handleDrop}//handleDropGeojson}//handleGeojson}
+    onDrop={handleDrop}
     onDragOver={handleDragOver}
     style={{ width: '100%', height: '500px' }}
   >
@@ -233,6 +212,8 @@ export const MapComponent = ({
         mapInstance={mapInstance}
         selectedFeatureAttributes={selectedFeatureAttributes}
         inmemory={savetomemory}
+        changeStyleData={changeStyleData}
+        setChangeStyleData={setChangeStyleData}
       />
 
       <BasemapSelector
@@ -244,13 +225,11 @@ export const MapComponent = ({
         <MemoryButton
           handleButtonClick={handleButtonClick}
           fileInputRef={fileInputRef}
-          // setGeojsons={setGeoJSONs}
           setVectors={setVectors}
           mapInstance={mapInstance}
         />
         : (
           <UpDelButttons
-            // setGeoJSONs={setGeoJSONs}
             setRasters={setRasters}
             mapInstance={mapInstance}
             projectid={projectid}
@@ -285,7 +264,26 @@ export const MapComponent = ({
           <a href="#!" className="modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
       </div>
+
+
+
+    <div id="change-style-modal" className="modal">
+        <div className="modal-content">
+            {changeStyleData}
+        </div>
+        <div className="modal-footer">
+          <a href="#!" className="modal-close waves-effect waves-green btn-flat">Fechar</a>
+        </div>
+    </div>
+
+
+
+
       {MapItem}
+
+
+
+
     </>
   );
 };
