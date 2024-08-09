@@ -1,8 +1,15 @@
+import Cookies from 'js-cookie'
+import axios from 'axios';
+import M from 'materialize-css';
+import { useState,useEffect } from 'react';
+
+import "./StyleControls.css"
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
 
 
-
-const get_item_table = (title, inputType, value, name, geojson, updateStyle) => {
+export const get_item_table = (title, inputType, value, name, geojson, updateStyle) => {
 
     const onChange = e => updateStyle(geojson.properties.id, name, e.target.value)
     const isRange = inputType === 'range';
@@ -45,10 +52,11 @@ const get_item_table = (title, inputType, value, name, geojson, updateStyle) => 
         </tr>
     )
 }
-var maxCharacters = 15
 
 
 export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
+
+    const [isModalOpen,setIsModalOpen] = useState(false)
 
     let isPoint = false;
     let isLine = false;
@@ -110,12 +118,22 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
     };
 
 
+    // const changeStyleButton = <>
+    //     <tr>
+    //         <td><span>Change style</span></td>
+    //         <td className='alnright'>
+    //             <a onClick={() => openStyleModal(geojson)} className='btn blue'>
+    //                 <i className='material-icons'>save</i>
+    //             </a>
+    //         </td>
+    //     </tr>
+    // </>
     const changeStyleButton = <>
         <tr>
             <td><span>Change style</span></td>
             <td className='alnright'>
-                <a onClick={() => openStyleModal(geojson)} className='btn blue'>
-                    <i className='material-icons'>save</i>
+                <a onClick={openStyleModal} className='btn blue'>
+                    <i className='material-icons'>edit</i>
                 </a>
             </td>
         </tr>
@@ -147,10 +165,10 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
                         {zoomanddelete}
                         {changeStyleButton}
                         {/* {!isPoint && !isLine && colorRow}
-                    {!isPoint && lineColorRow}
-                    {!isPoint && !isLine && opacityRow}
-                    {!isPoint && widthRow}
-                    {saveStyle} */}
+                        {!isPoint && lineColorRow}
+                        {!isPoint && !isLine && opacityRow}
+                        {!isPoint && widthRow}
+                        {saveStyle} */}
                     </tbody>
                 </table>
             </div>
@@ -158,7 +176,9 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
 
 
             {isModalOpen && (
-                <div className='modal' style={{ display: 'block' }}>
+                <div className='modal modal-change-style' 
+                style={{ display: 'block' }}
+                >
                     <div className='modal-content'>
                         <h4>Change Style</h4>
                         <p>Use the controls below to change the style of the layers.</p>
@@ -180,3 +200,241 @@ export const StyleControls = ({ geojsondata, updateStyle, zoomanddelete }) => {
 
     );
 };
+
+
+
+
+
+
+
+
+const changeVisual = async (rasters, setRasters, raster_id, visual_type, params) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}api/main/raster/change-visual/${raster_id}`,
+      {
+        params: params,
+        visual_type: visual_type
+      },
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${Cookies.get('access_token')}`
+        }
+      }
+    );
+
+    // const updatedRasters = rasters.map(raster => {
+    //   if (raster.id === raster_id) {
+    //     return { ...raster, png: response.data.png };
+    //   }
+    //   return raster;
+    // });
+    // setRasters(updatedRasters)
+    const updatedRasters = rasters.map(raster => {
+      if (raster.data.id === raster_id) {
+        return { ...raster, data: { ...raster.data, png: response.data.png } }
+      }
+      return raster;
+    });
+    setRasters(updatedRasters)
+    // // console.log(response)
+
+    if (response.status === 201) {
+      M.toast(
+        {
+          html: "Raster updated sucessfully.",
+          classes: 'green rounded',
+          displayLength: 5000
+        });
+    } else {
+      M.toast(
+        {
+          html: "Error while trying to update raster",
+          classes: 'red rounded',
+          displayLength: 5000
+        })
+    }
+
+
+    return response
+
+  } catch (error) {
+    console.log(error)
+    // console.error('Error fetching GeoJSON data:', error);
+  }
+}
+
+
+
+export const StyleRasterControls = ({
+    rasters,
+    setRasters,
+    // dispatch,
+    // raster,
+    // zoomToLayerRaster,
+    zoomanddelete,
+    bands,
+    raster_id,
+    // updateStyle,
+    // rasterStyles
+  }) => {
+  
+    const [selectedValues, setSelectedValues] = useState({ R: '', G: '', B: '', Gray: '' });
+  
+    useEffect(() => {
+      var options = {}
+      var elems = document.querySelectorAll('.collapsible');
+      M.Collapsible.init(elems, options);
+  
+      var elems = document.querySelectorAll('select');
+      M.FormSelect.init(elems);
+  
+    }, [])
+  
+    const handleSubmitComposition = () => {
+  
+      const visual_type = "composition"
+  
+      const params = {
+        R: selectedValues['R'],
+        G: selectedValues['G'],
+        B: selectedValues['B']
+      };
+  
+      if (!selectedValues['R'] || !selectedValues['G'] || !selectedValues['B']) {
+        alert('Please select values for R, G, and B.');
+        return;
+      }
+  
+      changeVisual(rasters, setRasters, raster_id, visual_type, params)
+  
+    };
+  
+    const handleSubmitGrayscale = () => {
+      const visual_type = "grayscale"
+      const params = {
+        Gray: selectedValues['Gray'],
+      };
+  
+      if (!selectedValues['Gray']) {
+        alert('Please select the band.')
+        return;
+      }
+  
+      changeVisual(rasters, setRasters, raster_id, visual_type, params)
+  
+    };
+  
+    const selectItems = (key) => {
+      return (
+        <select
+          // ref={key}
+          // value={}
+          onChange={(e) => setSelectedValues({ ...selectedValues, [key]: e.target.value })}
+          defaultValue={selectedValues[key]}
+        >
+          <option value="" disabled>
+            Choose your option
+          </option>
+          {Array.from({ length: bands }, (_, index) => (
+            <option key={index} value={index}>
+              {`Band ${index + 1}`}
+            </option>
+          ))}
+        </select>
+      );
+    }
+  
+    const tableComposition = (
+      <table className='centered'>
+        <thead>
+          <tr>
+            <th>Band</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Red</td>
+            <td>
+              {selectItems("R")}
+            </td>
+          </tr>
+          <tr>
+            <td>Green</td>
+            <td>
+              {selectItems("G")}
+            </td>
+          </tr>
+          <tr>
+            <td>Blue</td>
+            <td>
+              {selectItems("B")}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    );
+  
+    const tableGray = (
+      <table className='centered'>
+        <thead>
+          <tr>
+            <th>Band</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Choose your option:</td>
+            <td>
+              {selectItems("Gray")}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    )
+  
+    const bandsItem =
+      <div className='collapsible-raster'>
+        <h5 className='center'>Display:</h5>
+        <ul className="collapsible">
+          <li>
+            <div className="collapsible-header">Composition</div>
+            <div className="collapsible-body">
+              {tableComposition}
+              <button onClick={handleSubmitComposition} type='submit' className="btn submit-display-button center">
+                Submit
+              </button>
+            </div>
+          </li>
+          <li>
+            <div className="collapsible-header">
+              Grayscale
+            </div>
+            <div className="collapsible-body">
+              {tableGray}
+              <button onClick={handleSubmitGrayscale} type='submit' className="btn submit-display-button center">
+                Submit
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+  
+    return (
+      <div className='side-nav-item-dropdown-style z-depth-5'>
+        <table>
+          <tbody>
+            {zoomanddelete}
+          </tbody>
+        </table>
+        {bands > 0 && bandsItem}
+      </div>
+    )
+  }
+
+
+
+

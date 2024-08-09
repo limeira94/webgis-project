@@ -206,7 +206,6 @@ export const createGeojsons = (geojsons) => {
 
 export const setData = async (
     setProject, 
-    setGeoJSONs, 
     setRasters, 
     project_id, 
     projects, 
@@ -218,7 +217,7 @@ export const setData = async (
         if (selectedProject) {
             setProject(selectedProject);
             setVectors(createGeojsons(parseVector(selectedProject.vector)))
-            setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)));
+            // setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)));
             setRasters(createRasters(selectedProject.raster));
         } else {
             navigate(`/project`);

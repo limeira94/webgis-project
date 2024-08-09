@@ -30,9 +30,7 @@ const Map = ({ project, rasters, setRasters,geojsons, setGeoJSONs,vectors,setVec
         <>
             <MapComponent
                 rasters={rasters}
-                geojsons={geojsons}
                 setRasters={setRasters}
-                setGeoJSONs={setGeoJSONs}
                 vectors={vectors}
                 setVectors={setVectors}
                 projectid={project.id}
@@ -52,7 +50,6 @@ function Project() {
     const [projectTextInput, setProjectTextInput] = useState(false);
     const [inputValue, setInputValue] = useState("");
     const [rasters, setRasters] = useState([]);
-    const [geojsons, setGeoJSONs] = useState([]);
     const [vectors, setVectors] = useState([]);
     const [isLoading,setIsLoading] = useState(false)
 
@@ -62,7 +59,7 @@ function Project() {
         M.AutoInit();
         const fetchData = async () => {
             if (project_id && projects && project === null) {
-                setData(setProject, setGeoJSONs, setRasters, project_id, projects, navigate,setVectors);
+                setData(setProject, setRasters, project_id, projects, navigate,setVectors);
             } else {
                 await getProjects(setProjects);
             }
@@ -144,8 +141,6 @@ function Project() {
                     project={project}
                     rasters={rasters}
                     setRasters={setRasters}
-                    geojsons={geojsons}
-                    setGeoJSONs={setGeoJSONs}
                     vectors={vectors}
                     setVectors={setVectors}
                 />

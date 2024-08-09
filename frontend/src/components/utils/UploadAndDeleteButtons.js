@@ -9,7 +9,7 @@ import { updateGeometry } from '../../features/data';
 
 
 const UpDelButttons = ({
-    setGeoJSONs,
+    // setGeoJSONs,
     setRasters,
     mapInstance,
     projectid,  //TODO: Change the way to do this, maybe running two different routes
@@ -185,7 +185,8 @@ const UpDelButttons = ({
                                 onChange={(event) => handleGeojson(
                                     event,
                                     //    getCenterOfGeoJSON, 
-                                    setGeoJSONs,
+                                    // setGeoJSONs,
+                                    setVectors,
                                     mapInstance,
                                     dispatch,
                                     projectid,

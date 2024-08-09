@@ -2,7 +2,10 @@ import React, { useState, useRef } from 'react';
 import L from 'leaflet';
 import M from 'materialize-css';
 import { useEffect } from 'react';
-import { ListItemWithStyleAll, ListItemWithStyleMemory } from './MapUtils';
+// import { ListItemWithStyleMemory } from '../sidenav/ListItem';
+import { ListItemWithStyleMemory } from './Memory/ListItem';
+// import { ListItemWithStyleAll, ListItemWithStyleMemory } from './MapUtils';
+
 
 const ToggleLayersSelectorMemory = (
   {

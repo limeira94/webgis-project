@@ -65,7 +65,7 @@ const ToggleLayersSelector = (
               polygonStyles={geojson.style}
               dataset={geojson}
               datatype={"geojson"}
-              zoomToLayer={()=>zoomToLayer}
+              zoomToLayer={()=>zoomToLayer(geojson.data.properties.id,geojsonLayerRefs,mapInstance)}
               updateStyle={updateStyle}
               selectedFeatureAttributes={selectedFeatureAttributes}
               inmemory={inmemory}

@@ -44,9 +44,7 @@ L.Icon.Default.mergeOptions({
 
 export const MapComponent = ({
   rasters,
-  geojsons,
   setRasters,
-  setGeoJSONs,
   vectors,
   setVectors,
   projectid = null,
@@ -85,8 +83,12 @@ export const MapComponent = ({
     if (project && mapInstance) {
       let center = defaultCenter;
       let zoom = defaultZoom;
+      console.log("STARTING")
+      console.log(project.centerCoordinate)
+      console.log(project.bounds.minLat)
 
       if (project.centerCoordinate && !(project.bounds.minLat === Infinity || project.bounds.maxLat === -Infinity)) {
+        console.log(project)
         const { minLat, maxLat, minLng, maxLng } = project.bounds;
         center = [(minLat + maxLat) / 2, (minLng + maxLng) / 2];
         mapInstance.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
@@ -114,21 +116,23 @@ export const MapComponent = ({
 
   const handleDrop = (e) => {
     if (!savetomemory) {
-      handleDropGeojson(e, setGeoJSONs, setRasters, mapInstance, dispatch, projectid, setUploading)
+      // handleDropGeojson(e, setGeoJSONs, setRasters, mapInstance, dispatch, projectid, setUploading)
+      handleDropGeojson(e, setVectors, setRasters, mapInstance, dispatch, projectid, setUploading)
     } else {
-      UploadToMemoryDrop(e, setGeoJSONs, mapInstance)
+      // UploadToMemoryDrop(e, setGeoJSONs, mapInstance)
+      UploadToMemoryDrop(e, setVectors, mapInstance)
     }
   }
 
-  const getFeatureStyle = (feature) => {
-    return {
-      color: feature.style.color || "blue",
-      weight: feature.style.weight || 2,
-      // opacity: feature.properties.style.opacity || 1
-      fillOpacity: feature.style.fillOpacity || 1.0,
-      fillColor: feature.style.fillColor || "#00ff55"
-    };
-  };
+  // const getFeatureStyle = (feature) => {
+  //   return {
+  //     color: feature.style.color || "blue",
+  //     weight: feature.style.weight || 2,
+  //     // opacity: feature.properties.style.opacity || 1
+  //     fillOpacity: feature.style.fillOpacity || 1.0,
+  //     fillColor: feature.style.fillColor || "#00ff55"
+  //   };
+  // };
 
   const onEachFeatureVector = (vector) => (feature, layer) => {
     if (feature){
@@ -201,40 +205,6 @@ export const MapComponent = ({
         </GeoJSON>)
       })}
 
-      {/* {geojsons.map((geojsondata, index) => {
-        const geojson = geojsondata.data
-        return geojsondata.visible && (
-          <GeoJSON
-            key={index}
-            ref={(el) => {
-              if (el) {
-                geojsonLayerRefs.current[geojson.properties.id] = el;
-              }
-            }}
-            data={{
-              type: 'FeatureCollection',
-              features: [geojson],
-            }}
-            style={geojsondata.style}
-
-            onEachFeature={(feature, layer) => {
-              // if (feature.geometry.type !== 'Point') {
-                layer.on('click', () => {
-                  const attributes = feature.properties.attributes;
-                  if (attributes) {
-                    setSelectedFeatureAttributes(attributes);
-                    setModalData([attributes]);
-                    // setIsModalOpen(true);
-                    const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
-                    modalInstance.open();
-                  }
-                }
-              );
-              // }
-            }}
-          />
-        )
-      })} */}
       <ScaleControl position="bottomleft" />
       <FullscreenControl className="custom-fullscreen-control" position="bottomright" />
       <ZoomControl position="bottomright" />
@@ -253,18 +223,7 @@ export const MapComponent = ({
       {
         uploading
           ? loadingIcon : null}
-      {/* <ToggleLayersSelector
-        rasters={rasters}
-        setRasters={setRasters}
-        geojsons={geojsons}
-        setGeojsons={setGeoJSONs}
-        vectors={vectors}
-        setVectors={setVectors}
-        geojsonLayerRefs={geojsonLayerRefs}
-        mapInstance={mapInstance}
-        selectedFeatureAttributes={selectedFeatureAttributes}
-        inmemory={savetomemory}
-      /> */}
+
       <ToggleLayersSelector
         rasters={rasters}
         setRasters={setRasters}
@@ -285,12 +244,13 @@ export const MapComponent = ({
         <MemoryButton
           handleButtonClick={handleButtonClick}
           fileInputRef={fileInputRef}
-          setGeojsons={setGeoJSONs}
+          // setGeojsons={setGeoJSONs}
+          setVectors={setVectors}
           mapInstance={mapInstance}
         />
         : (
           <UpDelButttons
-            setGeoJSONs={setGeoJSONs}
+            // setGeoJSONs={setGeoJSONs}
             setRasters={setRasters}
             mapInstance={mapInstance}
             projectid={projectid}

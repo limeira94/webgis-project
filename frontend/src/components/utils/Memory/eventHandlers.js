@@ -1,6 +1,7 @@
 import bbox from '@turf/bbox';
 // import { createGeojsons } from './ProjectFunctions';
 import { createGeojsons } from '../ProjectFunctions';
+import { parseVector } from '../MapUtils';
 import L from 'leaflet';
 
 
@@ -40,7 +41,8 @@ export const UploadToMemoryDrop = (event,setGeoJSONs,mapInstance) => {
   
 };
 
-export const UploadToMemory = (event,setGeoJSONs,mapInstance) => {
+// export const UploadToMemory = (event,setGeoJSONs,mapInstance) => {
+export const UploadToMemory = (event,setVectors,mapInstance) => {
     const file = event.target.files[0];
     event.target.value = null;
 
@@ -60,9 +62,14 @@ export const UploadToMemory = (event,setGeoJSONs,mapInstance) => {
       updateMapAndView(calculatedBounds, mapInstance);
 
       //TODO: verificar se isso aqui não pode dar bug. 
+      //TODO: Tem que passar um parsers antes de criar os dados vetoriais
 
-      var geojson = createGeojsons([combinedFeature])  
-      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, geojson[0]]);
+      // var geojson = createGeojsons([combinedFeature])  
+      // setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, geojson[0]]);
+      
+      //TODO: Double check this
+      var geojson = createGeojsons(parseVector([combinedFeature]))  
+      setVectors(prevGeoJSONs => [...prevGeoJSONs, geojson[0]]);
     };
     reader.readAsText(file);
   };

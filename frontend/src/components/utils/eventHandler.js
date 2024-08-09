@@ -3,7 +3,7 @@ import { createGeojsons } from './ProjectFunctions';
 import L from 'leaflet';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
-import { parseGeoJSON,parseVector } from './MapUtils';
+import { parseVector } from './MapUtils';
 import M from 'materialize-css';
 import parse from 'wellknown';
 
@@ -88,7 +88,17 @@ export const handleRaster = async (event, setRasters, mapInstance, dispatch, pro
   }
 };
 
-export const handleDropGeojson = async (event, setGeoJSONs,setRasters,mapInstance, dispatch, projectid, setUploading) => {
+export const handleDropGeojson = async (
+  event, 
+  // setGeoJSONs,
+  setVectors,
+  setRasters,
+  mapInstance, 
+  dispatch, 
+  projectid, 
+  setUploading
+) => {
+
   event.preventDefault();
   const file = event.dataTransfer.files[0]; 
   console.log(file.name)
@@ -103,7 +113,8 @@ export const handleDropGeojson = async (event, setGeoJSONs,setRasters,mapInstanc
         const { savedGeoJson } = payload;
         const features = Array.isArray(savedGeoJson) ? savedGeoJson : [savedGeoJson];
 
-        const geojsons = createGeojsons(parseGeoJSON(features))
+        // const geojsons = createGeojsons(parseGeoJSON(features))
+        const geojsons = createGeojsons(parseVector(features))
         const calculatedBounds = bbox(geojsons[0].data);
 
         if (mapInstance && calculatedBounds) {
@@ -114,7 +125,9 @@ export const handleDropGeojson = async (event, setGeoJSONs,setRasters,mapInstanc
           mapInstance.flyToBounds(boundsLatLng, { maxZoom: 16 });
         }
 
-        setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...geojsons])
+        // setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...geojsons])
+        setVectors(prevGeoJSONs => [...prevGeoJSONs, ...geojsons])
+
         setUploading(false)
       } else {
         setUploading(false)
@@ -167,7 +180,16 @@ export const handleDropGeojson = async (event, setGeoJSONs,setRasters,mapInstanc
     }
   }
 
-export const handleGeojson = async (event, setGeoJSONs,mapInstance, dispatch, projectid, setUploading) => {
+export const handleGeojson = async (
+  event, 
+  // setGeoJSONs,
+  setVectors,
+  mapInstance, 
+  dispatch, 
+  projectid, 
+  setUploading
+) => {
+
   event.preventDefault();
   console.log("DROP?")
   const file = event.target.files[0];
@@ -217,7 +239,8 @@ export const handleGeojson = async (event, setGeoJSONs,mapInstance, dispatch, pr
       }
       // const geojsons = createGeojsons(featuresCollection.features)
 
-      setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...geojsons])
+      // setGeoJSONs(prevGeoJSONs => [...prevGeoJSONs, ...geojsons])
+      setVectors(prevGeoJSONs => [...prevGeoJSONs, ...geojsons])
       setUploading(false)
     } else {
       setUploading(false)

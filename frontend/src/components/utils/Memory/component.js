@@ -5,13 +5,15 @@ const MemoryButton = (
     {
         handleButtonClick,
         fileInputRef,
-        setGeojsons,
+        // setGeojsons,
+        setVectors,
         mapInstance,
     }) => {
 
 
     const handleFileInputChange = (event) => {
-        UploadToMemory(event, setGeojsons, mapInstance);
+        // UploadToMemory(event, setGeojsons, mapInstance);
+        UploadToMemory(event, setVectors, mapInstance);
         };
 
 return (

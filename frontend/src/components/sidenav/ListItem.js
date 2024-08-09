@@ -1,5 +1,6 @@
-import { StyleControls } from "./StyleControls";
+import { StyleControls,StyleRasterControls,StyleControlsMemory } from "./StyleControls";
 import { useState,useRef,useEffect } from "react";
+import { delete_geojson,delete_raster } from "../../features/data";
 import { useDispatch } from "react-redux";
 import M from 'materialize-css';
 
@@ -13,7 +14,7 @@ const removeItemFromList = (datasets, setDatasets, fileId, datatype) => {
     }
 }
 
-const handleDeleteFiles = (
+export const handleDeleteFiles = (
     fileId,
     dispatch,
     datasets,
@@ -47,7 +48,7 @@ const handleDeleteFiles = (
             });
     }
 }
-
+var maxCharacters = 15
 export const ListItem = ({
     datasets,
     setDatasets,
