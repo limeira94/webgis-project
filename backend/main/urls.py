@@ -12,8 +12,8 @@ router.register('upload_draw', views.LeafletDrawUploadViewSet, basename='upload_
 urlpatterns = [
     path('', include(router.urls)),
     
-    path('geojson/<int:pk>/', views.GeoJSONDetailView.as_view(), name='get_geojson'),
-    path('geojson/', views.GeoJSONListView.as_view(), name='get_all_geojson'),
+    # path('geojson/<int:pk>/', views.GeoJSONDetailView.as_view(), name='get_geojson'),
+    # path('geojson/', views.GeoJSONListView.as_view(), name='get_all_geojson'),
     path('project/<int:pk>/', views.ProjectGetList.as_view(), name='get-project'),
     path('projects/', views.ProjectList.as_view(), name='get_projects'),
     path('projects/<int:pk>/', views.ProjectList.as_view(), name='delete-project'),

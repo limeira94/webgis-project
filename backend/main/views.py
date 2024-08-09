@@ -12,7 +12,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import GeoJSONFile, Project, RasterFile
+from .models import  Project, RasterFile,VectorFileModel #,GeoJSONFile
 from .serializers import *
 
 from shapely.geometry import box
@@ -60,8 +60,8 @@ class ProjectList(APIView):
         try:
             project = Project.objects.get(pk=pk)
             if request.user == project.user:
-                geojson_file = GeoJSONFile.objects.filter(project=project)
-                geojson_file.delete()
+                # geojson_file = GeoJSONFile.objects.filter(project=project)
+                # geojson_file.delete()
                 project.delete()
                 return Response({'detail': 'Project deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
             else:
@@ -231,68 +231,68 @@ class RasterCalculatorView(APIView):
         assert request.user == raster.user
 
 
-class GeoJSONDetailView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+# class GeoJSONDetailView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
     
-    def get(self, request, pk):
-        try:
-            geojson_file = GeoJSONFile.objects.get(pk=pk)
-            serializer = GeoJsonFileSerializer(geojson_file)
-            return Response(serializer.data)
-        except GeoJSONFile.DoesNotExist:
-            return Response(
-                {'error': 'GeoJSON file not found'},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+#     def get(self, request, pk):
+#         try:
+#             geojson_file = GeoJSONFile.objects.get(pk=pk)
+#             serializer = GeoJsonFileSerializer(geojson_file)
+#             return Response(serializer.data)
+#         except GeoJSONFile.DoesNotExist:
+#             return Response(
+#                 {'error': 'GeoJSON file not found'},
+#                 status=status.HTTP_404_NOT_FOUND,
+#             )
 
-    # def delete(self, request, pk):
-    #     try:
-    #         geojson_file= GeoJSONFile.objects.get(pk=pk)
-    #         group_id = geojson_file.group_id
-    #         filter_groupid = GeoJSONFile.objects.filter(group_id=group_id)
+#     # def delete(self, request, pk):
+#     #     try:
+#     #         geojson_file= GeoJSONFile.objects.get(pk=pk)
+#     #         group_id = geojson_file.group_id
+#     #         filter_groupid = GeoJSONFile.objects.filter(group_id=group_id)
 
-    #         filter_groupid.delete()
-    #         return Response(
-    #             {'message': 'GeoJSON file deleted successfully'},
-    #             status=status.HTTP_204_NO_CONTENT,
-    #         )
-    #     except GeoJSONFile.DoesNotExist:
-    #         return Response(
-    #             {'error': 'GeoJSON file not found'},
-    #             status=status.HTTP_404_NOT_FOUND,
-    #         )
-    def delete(self, request, pk):
-        try:
+#     #         filter_groupid.delete()
+#     #         return Response(
+#     #             {'message': 'GeoJSON file deleted successfully'},
+#     #             status=status.HTTP_204_NO_CONTENT,
+#     #         )
+#     #     except GeoJSONFile.DoesNotExist:
+#     #         return Response(
+#     #             {'error': 'GeoJSON file not found'},
+#     #             status=status.HTTP_404_NOT_FOUND,
+#     #         )
+#     def delete(self, request, pk):
+#         try:
             
-            geojson = VectorFileModel.objects.get(pk=pk)
+#             geojson = VectorFileModel.objects.get(pk=pk)
             
-            if request.user==geojson.user:
-                geojson.delete()
+#             if request.user==geojson.user:
+#                 geojson.delete()
 
-            return Response(
-                {'message': 'GeoJSON file deleted successfully'},
-                status=status.HTTP_204_NO_CONTENT,
-            )
-        except VectorFileSerializer.DoesNotExist:
-            return Response(
-                {'error': 'GeoJSON file not found'},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+#             return Response(
+#                 {'message': 'GeoJSON file deleted successfully'},
+#                 status=status.HTTP_204_NO_CONTENT,
+#             )
+#         except VectorFileSerializer.DoesNotExist:
+#             return Response(
+#                 {'error': 'GeoJSON file not found'},
+#                 status=status.HTTP_404_NOT_FOUND,
+#             )
 
 
-class GeoJSONListView(APIView):
-    def get(self, request):
-        geojson_files = GeoJSONFile.objects.all()
-        serializer = GeoJsonFileSerializer(geojson_files, many=True)
-        return Response(serializer.data)
+# class GeoJSONListView(APIView):
+#     def get(self, request):
+#         geojson_files = GeoJSONFile.objects.all()
+#         serializer = GeoJsonFileSerializer(geojson_files, many=True)
+#         return Response(serializer.data)
 
-    def delete(self, request):
-        print('DELETING')
-        GeoJSONFile.objects.all().delete()
-        return Response(
-            {'message': 'All GeoJSON files deleted successfully'},
-            status=status.HTTP_204_NO_CONTENT,
-        )
+#     def delete(self, request):
+#         print('DELETING')
+#         GeoJSONFile.objects.all().delete()
+#         return Response(
+#             {'message': 'All GeoJSON files deleted successfully'},
+#             status=status.HTTP_204_NO_CONTENT,
+#         )
 
 #TODO: Olhar no Geojson model 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -486,40 +486,40 @@ class LeafletDrawUploadViewSet(viewsets.ViewSet):
                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
             
-    def update(self, request, pk=None):
-        try:
-            geometry_data = request.data.get('geometry')
-            if not geometry_data:
-                raise ValueError("Missing 'geometry'")
+    # def update(self, request, pk=None):
+    #     try:
+    #         geometry_data = request.data.get('geometry')
+    #         if not geometry_data:
+    #             raise ValueError("Missing 'geometry'")
             
-            geometry_feature = geometry_data['geometry']
-            geometry = GEOSGeometry(json.dumps(geometry_feature))
+    #         geometry_feature = geometry_data['geometry']
+    #         geometry = GEOSGeometry(json.dumps(geometry_feature))
             
-            try:
-                geometry_instance = GeoJSONFile.objects.get(pk=pk, user=request.user)
-            except GeoJSONFile.DoesNotExist:
-                return Response(
-                    {'error': 'Geometry not found'}, status=status.HTTP_404_NOT_FOUND
-                )
+    #         try:
+    #             geometry_instance = GeoJSONFile.objects.get(pk=pk, user=request.user)
+    #         except GeoJSONFile.DoesNotExist:
+    #             return Response(
+    #                 {'error': 'Geometry not found'}, status=status.HTTP_404_NOT_FOUND
+    #             )
             
-            geometry_instance.geojson = geometry
-            geometry_instance.save()
+    #         geometry_instance.geojson = geometry
+    #         geometry_instance.save()
             
-            return Response(
-                {
-                    'message': 'Geometry updated successfully',
-                    'updatedGeometry': {
-                        'id': geometry_instance.id,
-                        'geojson': json.loads(geometry_instance.geojson.geojson)
-                    }
-                },
-                status=status.HTTP_200_OK,
-            )
+    #         return Response(
+    #             {
+    #                 'message': 'Geometry updated successfully',
+    #                 'updatedGeometry': {
+    #                     'id': geometry_instance.id,
+    #                     'geojson': json.loads(geometry_instance.geojson.geojson)
+    #                 }
+    #             },
+    #             status=status.HTTP_200_OK,
+    #         )
         
-        except Exception as e:
-            return Response(
-                {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
-            )
+    #     except Exception as e:
+    #         return Response(
+    #             {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
+    #         )
             
 
     

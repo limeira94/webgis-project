@@ -53,13 +53,13 @@ class VectorFileModel(models.Model):
     #     self.name = os.path.splitext(NAME)[0]
         
 
-class GeoJSONFile(models.Model):
-    name = models.CharField(max_length=255)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    geojson = models.GeometryField()
-    attributes = JSONField(blank=True, null=True)
-    group_id = models.IntegerField(default=0)
-    style = models.JSONField(default=get_default_style)
+# class GeoJSONFile(models.Model):
+#     name = models.CharField(max_length=255)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+#     geojson = models.GeometryField()
+#     attributes = JSONField(blank=True, null=True)
+#     group_id = models.IntegerField(default=0)
+#     style = models.JSONField(default=get_default_style)
 
 #TODO: 
 # Substituir overwrite do save
@@ -141,7 +141,7 @@ class Project(models.Model):
     name = models.CharField(max_length=100)
     thumbnail = models.ImageField(null=True, blank=True)
     vector = models.ManyToManyField(VectorFileModel, blank=True)
-    geojson = models.ManyToManyField(GeoJSONFile, blank=True)
+    # geojson = models.ManyToManyField(GeoJSONFile, blank=True)
     raster = models.ManyToManyField(RasterFile, blank=True)
     public = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

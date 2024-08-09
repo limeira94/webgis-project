@@ -17,10 +17,10 @@ class VectorFileSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class GeoJsonFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GeoJSONFile
-        fields = "__all__"#('id', 'name', 'geojson', 'attributes', 'group_id')
+# class GeoJsonFileSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = GeoJSONFile
+#         fields = "__all__"#('id', 'name', 'geojson', 'attributes', 'group_id')
 
 
 class RasterFileSerializer(serializers.ModelSerializer):
@@ -74,7 +74,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class ProjectPkSerializer(serializers.ModelSerializer):
     raster = RasterFileSerializer(many=True, read_only=True)
-    geojson = GeoJsonFileSerializer(many=True, read_only=True)
+    # geojson = GeoJsonFileSerializer(many=True, read_only=True)
     vector = VectorFileSerializer(many=True, read_only=True)
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
