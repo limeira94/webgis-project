@@ -231,53 +231,71 @@ class RasterCalculatorView(APIView):
         assert request.user == raster.user
 
 
-# class GeoJSONDetailView(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
+class GeoJSONDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        try:
+            
+            geojson = VectorFileModel.objects.get(pk=pk)
+            
+            if request.user==geojson.user:
+                geojson.delete()
+
+            return Response(
+                {'message': 'GeoJSON file deleted successfully'},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+        except VectorFileSerializer.DoesNotExist:
+            return Response(
+                {'error': 'GeoJSON file not found'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
     
-#     def get(self, request, pk):
-#         try:
-#             geojson_file = GeoJSONFile.objects.get(pk=pk)
-#             serializer = GeoJsonFileSerializer(geojson_file)
-#             return Response(serializer.data)
-#         except GeoJSONFile.DoesNotExist:
-#             return Response(
-#                 {'error': 'GeoJSON file not found'},
-#                 status=status.HTTP_404_NOT_FOUND,
-#             )
+    # def get(self, request, pk):
+    #     try:
+    #         geojson_file = GeoJSONFile.objects.get(pk=pk)
+    #         serializer = GeoJsonFileSerializer(geojson_file)
+    #         return Response(serializer.data)
+    #     except GeoJSONFile.DoesNotExist:
+    #         return Response(
+    #             {'error': 'GeoJSON file not found'},
+    #             status=status.HTTP_404_NOT_FOUND,
+    #         )
 
-#     # def delete(self, request, pk):
-#     #     try:
-#     #         geojson_file= GeoJSONFile.objects.get(pk=pk)
-#     #         group_id = geojson_file.group_id
-#     #         filter_groupid = GeoJSONFile.objects.filter(group_id=group_id)
+    # def delete(self, request, pk):
+    #     try:
+    #         geojson_file= GeoJSONFile.objects.get(pk=pk)
+    #         group_id = geojson_file.group_id
+    #         filter_groupid = GeoJSONFile.objects.filter(group_id=group_id)
 
-#     #         filter_groupid.delete()
-#     #         return Response(
-#     #             {'message': 'GeoJSON file deleted successfully'},
-#     #             status=status.HTTP_204_NO_CONTENT,
-#     #         )
-#     #     except GeoJSONFile.DoesNotExist:
-#     #         return Response(
-#     #             {'error': 'GeoJSON file not found'},
-#     #             status=status.HTTP_404_NOT_FOUND,
-#     #         )
-#     def delete(self, request, pk):
-#         try:
+    #         filter_groupid.delete()
+    #         return Response(
+    #             {'message': 'GeoJSON file deleted successfully'},
+    #             status=status.HTTP_204_NO_CONTENT,
+    #         )
+    #     except GeoJSONFile.DoesNotExist:
+    #         return Response(
+    #             {'error': 'GeoJSON file not found'},
+    #             status=status.HTTP_404_NOT_FOUND,
+    #         )
+    # def delete(self, request, pk):
+    #     try:
             
-#             geojson = VectorFileModel.objects.get(pk=pk)
+    #         geojson = VectorFileModel.objects.get(pk=pk)
             
-#             if request.user==geojson.user:
-#                 geojson.delete()
+    #         if request.user==geojson.user:
+    #             geojson.delete()
 
-#             return Response(
-#                 {'message': 'GeoJSON file deleted successfully'},
-#                 status=status.HTTP_204_NO_CONTENT,
-#             )
-#         except VectorFileSerializer.DoesNotExist:
-#             return Response(
-#                 {'error': 'GeoJSON file not found'},
-#                 status=status.HTTP_404_NOT_FOUND,
-#             )
+    #         return Response(
+    #             {'message': 'GeoJSON file deleted successfully'},
+    #             status=status.HTTP_204_NO_CONTENT,
+    #         )
+    #     except VectorFileSerializer.DoesNotExist:
+    #         return Response(
+    #             {'error': 'GeoJSON file not found'},
+    #             status=status.HTTP_404_NOT_FOUND,
+    #         )
 
 
 # class GeoJSONListView(APIView):

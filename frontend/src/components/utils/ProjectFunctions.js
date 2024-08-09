@@ -40,9 +40,10 @@ export const getProject = async (projectId) => {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        // console.log(response.data)
-        const center = calculateCenter(response.data.geojson);
-        const bounds = calculateBoundingBox(response.data.geojson);
+        // const center = calculateCenter(response.data.geojson);
+        // const bounds = calculateBoundingBox(response.data.geojson);
+        const center = calculateCenter(response.data.vector);
+        const bounds = calculateBoundingBox(response.data.vector);
         return {
             ...response.data,
                 centerCoordinate: center,
@@ -53,54 +54,109 @@ export const getProject = async (projectId) => {
     }
 }
 
-const calculateBoundingBox = (geojsons) => {
+// const calculateBoundingBox = (geojsons) => {
+//     let minLat = Infinity;
+//     let maxLat = -Infinity;
+//     let minLng = Infinity;
+//     let maxLng = -Infinity;
+//     console.log(geojsons)
+
+//     geojsons.forEach(geojson => {
+//         const coordinates = geojson.geojson.replace('SRID=4326;', '');
+//         const regex = /-?\d+\.\d+ -?\d+\.\d+/g; // Regex para capturar coordenadas
+//         const matches = coordinates.match(regex);
+
+//         if (matches) {
+//             matches.forEach(match => {
+//                 const [lng, lat] = match.split(' ').map(Number);
+//                 minLat = Math.min(minLat, lat);
+//                 maxLat = Math.max(maxLat, lat);
+//                 minLng = Math.min(minLng, lng);
+//                 maxLng = Math.max(maxLng, lng);
+//             });
+//         }
+//     });
+
+//     return { minLat, maxLat, minLng, maxLng };
+// };
+
+const calculateBoundingBox = (vectors) => {
     let minLat = Infinity;
     let maxLat = -Infinity;
     let minLng = Infinity;
     let maxLng = -Infinity;
 
-    geojsons.forEach(geojson => {
-        const coordinates = geojson.geojson.replace('SRID=4326;', '');
-        const regex = /-?\d+\.\d+ -?\d+\.\d+/g; // Regex para capturar coordenadas
-        const matches = coordinates.match(regex);
+    vectors.forEach(vector => {
+        vector.geoms.forEach(geom => {
+            const coordinates = geom.geometry.replace('SRID=4326;', '');
+            const regex = /-?\d+\.\d+ -?\d+\.\d+/g; // Regex to capture coordinates
+            const matches = coordinates.match(regex);
 
-        if (matches) {
-            matches.forEach(match => {
-                const [lng, lat] = match.split(' ').map(Number);
-                minLat = Math.min(minLat, lat);
-                maxLat = Math.max(maxLat, lat);
-                minLng = Math.min(minLng, lng);
-                maxLng = Math.max(maxLng, lng);
-            });
-        }
+            if (matches) {
+                matches.forEach(match => {
+                    const [lng, lat] = match.split(' ').map(Number);
+                    minLat = Math.min(minLat, lat);
+                    maxLat = Math.max(maxLat, lat);
+                    minLng = Math.min(minLng, lng);
+                    maxLng = Math.max(maxLng, lng);
+                });
+            }
+        });
     });
 
     return { minLat, maxLat, minLng, maxLng };
 };
 
-const calculateCenter = (geojsons) => {
+const calculateCenter = (vectors) => {
     let totalLat = 0;
     let totalLng = 0;
     let count = 0;
 
-    geojsons.forEach(geojson => {
-        const coordinates = geojson.geojson.replace('SRID=4326;', '');
-        const type = geojson.geojson.includes('POLYGON') ? 'POLYGON' : 'POINT';
-        const regex = /-?\d+\.\d+ -?\d+\.\d+/g; // Regex atualizado para extrair corretamente "longitude latitude", considerando sinais negativos
-        const matches = coordinates.match(regex);
+    vectors.forEach(vector => {
+        vector.geoms.forEach(geom => {
+            const coordinates = geom.geometry.replace('SRID=4326;', '');
+            const regex = /-?\d+\.\d+ -?\d+\.\d+/g; // Updated regex to extract "longitude latitude"
+            const matches = coordinates.match(regex);
 
-        if (matches) {
-            matches.forEach(match => {
-                const [lng, lat] = match.split(' ').map(Number);
-                totalLat += lat;
-                totalLng += lng;
-                count++;
-            });
-        }
+            if (matches) {
+                matches.forEach(match => {
+                    const [lng, lat] = match.split(' ').map(Number);
+                    totalLat += lat;
+                    totalLng += lng;
+                    count++;
+                });
+            }
+        });
     });
 
     return count > 0 ? { lat: totalLat / count, lng: totalLng / count } : null;
 };
+
+
+// const calculateCenter = (geojsons) => {
+//     let totalLat = 0;
+//     let totalLng = 0;
+//     let count = 0;
+//     console.log(geojsons)
+
+//     geojsons.forEach(geojson => {
+//         const coordinates = geojson.geojson.replace('SRID=4326;', '');
+//         const type = geojson.geojson.includes('POLYGON') ? 'POLYGON' : 'POINT';
+//         const regex = /-?\d+\.\d+ -?\d+\.\d+/g; // Regex atualizado para extrair corretamente "longitude latitude", considerando sinais negativos
+//         const matches = coordinates.match(regex);
+
+//         if (matches) {
+//             matches.forEach(match => {
+//                 const [lng, lat] = match.split(' ').map(Number);
+//                 totalLat += lat;
+//                 totalLng += lng;
+//                 count++;
+//             });
+//         }
+//     });
+
+//     return count > 0 ? { lat: totalLat / count, lng: totalLng / count } : null;
+// };
 
 
 export const handleDeleteProject = async (projectId, setProjects) => {
