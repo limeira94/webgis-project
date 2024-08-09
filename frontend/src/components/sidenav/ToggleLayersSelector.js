@@ -22,6 +22,7 @@ const ToggleLayersSelector = (
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const updateStyle = (polygonId, styleKey, value) => {
+    console.log(polygonId, styleKey, value)
     setVectors(prevGeojsons => {
         return prevGeojsons.map(geojson => {
             if (geojson.data.properties.id === polygonId) {

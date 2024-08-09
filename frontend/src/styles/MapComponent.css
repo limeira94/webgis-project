@@ -516,6 +516,7 @@
 
 .sidenav-range-style{
   width: 40px;
+  max-width: 120px;
 }
 
 

@@ -28,9 +28,6 @@ class UpdateVectorStyle(APIView):
         if not style:
             return Response({"error": "Style data is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # print(style,type(style))
-        # for i,j in vector.style.items():
-        #     print(i,j)
         vector.style = style
         vector.save()
 

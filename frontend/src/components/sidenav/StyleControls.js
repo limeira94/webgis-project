@@ -8,10 +8,152 @@ import "./StyleControls.css"
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
 
+const GlobalStyle = ({ geojson,updateStyle }) => {
+  const [color, setColor] = useState(geojson.data.properties.style.fillColor);
+  const [lineColor, setLineColor] = useState(geojson.data.properties.style.color);
+  const [width, setWidth] = useState(geojson.data.properties.style.weight);
+  const [opacity, setOpacity] = useState(geojson.data.properties.style.opacity);
+
+  const handleColorChange = (e) => setColor(e.target.value);
+  const handleLineColorChange = (e) => setLineColor(e.target.value);
+  const handleWidthChange = (e) => setWidth(e.target.value);
+  const handleOpacityChange = (e) => setOpacity(e.target.value);
+
+  const data = [
+    { name: "Color", class: "input-color-style", type: "color", value: color, onchange: handleColorChange },
+    { name: "Line Color", class: "input-color-style", type: "color", value: lineColor, onchange: handleLineColorChange },
+    { name: "Line Size", class: "sidenav-range-style", type: "range", min: 0, max: 10, step: 1, value: width, onchange: handleWidthChange },
+    { name: "Opacity", class: "sidenav-range-style", type: "range", min: 0, max: 1, step: 0.1, value: opacity, onchange: handleOpacityChange }
+  ];
+
+  const handleSaveStyle = async (geojson) => {
+    try {
+        const style = geojson.data.properties.style;
+        const vectorId = geojson.data.properties.id;
+        const token = Cookies.get('access_token');
+
+        const response = await axios.post(
+            `${API_URL}api/main/vectors/${vectorId}/save-style/`, {
+            style: style
+        }, {
+            headers: {
+                Accept: 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 200) {
+          
+          updateStyle(geojson.data.properties.id, "fillColor", color)
+          updateStyle(geojson.data.properties.id, "color", lineColor)
+          updateStyle(geojson.data.properties.id, "weight", width)
+          updateStyle(geojson.data.properties.id, "fillOpacity", opacity)
+            // console.log('Style saved successfully!');
+            //TODO: Update style for all in here
+            //name: name of the property in the GeoJSON object, from Leaflet
+            //value: 
+            // updateStyle(geojson.properties.id, name, value)
+        } else {
+            console.error('Unexpected response:', response);
+        }
+    } catch (error) {
+        console.error('Error saving style:', error);
+    }
+};
+
+
+  const saveStyle = <>
+      <tr>
+          <td><span>Save style</span></td>
+          <td className='alnright'>
+              <a onClick={
+                () => handleSaveStyle(geojson)
+                // ()=>handleSaveStyle(geojson)
+                } className='btn blue'><i className='material-icons'>save</i></a>
+          </td>
+      </tr>
+    </>
+
+  return (
+    <table>
+      <tbody>
+        {data.map((d, index) => (
+          <tr key={index}>
+            <td><span>{d.name}</span></td>
+            <td className='alnright'>
+              <input
+                className={d.class}
+                type={d.type}
+                min={d.min}
+                max={d.max}
+                step={d.step}
+                value={d.value}
+                onChange={d.onchange}
+              />
+            </td>
+          </tr>
+        ))}
+        {/* {saveButton} */}
+        {saveStyle}
+      </tbody>
+    </table>
+  );
+};
+
+const CategorizedStyle = ({ geojson }) => {
+  // TODO: Implement categorized style logic
+
+  return <div>Categorized Style Configuration</div>;
+};
+
+const ModalChangeData = ({ geojson,updateStyle }) => {
+  const [selectedOption, setSelectedOption] = useState('global');
+
+  const handleOptionChange = (e) => setSelectedOption(e.target.value);
+
+  return (
+    <>
+      <p>
+        <label>
+          <input
+            className="with-gap"
+            name="styleOption"
+            type="radio"
+            value="global"
+            checked={selectedOption === 'global'}
+            onChange={handleOptionChange}
+          />
+          <span>Global</span>
+        </label>
+      </p>
+      <p>
+        <label>
+          <input
+            className="with-gap"
+            name="styleOption"
+            type="radio"
+            value="category"
+            checked={selectedOption === 'category'}
+            onChange={handleOptionChange}
+          />
+          <span>Categorized</span>
+        </label>
+      </p>
+
+      {selectedOption === 'global' ? (
+        <GlobalStyle geojson={geojson} updateStyle={updateStyle}/>
+      ) : (
+        <CategorizedStyle geojson={geojson} />
+      )}
+    </>
+  );
+};
 
 export const get_item_table = (title, inputType, value, name, geojson, updateStyle) => {
 
-    const onChange = e => updateStyle(geojson.properties.id, name, e.target.value)
+    const onChange = e => updateStyle(
+      geojson.properties.id, name, e.target.value
+    )
     const isRange = inputType === 'range';
 
     let min, max, step;
@@ -148,16 +290,16 @@ export const StyleControls = ({
         
       </>
 
+    // const data = 
+
 
     const openStyleModal = () => {
-      setChangeStyleData(data)
-      // setIsModalOpen(true);
+      // setChangeStyleData(data)
+      setChangeStyleData(<ModalChangeData 
+                            geojson={geojsondata} 
+                            updateStyle={updateStyle}
+                            />)
   };
-
-  const closeStyleModal = () => {
-      // setIsModalOpen(false);
-  };
-
 
     const changeStyleButton = <>
         <tr>
@@ -179,36 +321,9 @@ export const StyleControls = ({
                     <tbody>
                         {zoomanddelete}
                         {changeStyleButton}
-                        {/* {!isPoint && !isLine && colorRow}
-                        {!isPoint && lineColorRow}
-                        {!isPoint && !isLine && opacityRow}
-                        {!isPoint && widthRow}
-                        {saveStyle} */}
                     </tbody>
                 </table>
             </div>
-
-
-
-            {/* {isModalOpen && (
-                <div className='modal modal-change-style' 
-                style={{ display: 'block' }}
-                >
-                    <div className='modal-content'>
-                        <h4>Change Style</h4>
-                        <p>Use the controls below to change the style of the layers.</p>
-                        {!isPoint && !isLine && colorRow}
-                        {!isPoint && lineColorRow}
-                        {!isPoint && !isLine && opacityRow}
-                        {!isPoint && widthRow}
-                    </div>
-                    <div className='modal-footer'>
-                        <a onClick={closeStyleModal} className='modal-close btn red'>Close</a>
-                        <a onClick={() => handleSaveStyle(geojson)} className='modal-close btn blue'>Save</a>
-                    </div>
-                </div>
-            )} */}
-
         </>
 
 
