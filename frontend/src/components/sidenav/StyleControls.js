@@ -19,11 +19,22 @@ const GlobalStyle = ({ geojson,updateStyle }) => {
   const handleWidthChange = (e) => setWidth(e.target.value);
   const handleOpacityChange = (e) => setOpacity(e.target.value);
 
+  let isPoint = false;
+  let isLine = false;
+
+  if (geojson.data.type === 'FeatureCollection') {
+      isPoint = geojson.data.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
+      isLine = geojson.data.features.some(feature => feature.geometry && (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString"));
+  } else {
+      isPoint = geojson.data.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
+      isLine = geojson.data.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
+  }
+
   const data = [
-    { name: "Color", class: "input-color-style", type: "color", value: color, onchange: handleColorChange },
-    { name: "Line Color", class: "input-color-style", type: "color", value: lineColor, onchange: handleLineColorChange },
-    { name: "Line Size", class: "sidenav-range-style", type: "range", min: 0, max: 10, step: 1, value: width, onchange: handleWidthChange },
-    { name: "Opacity", class: "sidenav-range-style", type: "range", min: 0, max: 1, step: 0.1, value: opacity, onchange: handleOpacityChange }
+    { name: "Color", class: "input-color-style", type: "color", value: color, onchange: handleColorChange, show:!isPoint && !isLine  },
+    { name: "Line Color", class: "input-color-style", type: "color", value: lineColor, onchange: handleLineColorChange, show:!isPoint  },
+    { name: "Line Size", class: "sidenav-range-style", type: "range", min: 0, max: 10, step: 1, value: width, onchange: handleWidthChange, show:!isPoint }, 
+    { name: "Opacity", class: "sidenav-range-style", type: "range", min: 0, max: 1, step: 0.1, value: opacity, onchange: handleOpacityChange, show:!isPoint && !isLine }
   ];
 
   const handleSaveStyle = async (geojson) => {
@@ -48,11 +59,6 @@ const GlobalStyle = ({ geojson,updateStyle }) => {
           updateStyle(geojson.data.properties.id, "color", lineColor)
           updateStyle(geojson.data.properties.id, "weight", width)
           updateStyle(geojson.data.properties.id, "fillOpacity", opacity)
-            // console.log('Style saved successfully!');
-            //TODO: Update style for all in here
-            //name: name of the property in the GeoJSON object, from Leaflet
-            //value: 
-            // updateStyle(geojson.properties.id, name, value)
         } else {
             console.error('Unexpected response:', response);
         }
@@ -74,26 +80,29 @@ const GlobalStyle = ({ geojson,updateStyle }) => {
       </tr>
     </>
 
+
+
   return (
     <table>
       <tbody>
-        {data.map((d, index) => (
-          <tr key={index}>
-            <td><span>{d.name}</span></td>
-            <td className='alnright'>
-              <input
-                className={d.class}
-                type={d.type}
-                min={d.min}
-                max={d.max}
-                step={d.step}
-                value={d.value}
-                onChange={d.onchange}
-              />
-            </td>
-          </tr>
-        ))}
-        {/* {saveButton} */}
+        {data.map((d, index) =>
+          d.show ? (
+            <tr key={index}>
+              <td><span>{d.name}</span></td>
+              <td className='alnright'>
+                <input
+                  className={d.class}
+                  type={d.type}
+                  min={d.min}
+                  max={d.max}
+                  step={d.step}
+                  value={d.value}
+                  onChange={d.onchange}
+                />
+              </td>
+            </tr>
+          ) : null
+        )}
         {saveStyle}
       </tbody>
     </table>
@@ -113,7 +122,8 @@ const ModalChangeData = ({ geojson,updateStyle }) => {
 
   return (
     <>
-      <p>
+      <div className='center'>
+      
         <label>
           <input
             className="with-gap"
@@ -125,8 +135,7 @@ const ModalChangeData = ({ geojson,updateStyle }) => {
           />
           <span>Global</span>
         </label>
-      </p>
-      <p>
+      
         <label>
           <input
             className="with-gap"
@@ -138,7 +147,8 @@ const ModalChangeData = ({ geojson,updateStyle }) => {
           />
           <span>Categorized</span>
         </label>
-      </p>
+      
+      </div>
 
       {selectedOption === 'global' ? (
         <GlobalStyle geojson={geojson} updateStyle={updateStyle}/>
@@ -206,46 +216,46 @@ export const StyleControls = ({
 
     // const [isModalOpen,setIsModalOpen] = useState(false)
 
-    let isPoint = false;
-    let isLine = false;
+    // let isPoint = false;
+    // let isLine = false;
 
-    const geojson = geojsondata.data.features === undefined ?
-        geojsondata.data :
-        geojsondata.data//.features[0]
+    // const geojson = geojsondata.data.features === undefined ?
+    //     geojsondata.data :
+    //     geojsondata.data//.features[0]
 
-    if (geojson.type === 'FeatureCollection') {
-        isPoint = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
-        isLine = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString"));
-    } else {
-        isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
-        isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
-    }
+    // if (geojson.type === 'FeatureCollection') {
+    //     isPoint = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
+    //     isLine = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString"));
+    // } else {
+    //     isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
+    //     isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
+    // }
 
-    const handleSaveStyle = async (geojson) => {
-        try {
-            const style = geojson.properties.style;
-            const vectorId = geojson.properties.id;
-            const token = Cookies.get('access_token');
+    // const handleSaveStyle = async (geojson) => {
+    //     try {
+    //         const style = geojson.properties.style;
+    //         const vectorId = geojson.properties.id;
+    //         const token = Cookies.get('access_token');
 
-            const response = await axios.post(
-                `${API_URL}api/main/vectors/${vectorId}/save-style/`, {
-                style: style
-            }, {
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            });
+    //         const response = await axios.post(
+    //             `${API_URL}api/main/vectors/${vectorId}/save-style/`, {
+    //             style: style
+    //         }, {
+    //             headers: {
+    //                 Accept: 'application/json',
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         });
 
-            if (response.status === 200) {
-                console.log('Style saved successfully!');
-            } else {
-                console.error('Unexpected response:', response);
-            }
-        } catch (error) {
-            console.error('Error saving style:', error);
-        }
-    };
+    //         if (response.status === 200) {
+    //             console.log('Style saved successfully!');
+    //         } else {
+    //             console.error('Unexpected response:', response);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error saving style:', error);
+    //     }
+    // };
 
 
     
@@ -254,41 +264,41 @@ export const StyleControls = ({
     // const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
 
     // const colorValue = geojsondata.style.fillColor
-    const colorValue = geojsondata.data.properties.style.fillColor
-    const colorRow = get_item_table("Color", "color", colorValue, "fillColor", geojson, updateStyle);
+    // const colorValue = geojsondata.data.properties.style.fillColor
+    // const colorRow = get_item_table("Color", "color", colorValue, "fillColor", geojson, updateStyle);
 
-    const lineColorValue = geojsondata.data.properties.style.color
-    const lineColorRow = get_item_table("Line Color", "color", lineColorValue, "color", geojson, updateStyle);
+    // const lineColorValue = geojsondata.data.properties.style.color
+    // const lineColorRow = get_item_table("Line Color", "color", lineColorValue, "color", geojson, updateStyle);
 
-    const widthValue = geojsondata.data.properties.style.weight
-    const widthRow = get_item_table("Line Size", "range", widthValue, "weight", geojson, updateStyle);
+    // const widthValue = geojsondata.data.properties.style.weight
+    // const widthRow = get_item_table("Line Size", "range", widthValue, "weight", geojson, updateStyle);
 
-    const opacityValue = geojsondata.data.properties.style.fillOpacity
-    const opacityRow = get_item_table("Opacity", "range", opacityValue, "fillOpacity", geojson, updateStyle);
+    // const opacityValue = geojsondata.data.properties.style.fillOpacity
+    // const opacityRow = get_item_table("Opacity", "range", opacityValue, "fillOpacity", geojson, updateStyle);
 
-    const saveStyle = <>
-      <tr>
-          <td><span>Save style</span></td>
-          <td className='alnright'>
-              <a onClick={() => handleSaveStyle(geojson)} className='btn blue'><i className='material-icons'>save</i></a>
-          </td>
-      </tr>
-    </>
+    // const saveStyle = <>
+    //   <tr>
+    //       <td><span>Save style</span></td>
+    //       <td className='alnright'>
+    //           <a onClick={() => handleSaveStyle(geojson)} className='btn blue'><i className='material-icons'>save</i></a>
+    //       </td>
+    //   </tr>
+    // </>
 
-    const data = <>
-        <h4>Change Style</h4>
-        <p>Use the controls below to change the style of the layers.</p>
-        <table>
-          <tbody>
-            {!isPoint && !isLine && colorRow}
-            {!isPoint && lineColorRow}
-            {!isPoint && !isLine && opacityRow}
-            {!isPoint && widthRow}
-            {saveStyle}
-          </tbody>
-        </table>
+    // const data = <>
+    //     <h4>Change Style</h4>
+    //     <p>Use the controls below to change the style of the layers.</p>
+    //     <table>
+    //       <tbody>
+    //         {!isPoint && !isLine && colorRow}
+    //         {!isPoint && lineColorRow}
+    //         {!isPoint && !isLine && opacityRow}
+    //         {!isPoint && widthRow}
+    //         {saveStyle}
+    //       </tbody>
+    //     </table>
         
-      </>
+    //   </>
 
     // const data = 
 
