@@ -19,7 +19,14 @@
     "welcome": "Welcome to WebGIS",
     "simplified": "Simplified",
     "full": "Full",
-    "continent": "Continent",
-    "country": "Country",
-    "all_countries": "All Countries"
+    "homepage_text": "This project is an open-source platform to visualize and analyze geographic data.\nBelow you can find information about how to use this website.",
+    "add_vector": "Add vector layers (GeoJSON)" ,
+    "edit_layer_style": "Edit layer styles",
+    "access_basemap": "Access multiple basemaps",
+    "print_map": "Print maps",
+    "add_raster": "Add raster layers",
+    "draw_layers": "Draw layers",	
+    "create_project": "Create and edit Projects",
+    "note_1": "Note: The data is temporary here, it will be deleted after reloading the page. All data will be lost.",
+    "note_2": "Note: After registering, you will be able to create projects and save your data in the database."
 }

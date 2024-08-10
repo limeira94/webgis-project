@@ -19,8 +19,15 @@
     "welcome": "Bem-vindo ao WebGIS",
     "simplified": "Simplificado",
     "full": "Completo",
-    "continent": "Continente",
-    "country": "País",
-    "all_countries": "Todos os Países",
-    "focos_espurios": "Focos Espúrios"
+    "homepage_text": "Este projeto é uma plataforma de código aberto para visualizar e analisar dados geográficos.\nAbaixo você encontra informações sobre como usar este site.",
+    "add_vector": "Adicionar dados vetoriais (GeoJSON)",
+    "edit_layer_style": "Editar estilos de camada",
+    "access_basemap": "Acesso a diferentes mapas base",
+    "area_measure": "Medição de área",
+    "print_map": "Impressão de mapas",
+    "add_raster": "Adicionar camadas raster",
+    "draw_layers": "Desenhar camadas",	
+    "create_project": "Criar e editar Projetos",
+    "note_1": "Nota: Os dados são temporários aqui, serão excluídos após recarregar a página. Todos os dados serão perdidos.",
+    "note_2": "Nota: Após o registro, você poderá criar projetos e salvar seus dados no banco de dados."
 }

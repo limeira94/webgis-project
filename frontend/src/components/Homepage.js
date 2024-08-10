@@ -36,19 +36,16 @@ const Homepage = () => {
         navigate(`/project/${projectId}`);
     };
 
-    const topText = `
-This project is a open-source platform to visualize and analyse geographic data.
-Below you can find information about how to use this website.
-    `
+    const topText = t('homepage_text')
     const listItens = [
-        { "type": "simple", "text": "Add vector layers (GeoJSON)" },
-        { "type": "simple", "text": "Edit layer styles" },
-        { "type": "simple", "text": "Access multiple basemaps" },
-        { "type": "simple", "text": "Area Measurement" },
-        { "type": "simple", "text": "Print maps" },
-        { "type": "complex", "text": "Add raster layers" },
-        { "type": "complex", "text": "Edit layers" },
-        { "type": "complex", "text": "Create and edit Projects" },
+        { "type": "simple", "text": t('add_vector') },
+        { "type": "simple", "text": t("edit_layer_style") },
+        { "type": "simple", "text": t("access_basemap") },
+        { "type": "simple", "text": t("area_measure") },
+        { "type": "simple", "text": t("print_map") },
+        { "type": "complex", "text": t("add_raster")},
+        { "type": "complex", "text": t("draw_layers") },
+        { "type": "complex", "text": t("create_project") },
     ]
 
     const simplifiedText = () => {
@@ -99,8 +96,7 @@ Below you can find information about how to use this website.
                                         {simplifiedText()}
                                     </span>
                                 </div>
-                                <p className='center'><a href="/map" className='btn btn-small red center rounded-button'>Take a tour</a></p>
-                                <p className='note-style center'>Note: The data is temporary here, it will be deleted after reloading the page. All data will be lost.</p>
+                                <p className='center'><a href="/map" className='btn btn-small red center rounded-button'>{t('take_tour')}</a></p>
                             </div>
                         </div>
                         <div className="col s12 m6">
@@ -115,7 +111,7 @@ Below you can find information about how to use this website.
                                     </span>
                                 </div>
                                 <p className='center'><a href="/register" className='btn btn-small red rounded-button'>{t('register')}</a></p>
-                                <p className='note-style center'>Note: After registering, you will be able to create projects and save your data in the database.</p>
+                                <p className='note-style center'>{t('note_2')}</p>
                             </div>
                         </div>
                     </div>
