@@ -121,6 +121,9 @@ export const MapComponent = ({
   const onEachFeatureVector = (vector) => (feature, layer) => {
     if (feature){
 
+      //TODO: Add style in here
+      // layer.setStyle(feature.style)
+
       layer.on('click', () => {
         const attributes = feature.properties.attributes;
         if (attributes) {

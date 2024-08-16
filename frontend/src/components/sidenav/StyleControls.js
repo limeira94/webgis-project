@@ -43,9 +43,20 @@ const GlobalStyle = ({ geojson,updateStyle }) => {
         const vectorId = geojson.data.properties.id;
         const token = Cookies.get('access_token');
 
+        const updatedStyle = {
+          color: lineColor,
+          weight: width,
+          fillColor: color,
+          fillOpacity: opacity
+        }
+
+        console.log(style)
+        console.log(updatedStyle)
+        console.log("style",style===updatedStyle)
+
         const response = await axios.post(
             `${API_URL}api/main/vectors/${vectorId}/save-style/`, {
-            style: style
+            style: updatedStyle
         }, {
             headers: {
                 Accept: 'application/json',

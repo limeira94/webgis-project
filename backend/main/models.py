@@ -37,7 +37,7 @@ class Geojson(models.Model):
     attributes = JSONField(blank=True, null=True)
     # vector = models.ForeignKey(VectorFileModel,on_delete=models.CASCADE)
     # style = models.JSONField(default=get_default_style)
-    style = models.JSONField(default=dict)
+    style = models.JSONField(default=get_default_style)
 
 class VectorFileModel(models.Model):
     file = models.FileField(upload_to="",blank=True,null=True)
