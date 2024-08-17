@@ -271,6 +271,7 @@ export const setData = async (
     try {
         const selectedProject = await getProject(project_id); // Wait for the project data to be fetched
         if (selectedProject) {
+            // console.log("AAAA",selectedProject.vector)
             setProject(selectedProject);
             setVectors(createGeojsons(parseVector(selectedProject.vector)))
             // setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)));

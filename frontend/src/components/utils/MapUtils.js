@@ -3,9 +3,9 @@ import parse from 'wellknown';
 
 
 export const parseVector = (vector) => {
-    console.log("VECTOR", vector);
+    // console.log("VECTOR", vector);
     const parsed = vector.map((data) => {
-      console.log("DATA", data);
+      // console.log("DATA", data);
       const dataInfo = {
         type: 'FeatureCollection',
         features: [],
@@ -15,6 +15,7 @@ export const parseVector = (vector) => {
           name: data.name,
           format: data.format_name,
           style: data.style,
+          styleType:data.style_type
           // attributes: item.attributes,
         },
       };

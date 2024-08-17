@@ -21,22 +21,72 @@ const ToggleLayersSelector = (
   }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+//   const updateStyle = (polygonId, styleKey, value) => {
+//     setVectors(prevGeojsons => {
+//         return prevGeojsons.map(geojson => {
+//             if (geojson.data.properties.id === polygonId) {
+//                 const updatedProperties = {
+//                     ...geojson.data.properties,
+//                     style: {
+//                         ...geojson.data.properties.style,
+//                         [styleKey]: value
+//                     }
+//                 };
+//                 return {
+//                     ...geojson,
+//                     data: {
+//                         ...geojson.data,
+//                         properties: updatedProperties
+//                     }
+//                 };
+//             }
+//             return geojson;
+//         });
+//     });
+// };
   const updateStyle = (polygonId, styleKey, value) => {
     setVectors(prevGeojsons => {
         return prevGeojsons.map(geojson => {
             if (geojson.data.properties.id === polygonId) {
-                const updatedProperties = {
-                    ...geojson.data.properties,
-                    style: {
-                        ...geojson.data.properties.style,
-                        [styleKey]: value
-                    }
-                };
+                const updatedGeoms = geojson.data.features.map(geom => {
+                    return {
+                        ...geom,
+                        style: {
+                            ...geom.style,
+                            [styleKey]: value
+                        }
+                    }});
                 return {
                     ...geojson,
                     data: {
                         ...geojson.data,
-                        properties: updatedProperties
+                        features: updatedGeoms
+                    }
+                };
+            }
+            return geojson;
+        });
+    });
+  };
+
+  const updateStyleCat = (polygonId, styleKey, value, featureId = null) => {
+    setVectors(prevGeojsons => {
+        return prevGeojsons.map(geojson => {
+            if (geojson.data.properties.id === polygonId) {
+                const updatedGeoms = geojson.data.features.map(geom => {
+                    if (featureId && geom.id !== featureId) return geom;
+                    return {
+                        ...geom,
+                        style: {
+                            ...geom.style,
+                            [styleKey]: value
+                        }
+                    }});
+                return {
+                    ...geojson,
+                    data: {
+                        ...geojson.data,
+                        features: updatedGeoms
                     }
                 };
             }
@@ -44,6 +94,8 @@ const ToggleLayersSelector = (
         });
     });
 };
+
+
 
   useEffect(()=>{
     var options = {}
@@ -69,6 +121,7 @@ const ToggleLayersSelector = (
               datatype={"geojson"}
               zoomToLayer={()=>zoomToLayer(geojson.data.properties.id,geojsonLayerRefs,mapInstance)}
               updateStyle={updateStyle}
+              updateStyleCat={updateStyleCat}
               selectedFeatureAttributes={selectedFeatureAttributes}
               inmemory={inmemory}
               changeStyleData={changeStyleData}

@@ -121,8 +121,8 @@ export const MapComponent = ({
   const onEachFeatureVector = (vector) => (feature, layer) => {
     if (feature){
 
-      //TODO: Add style in here
-      // layer.setStyle(feature.style)
+      // TODO: use this function to be able to highlight selected features
+      // layer.setStyle(feature.style);
 
       layer.on('click', () => {
         const attributes = feature.properties.attributes;
@@ -135,6 +135,19 @@ export const MapComponent = ({
         }
       )
     }
+  }
+
+  const vectorStyle = (feature,vector) => {
+
+    // const selected = vector.features.filter(
+    //   (v)=>{v.id===feature.id}
+    // )
+    const selected = vector.data.features.find(
+      (v) => v.id === feature.id
+    );
+    
+    return(selected.style)
+
   }
 
   const MapItem = <div
@@ -181,7 +194,9 @@ export const MapComponent = ({
             }
           }}
           data={vector.data}
-          style={vector.data.properties.style}
+          // style={(feature) => feature.style}
+          style={(feature) => vectorStyle(feature,vector)}
+          // style={vector.data.properties.style}
           onEachFeature={onEachFeatureVector(vector.data)}
         >
         </GeoJSON>)

@@ -21,4 +21,5 @@ urlpatterns = [
     # path('upload_geojson/', views.GeoJSONUploadView.as_view(), name='upload-geojson'),
     # path('upload_shapefile/', views.ShapefileUploadView.as_view(), name='upload-shapefile'),    
     path("vectors/<int:pk>/save-style/",views.UpdateVectorStyle.as_view(),name="update-style-vector"),
+    path("vectors/<int:pk>/save-style-cat/",views.UpdateCategorizedStyle.as_view(),name="update-style-vector"),
 ]

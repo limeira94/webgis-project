@@ -57,6 +57,7 @@ export const ListItem = ({
     datatype,
     zoomToLayer,
     updateStyle,
+    updateStyleCat,
     geojsonLayerRefs,
     mapInstance,
     changeStyleData,
@@ -152,6 +153,7 @@ export const ListItem = ({
             <StyleControls
                 geojsondata={dataset}
                 updateStyle={updateStyle}
+                updateStyleCat={updateStyleCat}
                 zoomanddelete={zoomanddelete}
                 changeStyleData={changeStyleData}
                 setChangeStyleData={setChangeStyleData}

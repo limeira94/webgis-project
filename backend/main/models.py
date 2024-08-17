@@ -32,6 +32,13 @@ def get_default_style():
         # "fillColor": "#ff7800"
     }
 
+STYLE_TYPES = [
+    ("A","All"),
+    ("C","Categorized"),
+    # ("G","Graduated"),
+]
+
+
 class Geojson(models.Model):
     geometry = models.GeometryField()
     attributes = JSONField(blank=True, null=True)
@@ -45,6 +52,7 @@ class VectorFileModel(models.Model):
     name = models.CharField(max_length=100)#,unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     style = models.JSONField(default=get_default_style)
+    style_type = models.CharField(choices=STYLE_TYPES,default="A")
     geoms = models.ManyToManyField(Geojson)
 
     # def save(self, *args, **kwargs):

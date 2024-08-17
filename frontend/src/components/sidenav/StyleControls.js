@@ -2,6 +2,12 @@ import Cookies from 'js-cookie'
 import axios from 'axios';
 import M from 'materialize-css';
 import { useState,useEffect } from 'react';
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
+} from "@mui/material"
 
 import "./StyleControls.css"
 
@@ -9,10 +15,10 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
 
 const GlobalStyle = ({ geojson,updateStyle }) => {
-  const [color, setColor] = useState(geojson.data.properties.style.fillColor);
-  const [lineColor, setLineColor] = useState(geojson.data.properties.style.color);
-  const [width, setWidth] = useState(geojson.data.properties.style.weight);
-  const [opacity, setOpacity] = useState(geojson.data.properties.style.opacity);
+  const [color, setColor] = useState(geojson.data.properties.style?.fillColor);
+  const [lineColor, setLineColor] = useState(geojson.data.properties.style?.color);
+  const [width, setWidth] = useState(geojson.data.properties.style?.weight);
+  const [opacity, setOpacity] = useState(geojson.data.properties.style?.opacity);
 
   const handleColorChange = (e) => setColor(e.target.value);
   const handleLineColorChange = (e) => setLineColor(e.target.value);
@@ -120,13 +126,144 @@ const GlobalStyle = ({ geojson,updateStyle }) => {
   );
 };
 
-const CategorizedStyle = ({ geojson }) => {
-  // TODO: Implement categorized style logic
-
-  return <div>Categorized Style Configuration</div>;
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 };
 
-const ModalChangeData = ({ geojson,updateStyle }) => {
+const CategorizedStyle = ({ geojson,updateStyle }) => {
+  const [column, setColumn] = useState(null);
+  const [uniqueValues, setUniqueValues] = useState([]);
+  const [colors, setColors] = useState({});
+
+  const handleSaveCategorizedStyle = async () => {
+    try {
+      const vectorId = geojson.data.properties.id;
+      const token = Cookies.get('access_token');
+
+      const categorizedStyles = geojson.data.features.reduce((acc, feature) => {
+        const attributeValue = feature.properties.attributes[column];
+        acc[feature.id] = {
+          ...feature.style,
+          fillColor: colors[attributeValue],
+        };
+        return acc;
+      }, {});
+
+      const response = await axios.post(
+        `${API_URL}api/main/vectors/${vectorId}/save-style-cat/`,
+        { categorized_styles: categorizedStyles },
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        // Atualize o estilo no mapa
+        Object.keys(categorizedStyles).forEach(featureId => {
+          const style = categorizedStyles[featureId];
+          updateStyle(geojson.data.properties.id, "fillColor", style.fillColor);
+        });
+      } else {
+        console.error('Unexpected response:', response);
+      }
+    } catch (error) {
+      console.error('Error saving categorized style:', error);
+    }
+  };
+
+  const columns = geojson?.data?.features?.[0]?.properties?.attributes
+    ? Object.keys(geojson.data.features[0].properties.attributes)
+    : [];
+
+    const handleChange = (event) => {
+      const selectedColumn = event.target.value;
+      setColumn(selectedColumn);
+  
+      // Get all values for the selected column
+      const values = geojson.data.features.map(
+        (feature) => feature.properties.attributes[selectedColumn]
+      );
+      console.log("VALUES",values)
+  
+      // Extract unique values
+      const unique = [...new Set(values)];
+      setUniqueValues(unique);
+
+      const initialColors = unique.reduce((acc, value) => {
+        acc[value] = getRandomColor();
+        return acc;
+      }, {});
+      setColors(initialColors);
+    };
+
+    const handleColorChange = (value, color) => {
+      setColors((prevColors) => ({
+        ...prevColors,
+        [value]: color
+      }));
+    };
+
+    console.log(colors)
+
+  return (
+    <>
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Column</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={column}
+          label="Column"
+          onChange={handleChange}
+        >
+          {columns.map((col) => (
+            <MenuItem key={col} value={col}>
+              {col}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* {column && uniqueValues.length > 0 && (
+        <ul style={{ marginTop: '16px' }}>
+          {uniqueValues.map((value) => (
+            <li key={value}>{value}</li>
+          ))}
+        </ul>
+      )} */}
+      {column && uniqueValues.length > 0 && (
+        <>
+        <ul style={{ marginTop: '16px', listStyle: 'none', padding: 0 }}>
+          {uniqueValues.map((value) => (
+            <li key={value} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+              <input
+                type="color"
+                value={colors[value]}
+                onChange={(e) => handleColorChange(value, e.target.value)}
+                style={{ marginRight: '8px' }}
+              />
+              <span>{value}</span>
+            </li>
+          ))}
+        </ul>
+        <button onClick={handleSaveCategorizedStyle}>Save Categorized Style</button>
+        </>
+      )}
+    </>
+  );
+};
+
+export default CategorizedStyle;
+
+const ModalChangeData = ({ geojson,updateStyle,updateStyleCat }) => {
   const [selectedOption, setSelectedOption] = useState('global');
 
   const handleOptionChange = (e) => setSelectedOption(e.target.value);
@@ -164,7 +301,7 @@ const ModalChangeData = ({ geojson,updateStyle }) => {
       {selectedOption === 'global' ? (
         <GlobalStyle geojson={geojson} updateStyle={updateStyle}/>
       ) : (
-        <CategorizedStyle geojson={geojson} />
+        <CategorizedStyle geojson={geojson} updateStyle={updateStyleCat}/>
       )}
     </>
   );
@@ -220,6 +357,7 @@ export const get_item_table = (title, inputType, value, name, geojson, updateSty
 export const StyleControls = ({ 
   geojsondata, 
   updateStyle, 
+  updateStyleCat,
   zoomanddelete,
   changeStyleData,
   setChangeStyleData
@@ -319,6 +457,7 @@ export const StyleControls = ({
       setChangeStyleData(<ModalChangeData 
                             geojson={geojsondata} 
                             updateStyle={updateStyle}
+                            updateStyleCat={updateStyleCat}
                             />)
   };
 

@@ -17,25 +17,76 @@ from .serializers import *
 
 from shapely.geometry import box
 
+# class UpdateVectorStyle(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def post(self, request, pk):
+#         vector = get_object_or_404(VectorFileModel, pk=pk)
+#         style_data = request.data.get('style')  # Assume que os estilos são enviados como um dicionário com o ID do geom como chave.
+
+#         if not style_data:
+#             return Response({"error": "Styles data is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+#         # Itera sobre as geometrias e aplica os estilos individuais
+#         for geom_id, style in style_data.items():
+#             try:
+#                 geom = vector.geoms.get(id=geom_id)
+#                 geom.style = style
+#                 geom.save()
+#             except Geojson.DoesNotExist:
+#                 return Response({"error": f"Geojson with ID {geom_id} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+#         return Response({"message": "Success updating styles"}, status=status.HTTP_200_OK)
+
+# class UpdateVectorStyle(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def post(self, request, pk):
+#         vector = get_object_or_404(VectorFileModel, pk=pk)
+#         style = request.data.get('style')
+
+#         if not style:
+#             return Response({"error": "Style data is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+#         print(style)
+#         vector.style = style
+#         vector.save()
+
+#         # print(vector.style)
+
+#         # serializer = VectorFileModelSerializer(vector)
+#         return Response({"message":"Success updating style"}, status=status.HTTP_200_OK)
+class UpdateCategorizedStyle(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        vector = get_object_or_404(VectorFileModel, pk=pk)
+        categorized_styles = request.data.get('categorized_styles')  # Dicionário de estilos categorizados
+
+        if not categorized_styles:
+            return Response({"error": "Categorized styles data is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Atualiza o estilo de cada feature individualmente
+        for feature_id, style in categorized_styles.items():
+            vector.geoms.filter(id=feature_id).update(style=style)
+
+        return Response({"message": "Success updating categorized styles"}, status=status.HTTP_200_OK)
+
 
 class UpdateVectorStyle(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
         vector = get_object_or_404(VectorFileModel, pk=pk)
-        style = request.data.get('style')
+        style = request.data.get('style')  # Estilo único fornecido pelo frontend
 
         if not style:
             return Response({"error": "Style data is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        print(style)
-        vector.style = style
-        vector.save()
+        # Aplica o estilo a todas as geometrias associadas ao VectorFileModel
+        vector.geoms.update(style=style)
 
-        # print(vector.style)
-
-        # serializer = VectorFileModelSerializer(vector)
-        return Response({"message":"Success updating style"}, status=status.HTTP_200_OK)
+        return Response({"message": "Success updating styles"}, status=status.HTTP_200_OK)
 
 class ProjectList(APIView):
     permissions = [permissions.IsAuthenticated]
