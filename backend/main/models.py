@@ -52,7 +52,7 @@ class VectorFileModel(models.Model):
     name = models.CharField(max_length=100)#,unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     style = models.JSONField(default=get_default_style)
-    style_type = models.CharField(choices=STYLE_TYPES,default="A")
+    style_type = models.CharField(max_length=1, choices=STYLE_TYPES, default="A", blank=True, null=True)
     geoms = models.ManyToManyField(Geojson)
 
     # def save(self, *args, **kwargs):

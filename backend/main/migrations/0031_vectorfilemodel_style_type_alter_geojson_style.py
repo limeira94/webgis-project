@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='vectorfilemodel',
             name='style_type',
-            field=models.CharField(choices=[('G', 'Global'), ('C', 'Categorized')], default='G'),
+            field=models.CharField(blank=True, choices=[('A', 'All'), ('C', 'Categorized')], default='A', max_length=1, null=True),
         ),
         migrations.AlterField(
             model_name='geojson',
