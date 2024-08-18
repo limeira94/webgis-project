@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { Drawer, IconButton, List, ListItem, Button, ListItemIcon, ListItemText, Divide, Typography, Box, Divider } from '@mui/material';
 import { ChevronLeft, ChevronRight, CloudUpload, Layers, Search, Home, Language } from '@mui/icons-material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import LayersIcon from '@mui/icons-material/Layers';
 import { styled } from '@mui/system';
+import { handleRaster, handleGeojson, handleDrawUpload } from './eventHandler';
 
-const drawerWidth = 330;
+const drawerWidth = 360;
 const miniSidebarWidth = 60;
 const headerHeight = 64;
 
@@ -56,10 +58,21 @@ const ToggleButton = styled(IconButton)(({ open }) => ({
   },
 }));
 
-export default function SideNav() {
+export default function SideNav({ setRasters, mapInstance, projectid, setUploading, setVectors }) {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('addData');
+  const dispatch = useDispatch()
 
+  const fileInputRef = useRef(null);
+  const rasterInputRef = useRef(null);
+
+  const handleFileClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileClickRaster = () => {
+    rasterInputRef.current.click();
+  };
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
@@ -107,7 +120,7 @@ export default function SideNav() {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'left',
+            justifyContent: 'center',
             height: headerHeight,
             backgroundColor: '#dcdcdc',
             transition: 'padding-left 0.3s ease-in-out',
@@ -145,41 +158,71 @@ export default function SideNav() {
           )}
           <ListItem sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <Box sx={{ width: '80%', textAlign: 'center' }}>
-            {activeSection === 'addData' && (
+              {activeSection === 'addData' && (
                 <>
-              <Button
-                variant="contained"
-                sx={{
-                  width: '100%',
-                  marginBottom: '10px',
-                  backgroundColor: '#555',
-                  border: '1px solid #000',
-                  color: '#fff',
-                  '&:hover': {
-                    backgroundColor: '#666',
-                  }
-                }}
-                startIcon={<FileUploadIcon />}
-              >
-                Upload GeoJson
-              </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  width: '100%',
-                  backgroundColor: '#ddd',
-                  border: '1px solid #999',
-                  color: '#000',
-                  '&:hover': {
-                    backgroundColor: '#ccc',
-                  }
-                }}
-                startIcon={<FileUploadIcon />}
-              >
-                Upload Geotiff
-              </Button>
-              </>
-            )}
+                  <input
+                    type="file"
+                    onChange={(event) => handleGeojson(
+                      event,
+                      setVectors,
+                      mapInstance,
+                      dispatch,
+                      projectid,
+                      setUploading
+                    )}
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    accept=".geojson, application/geo+json"
+                  />
+                  <Button
+                    variant="contained"
+                    sx={{
+                      width: '100%',
+                      marginBottom: '10px',
+                      backgroundColor: '#555',
+                      border: '1px solid #000',
+                      color: '#fff',
+                      '&:hover': {
+                        backgroundColor: '#666',
+                      }
+                    }}
+                    startIcon={<FileUploadIcon />}
+                    onClick={handleFileClick}
+                  >
+                    Upload GeoJson
+                  </Button>
+                  <input
+                    type="file"
+                    onChange={(event) => handleRaster(
+                      event,
+                      setRasters,
+                      mapInstance,
+                      dispatch,
+                      projectid,
+                      setUploading
+                    )}
+                    ref={rasterInputRef}
+                    style={{ display: 'none' }}
+                    accept=".tif"
+                  />
+                  <Button
+                    variant="contained"
+                    sx={{
+                      width: '100%',
+                      backgroundColor: '#ddd',
+                      border: '1px solid #999',
+                      color: '#000',
+                      '&:hover': {
+                        backgroundColor: '#ccc',
+                      }
+                    }}
+                    startIcon={<FileUploadIcon />}
+                    onClick={handleFileClickRaster}
+                  >
+                    Upload Geotiff
+                  </Button>
+                </>
+              )}
             </Box>
           </ListItem>
         </List>

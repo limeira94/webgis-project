@@ -234,7 +234,13 @@ export const MapComponent = ({
         changeStyleData={changeStyleData}
         setChangeStyleData={setChangeStyleData}
       />
-      {/* <SideNav /> */}
+      {/* <SideNav 
+        setRasters={setRasters}
+        mapInstance={mapInstance}
+        projectid={projectid}
+        setUploading={setUploading}
+        setVectors={setVectors}
+        /> */}
 
       <BasemapSelector
         setSelectedTileLayer={setSelectedTileLayer}
