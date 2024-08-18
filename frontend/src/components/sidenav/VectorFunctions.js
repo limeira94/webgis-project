@@ -9,7 +9,3 @@ export const zoomToLayer = (geojsonId,geojsonLayerRefs,mapInstance) => {
         mapInstance.flyToBounds(bounds);
     }
 };
-
-
-
-

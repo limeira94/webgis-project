@@ -30,6 +30,7 @@ import { handleDropGeojson, handleGeojson } from './eventHandler';
 import { useDispatch } from 'react-redux';
 import { UploadToMemoryDrop } from './Memory/eventHandlers';
 import MouseCoordinates from './MouseCoordinates';
+import SideNav from './Sidebar';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -233,6 +234,7 @@ export const MapComponent = ({
         changeStyleData={changeStyleData}
         setChangeStyleData={setChangeStyleData}
       />
+      {/* <SideNav /> */}
 
       <BasemapSelector
         setSelectedTileLayer={setSelectedTileLayer}
