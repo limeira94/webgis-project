@@ -5,8 +5,10 @@ import { ChevronLeft, ChevronRight, CloudUpload, Layers, Search, Home, Language 
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import LayersIcon from '@mui/icons-material/Layers';
+import DrawIcon from '@mui/icons-material/Draw';
 import { styled } from '@mui/system';
 import { handleRaster, handleGeojson, handleDrawUpload } from './eventHandler';
+import DrawVector from './DrawVector';
 
 const drawerWidth = 360;
 const miniSidebarWidth = 60;
@@ -73,6 +75,7 @@ export default function SideNav({ setRasters, mapInstance, projectid, setUploadi
   const handleFileClickRaster = () => {
     rasterInputRef.current.click();
   };
+
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
@@ -98,6 +101,15 @@ export default function SideNav({ setRasters, mapInstance, projectid, setUploadi
           >
             <ListItemIcon>
               <Search fontSize='large' />
+            </ListItemIcon>
+          </ListItem>
+          <ListItem
+            key="draw"
+            onClick={() => setActiveSection('draw')}
+            sx={{ cursor: 'pointer' }}
+          >
+            <ListItemIcon>
+              <DrawIcon fontSize='large' />
             </ListItemIcon>
           </ListItem>
         </List>
@@ -154,6 +166,17 @@ export default function SideNav({ setRasters, mapInstance, projectid, setUploadi
               <Typography variant="h6" sx={{ textAlign: 'center', width: '100%' }}>
                 Search
               </Typography>
+            </ListItem>
+          )}
+          {activeSection === 'draw' && (
+            <ListItem sx={{ width: '100%', display:'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Typography variant="h6" sx={{ textAlign: 'center', width: '100%' }}>
+                Draw Vector
+              </Typography>
+              
+              <div id="draw-toolbar-container" style={{ marginTop: '10px' }}>
+                {/* O toolbar será inserido aqui */}
+              </div>
             </ListItem>
           )}
           <ListItem sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -231,6 +254,14 @@ export default function SideNav({ setRasters, mapInstance, projectid, setUploadi
           {open ? <ChevronLeft /> : <ChevronRight />}
         </ToggleButton>
       </Sidebar>
+
+      <DrawVector
+        mapInstance={mapInstance}
+        setVectors={setVectors}
+        projectid={projectid}
+        setUploading={setUploading}
+        active={activeSection === 'draw'}
+      />
     </>
   );
 }

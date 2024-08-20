@@ -55,14 +55,6 @@
   cursor: pointer;
 }
 
-/* .leaflet-control-geocoder {
-  position: absolute;
-  background-color: #01579b !important;
-  color: yellow !important;
-  top: 510px;
-  z-index: 1000;
-  cursor: pointer;
-} */
 
 .leaflet-control-geocoder-icon {
   background-image: none !important;
@@ -103,10 +95,6 @@
   width: 250px;
 }
 
-/* .leaflet-control-browser-print {
-  position: relative;
-  top: 510px;
-} */
 
 .leaflet-control-browser-print a {
   background: none !important;
@@ -123,13 +111,6 @@
   font-size: 16px;
   line-height: inherit;
 }
-
-/* .leaflet-control-measure {
-  position: absolute;
-  top: 510px;
-  z-index: 1000;
-  cursor: pointer;
-} */
 
 .leaflet-control-measure a {
   background: none !important;
@@ -434,19 +415,18 @@
   list-style-type: none;
 }
 
-.leaflet-draw-toolbar {
-  position: fixed;
-  bottom: 70px;
-  /* Ajuste baseado na altura do seu botão + espaço desejado */
-  left: calc(50% - 60px);
-  /* Centro horizontalmente */
-  transform: translateX(-50%);
-  /* Ajuste fino para centralizar */
-  z-index: 1001;
-  /* Garante que o controle fique acima da maioria dos elementos */
+
+.leaflet-draw-toolbar a {
+  display: block;
+  text-align: center;
+}
+.leaflet-draw-toolbar .leaflet-draw-actions {
+  display: none; /* Esconde os textos de ação abaixo dos botões */
 }
 
-
+.leaflet-draw-toolbar a span {
+  display: none; /* Esconde os rótulos de texto */
+}
 .sidenav-toolbar {
   width: 300px;
   height: 100%;
