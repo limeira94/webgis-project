@@ -17,90 +17,203 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 // - Points
 // - Line
 
-const GlobalStyle = ({ geojson,updateStyle }) => {
-  const [color, setColor] = useState(geojson.data.properties.style?.fillColor);
-  const [lineColor, setLineColor] = useState(geojson.data.properties.style?.color);
-  const [width, setWidth] = useState(geojson.data.properties.style?.weight);
-  const [opacity, setOpacity] = useState(geojson.data.properties.style?.opacity);
+// const GlobalStyle = ({ geojson,updateStyle }) => {
+//   const [color, setColor] = useState(geojson.data.properties.style?.fillColor);
+//   const [lineColor, setLineColor] = useState(geojson.data.properties.style?.color);
+//   const [width, setWidth] = useState(geojson.data.properties.style?.weight);
+//   const [opacity, setOpacity] = useState(geojson.data.properties.style?.opacity);
+
+//   const handleColorChange = (e) => setColor(e.target.value);
+//   const handleLineColorChange = (e) => setLineColor(e.target.value);
+//   const handleWidthChange = (e) => setWidth(e.target.value);
+//   const handleOpacityChange = (e) => setOpacity(e.target.value);
+
+//   let isPoint = false;
+//   let isLine = false;
+
+//   if (geojson.data.type === 'FeatureCollection') {
+//       isPoint = geojson.data.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
+//       isLine = geojson.data.features.some(feature => feature.geometry && (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString"));
+//   } else {
+//       isPoint = geojson.data.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
+//       isLine = geojson.data.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
+//   }
+
+//   const data = [
+//     { name: "Color", class: "input-color-style", type: "color", value: color, onchange: handleColorChange, show:!isPoint && !isLine  },
+//     { name: "Line Color", class: "input-color-style", type: "color", value: lineColor, onchange: handleLineColorChange, show:!isPoint  },
+//     { name: "Line Size", class: "sidenav-range-style", type: "range", min: 0, max: 10, step: 1, value: width, onchange: handleWidthChange, show:!isPoint }, 
+//     { name: "Opacity", class: "sidenav-range-style", type: "range", min: 0, max: 1, step: 0.1, value: opacity, onchange: handleOpacityChange, show:!isPoint && !isLine }
+//   ];
+
+//   const handleSaveStyle = async (geojson) => {
+//     try {
+//         const style = geojson.data.properties.style;
+//         const vectorId = geojson.data.properties.id;
+//         const token = Cookies.get('access_token');
+
+//         const updatedStyle = {
+//           color: lineColor,
+//           weight: width,
+//           fillColor: color,
+//           fillOpacity: opacity
+//         }
+
+//         console.log(style)
+//         console.log(updatedStyle)
+//         console.log("style",style===updatedStyle)
+
+//         const response = await axios.post(
+//             `${API_URL}api/main/vectors/${vectorId}/save-style/`, {
+//             style: updatedStyle
+//         }, {
+//             headers: {
+//                 Accept: 'application/json',
+//                 Authorization: `Bearer ${token}`
+//             }
+//         });
+
+//         if (response.status === 200) {
+          
+//           updateStyle(geojson.data.properties.id, "fillColor", color)
+//           updateStyle(geojson.data.properties.id, "color", lineColor)
+//           updateStyle(geojson.data.properties.id, "weight", width)
+//           updateStyle(geojson.data.properties.id, "fillOpacity", opacity)
+//         } else {
+//             console.error('Unexpected response:', response);
+//         }
+//     } catch (error) {
+//         console.error('Error saving style:', error);
+//     }
+// };
+//   const saveStyle = <>
+//       <tr>
+//           <td><span>Save style</span></td>
+//           <td className='alnright'>
+//               <a onClick={
+//                 () => handleSaveStyle(geojson)
+//                 // ()=>handleSaveStyle(geojson)
+//                 } className='btn blue'><i className='material-icons'>save</i></a>
+//           </td>
+//       </tr>
+//     </>
+
+
+
+//   return (
+//     <table>
+//       <tbody>
+//         {data.map((d, index) =>
+//           d.show ? (
+//             <tr key={index}>
+//               <td><span>{d.name}</span></td>
+//               <td className='alnright'>
+//                 <input
+//                   className={d.class}
+//                   type={d.type}
+//                   min={d.min}
+//                   max={d.max}
+//                   step={d.step}
+//                   value={d.value}
+//                   onChange={d.onchange}
+//                 />
+//               </td>
+//             </tr>
+//           ) : null
+//         )}
+//         {saveStyle}
+//       </tbody>
+//     </table>
+//   );
+// };
+
+const GlobalStyle = ({ geojson, updateStyle }) => {
+  const [color, setColor] = useState(geojson.data.properties.style?.fillColor || '#000000');
+  const [lineColor, setLineColor] = useState(geojson.data.properties.style?.color || '#000000');
+  const [width, setWidth] = useState(geojson.data.properties.style?.weight || 2);
+  const [opacity, setOpacity] = useState(geojson.data.properties.style?.fillOpacity || 1.0);
+  const [radius, setRadius] = useState(geojson.data.properties.style?.radius || 8);
 
   const handleColorChange = (e) => setColor(e.target.value);
   const handleLineColorChange = (e) => setLineColor(e.target.value);
   const handleWidthChange = (e) => setWidth(e.target.value);
   const handleOpacityChange = (e) => setOpacity(e.target.value);
+  const handleRadiusChange = (e) => setRadius(e.target.value);
 
   let isPoint = false;
   let isLine = false;
+  let isPolygon = false;
 
   if (geojson.data.type === 'FeatureCollection') {
-      isPoint = geojson.data.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
-      isLine = geojson.data.features.some(feature => feature.geometry && (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString"));
+    isPoint = geojson.data.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
+    isLine = geojson.data.features.some(feature => feature.geometry && (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString"));
+    isPolygon = geojson.data.features.some(feature => feature.geometry && (feature.geometry.type === "Polygon" || feature.geometry.type === "MultiPolygon"));
   } else {
-      isPoint = geojson.data.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
-      isLine = geojson.data.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
+    isPoint = geojson.data.geometry.type === "Point" || geojson.data.geometry.type === "MultiPoint";
+    isLine = geojson.data.geometry.type === "LineString" || geojson.data.geometry.type === "MultiLineString";
+    isPolygon = geojson.data.geometry.type === "Polygon" || geojson.data.geometry.type === "MultiPolygon";
   }
 
   const data = [
-    { name: "Color", class: "input-color-style", type: "color", value: color, onchange: handleColorChange, show:!isPoint && !isLine  },
-    { name: "Line Color", class: "input-color-style", type: "color", value: lineColor, onchange: handleLineColorChange, show:!isPoint  },
-    { name: "Line Size", class: "sidenav-range-style", type: "range", min: 0, max: 10, step: 1, value: width, onchange: handleWidthChange, show:!isPoint }, 
-    { name: "Opacity", class: "sidenav-range-style", type: "range", min: 0, max: 1, step: 0.1, value: opacity, onchange: handleOpacityChange, show:!isPoint && !isLine }
+    { name: "Fill Color", class: "input-color-style", type: "color", value: color, onchange: handleColorChange, show: isPoint || isPolygon },
+    { name: "Line Color", class: "input-color-style", type: "color", value: lineColor, onchange: handleLineColorChange, show: isLine || isPolygon },
+    { name: "Line Size", class: "sidenav-range-style", type: "range", min: 0, max: 10, step: 1, value: width, onchange: handleWidthChange, show: isLine },
+    { name: "Opacity", class: "sidenav-range-style", type: "range", min: 0, max: 1, step: 0.1, value: opacity, onchange: handleOpacityChange, show: isPoint || isPolygon },
+    { name: "Radius", class: "sidenav-range-style", type: "range", min: 0, max: 20, step: 1, value: radius, onchange: handleRadiusChange, show: isPoint }
   ];
 
   const handleSaveStyle = async (geojson) => {
     try {
-        const style = geojson.data.properties.style;
-        const vectorId = geojson.data.properties.id;
-        const token = Cookies.get('access_token');
+      const style = geojson.data.properties.style || {};
+      const vectorId = geojson.data.properties.id;
+      const token = Cookies.get('access_token');
 
-        const updatedStyle = {
-          color: lineColor,
-          weight: width,
-          fillColor: color,
-          fillOpacity: opacity
+      const updatedStyle = {
+        color: lineColor,
+        weight: width,
+        fillColor: color,
+        fillOpacity: opacity,
+        radius: radius
+      };
+
+      const response = await axios.post(
+        `${API_URL}api/main/vectors/${vectorId}/save-style/`, 
+        { style: updatedStyle },
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`
+          }
         }
+      );
 
-        console.log(style)
-        console.log(updatedStyle)
-        console.log("style",style===updatedStyle)
-
-        const response = await axios.post(
-            `${API_URL}api/main/vectors/${vectorId}/save-style/`, {
-            style: updatedStyle
-        }, {
-            headers: {
-                Accept: 'application/json',
-                Authorization: `Bearer ${token}`
-            }
+      if (response.status === 200) {
+        geojson.data.features.forEach(feature => {
+          const featureId = feature.id;
+          updateStyle(geojson.data.properties.id, "fillColor", color, featureId);
+          updateStyle(geojson.data.properties.id, "color", lineColor, featureId);
+          updateStyle(geojson.data.properties.id, "weight", width, featureId);
+          updateStyle(geojson.data.properties.id, "fillOpacity", opacity, featureId);
+          updateStyle(geojson.data.properties.id, "radius", radius, featureId);
         });
-
-        if (response.status === 200) {
-          
-          updateStyle(geojson.data.properties.id, "fillColor", color)
-          updateStyle(geojson.data.properties.id, "color", lineColor)
-          updateStyle(geojson.data.properties.id, "weight", width)
-          updateStyle(geojson.data.properties.id, "fillOpacity", opacity)
-        } else {
-            console.error('Unexpected response:', response);
-        }
+      } else {
+        console.error('Unexpected response:', response);
+      }
     } catch (error) {
-        console.error('Error saving style:', error);
+      console.error('Error saving style:', error);
     }
-};
+  };
 
-
-  const saveStyle = <>
-      <tr>
-          <td><span>Save style</span></td>
-          <td className='alnright'>
-              <a onClick={
-                () => handleSaveStyle(geojson)
-                // ()=>handleSaveStyle(geojson)
-                } className='btn blue'><i className='material-icons'>save</i></a>
-          </td>
-      </tr>
-    </>
-
-
+  const saveStyle = (
+    <tr>
+      <td><span>Save style</span></td>
+      <td className='alnright'>
+        <a onClick={() => handleSaveStyle(geojson)} className='btn blue'>
+          <i className='material-icons'>save</i>
+        </a>
+      </td>
+    </tr>
+  );
 
   return (
     <table>
@@ -129,6 +242,9 @@ const GlobalStyle = ({ geojson,updateStyle }) => {
   );
 };
 
+
+
+
 const getRandomColor = () => {
   const letters = '0123456789ABCDEF';
   let color = '#';
@@ -138,11 +254,6 @@ const getRandomColor = () => {
   return color;
 };
 
-
-
-// TODO:
-// - Points
-// - Line
 
 
 const CategorizedStyle = ({ geojson, updateStyle }) => {
