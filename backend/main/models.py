@@ -20,54 +20,55 @@ from .utils import *
 # É bom que podemos agrupar os dados baseado nisso, ao invés do "group_id"
 # Da pra fazer um model novo tipo esse:
 
-def get_default_style():
-    return {
-        "color": "#01579b",
-        "weight": 1,
-        "fillOpacity": 1.0,
-        "fillColor": "#00ff55"
-        # "color": "#ff7800",
-        # "weight": 3,
-        # "fillOpacity": 0.65,
-        # "fillColor": "#ff7800"
-    }
-
-STYLE_TYPES = [
-    ("A","All"),
-    ("C","Categorized"),
-    # ("G","Graduated"),
-]
+def get_default_style(geometry_type):
+    if geometry_type in ['Point', 'MultiPoint']:
+        return {
+            "radius": 8,  
+            "fillColor": 'red', 
+            "color": 'black',  
+            "weight": 2,  
+            "opacity": 1, 
+            "fillOpacity": 0.8  
+        }
+    elif geometry_type in ['LineString', 'MultiLineString']:
+        return {
+            "color": 'black',  
+            "weight": 2 
+        }
+    elif geometry_type in ['Polygon', 'MultiPolygon']:
+        return {
+            "fillColor": 'blue', 
+            "color": 'black',  
+            "weight": 2,  
+            "fillOpacity": 0.5  
+        }
+    else:
+        return {
+            "color": "#01579b",
+            "weight": 1,
+            "fillOpacity": 1.0,
+            "fillColor": "#00ff55"
+        }
 
 
 class Geojson(models.Model):
     geometry = models.GeometryField()
     attributes = JSONField(blank=True, null=True)
-    # vector = models.ForeignKey(VectorFileModel,on_delete=models.CASCADE)
-    # style = models.JSONField(default=get_default_style)
-    style = models.JSONField(default=get_default_style)
+    style = JSONField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        geometry_type = self.geometry.geom_type
+        if not self.style:
+            self.style = get_default_style(geometry_type)
+        super().save(*args, **kwargs)
 
 class VectorFileModel(models.Model):
     file = models.FileField(upload_to="",blank=True,null=True)
     format_name = models.CharField(max_length=20,blank=True,null=True)
-    name = models.CharField(max_length=100)#,unique=True)
+    name = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    style = models.JSONField(default=get_default_style)
-    style_type = models.CharField(max_length=1, choices=STYLE_TYPES, default="A", blank=True, null=True)
     geoms = models.ManyToManyField(Geojson)
 
-    # def save(self, *args, **kwargs):
-    #     NAME = self.file.name
-    #     super().save(*args, **kwargs)
-    #     self.name = os.path.splitext(NAME)[0]
-        
-
-# class GeoJSONFile(models.Model):
-#     name = models.CharField(max_length=255)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-#     geojson = models.GeometryField()
-#     attributes = JSONField(blank=True, null=True)
-#     group_id = models.IntegerField(default=0)
-#     style = models.JSONField(default=get_default_style)
 
 #TODO: 
 # Substituir overwrite do save
@@ -149,7 +150,6 @@ class Project(models.Model):
     name = models.CharField(max_length=100)
     thumbnail = models.ImageField(null=True, blank=True)
     vector = models.ManyToManyField(VectorFileModel, blank=True)
-    # geojson = models.ManyToManyField(GeoJSONFile, blank=True)
     raster = models.ManyToManyField(RasterFile, blank=True)
     public = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

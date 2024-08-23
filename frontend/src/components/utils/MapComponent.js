@@ -32,14 +32,14 @@ import { UploadToMemoryDrop } from './Memory/eventHandlers';
 import MouseCoordinates from './MouseCoordinates';
 import SideNav from './Sidebar';
 
-delete L.Icon.Default.prototype._getIconUrl;
+// delete L.Icon.Default.prototype._getIconUrl;
 
 
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-});
+// L.Icon.Default.mergeOptions({
+//   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+//   iconUrl: require('leaflet/dist/images/marker-icon.png'),
+//   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+// });
 
 export const MapComponent = ({
   rasters,
@@ -139,10 +139,6 @@ export const MapComponent = ({
   }
 
   const vectorStyle = (feature,vector) => {
-
-    // const selected = vector.features.filter(
-    //   (v)=>{v.id===feature.id}
-    // )
     const selected = vector.data.features.find(
       (v) => v.id === feature.id
     );
@@ -195,10 +191,14 @@ export const MapComponent = ({
             }
           }}
           data={vector.data}
-          // style={(feature) => feature.style}
           style={(feature) => vectorStyle(feature,vector)}
-          // style={vector.data.properties.style}
           onEachFeature={onEachFeatureVector(vector.data)}
+          pointToLayer={(feature, latlng) => {
+            if (feature.geometry.type === 'Point' || feature.geometry.type === 'MultiPoint') {
+              return L.circleMarker(latlng, vectorStyle(feature, vector));
+            }
+            return L.marker(latlng); 
+          }}
         >
         </GeoJSON>)
       })}
