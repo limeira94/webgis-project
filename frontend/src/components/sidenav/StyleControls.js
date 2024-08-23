@@ -135,10 +135,13 @@ const getRandomColor = () => {
   return color;
 };
 
-const CategorizedStyle = ({ geojson,updateStyle }) => {
+
+const CategorizedStyle = ({ geojson, updateStyle }) => {
   const [column, setColumn] = useState(null);
   const [uniqueValues, setUniqueValues] = useState([]);
   const [colors, setColors] = useState({});
+  const [weight, setWeight] = useState(5); // Default weight
+  const [fillOpacity, setFillOpacity] = useState(0.5); // Default fillOpacity
 
   const handleSaveCategorizedStyle = async () => {
     try {
@@ -150,6 +153,9 @@ const CategorizedStyle = ({ geojson,updateStyle }) => {
         acc[feature.id] = {
           ...feature.style,
           fillColor: colors[attributeValue],
+          color: "black", 
+          weight, 
+          fillOpacity, 
         };
         return acc;
       }, {});
@@ -167,9 +173,13 @@ const CategorizedStyle = ({ geojson,updateStyle }) => {
 
       if (response.status === 200) {
         // Atualize o estilo no mapa
+        console.log("CAT",categorizedStyles)
         Object.keys(categorizedStyles).forEach(featureId => {
           const style = categorizedStyles[featureId];
-          updateStyle(geojson.data.properties.id, "fillColor", style.fillColor);
+          updateStyle(geojson.data.properties.id, "fillColor", style.fillColor,featureId);
+          updateStyle(geojson.data.properties.id, "color", style.color,featureId);
+          updateStyle(geojson.data.properties.id, "weight", style.weight,featureId);
+          updateStyle(geojson.data.properties.id, "fillOpacity", style.fillOpacity,featureId);
         });
       } else {
         console.error('Unexpected response:', response);
@@ -186,13 +196,13 @@ const CategorizedStyle = ({ geojson,updateStyle }) => {
     const handleChange = (event) => {
       const selectedColumn = event.target.value;
       setColumn(selectedColumn);
-  
+
       // Get all values for the selected column
       const values = geojson.data.features.map(
         (feature) => feature.properties.attributes[selectedColumn]
       );
-      console.log("VALUES",values)
-  
+      console.log("VALUES", values);
+
       // Extract unique values
       const unique = [...new Set(values)];
       setUniqueValues(unique);
@@ -211,7 +221,13 @@ const CategorizedStyle = ({ geojson,updateStyle }) => {
       }));
     };
 
-    console.log(colors)
+    const handleWeightChange = (event) => {
+      setWeight(Number(event.target.value));
+    };
+
+    const handleFillOpacityChange = (event) => {
+      setFillOpacity(Number(event.target.value));
+    };
 
   return (
     <>
@@ -232,29 +248,52 @@ const CategorizedStyle = ({ geojson,updateStyle }) => {
         </Select>
       </FormControl>
 
-      {/* {column && uniqueValues.length > 0 && (
-        <ul style={{ marginTop: '16px' }}>
-          {uniqueValues.map((value) => (
-            <li key={value}>{value}</li>
-          ))}
-        </ul>
-      )} */}
       {column && uniqueValues.length > 0 && (
         <>
-        <ul style={{ marginTop: '16px', listStyle: 'none', padding: 0 }}>
-          {uniqueValues.map((value) => (
-            <li key={value} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+          <ul style={{ marginTop: '16px', listStyle: 'none', padding: 0 }}>
+            {uniqueValues.map((value) => (
+              <li key={value} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                <input
+                  type="color"
+                  value={colors[value]}
+                  onChange={(e) => handleColorChange(value, e.target.value)}
+                  style={{ marginRight: '8px' }}
+                />
+                <span>{value}</span>
+              </li>
+            ))}
+          </ul>
+          <div style={{ marginTop: '16px' }}>
+            <label>
+              Line size:
               <input
-                type="color"
-                value={colors[value]}
-                onChange={(e) => handleColorChange(value, e.target.value)}
-                style={{ marginRight: '8px' }}
+                type="range"
+                value={weight}
+                onChange={handleWeightChange}
+                min="0"
+                max="10"
+                step="1"
+                style={{ marginLeft: '8px' }}
               />
-              <span>{value}</span>
-            </li>
-          ))}
-        </ul>
-        <button onClick={handleSaveCategorizedStyle}>Save Categorized Style</button>
+            </label>
+          </div>
+          <div style={{ marginTop: '16px' }}>
+            <label>
+              Opacity:
+              <input
+                type="range"
+                value={fillOpacity}
+                onChange={handleFillOpacityChange}
+                min="0"
+                max="1"
+                step="0.1"
+                style={{ marginLeft: '8px' }}
+              />
+            </label>
+          </div>
+          <button onClick={handleSaveCategorizedStyle}>
+            Save Categorized Style
+          </button>
         </>
       )}
     </>
@@ -262,6 +301,134 @@ const CategorizedStyle = ({ geojson,updateStyle }) => {
 };
 
 export default CategorizedStyle;
+
+// const CategorizedStyle = ({ geojson,updateStyle }) => {
+//   const [column, setColumn] = useState(null);
+//   const [uniqueValues, setUniqueValues] = useState([]);
+//   const [colors, setColors] = useState({});
+
+//   const handleSaveCategorizedStyle = async () => {
+//     try {
+//       const vectorId = geojson.data.properties.id;
+//       const token = Cookies.get('access_token');
+
+//       const categorizedStyles = geojson.data.features.reduce((acc, feature) => {
+//         const attributeValue = feature.properties.attributes[column];
+//         acc[feature.id] = {
+//           ...feature.style,
+//           fillColor: colors[attributeValue],
+//         };
+//         return acc;
+//       }, {});
+
+//       const response = await axios.post(
+//         `${API_URL}api/main/vectors/${vectorId}/save-style-cat/`,
+//         { categorized_styles: categorizedStyles },
+//         {
+//           headers: {
+//             Accept: 'application/json',
+//             Authorization: `Bearer ${token}`,
+//           }
+//         }
+//       );
+
+//       if (response.status === 200) {
+//         // Atualize o estilo no mapa
+//         Object.keys(categorizedStyles).forEach(featureId => {
+//           const style = categorizedStyles[featureId];
+//           updateStyle(geojson.data.properties.id, "fillColor", style.fillColor);
+//         });
+//       } else {
+//         console.error('Unexpected response:', response);
+//       }
+//     } catch (error) {
+//       console.error('Error saving categorized style:', error);
+//     }
+//   };
+
+//   const columns = geojson?.data?.features?.[0]?.properties?.attributes
+//     ? Object.keys(geojson.data.features[0].properties.attributes)
+//     : [];
+
+//     const handleChange = (event) => {
+//       const selectedColumn = event.target.value;
+//       setColumn(selectedColumn);
+  
+//       // Get all values for the selected column
+//       const values = geojson.data.features.map(
+//         (feature) => feature.properties.attributes[selectedColumn]
+//       );
+//       console.log("VALUES",values)
+  
+//       // Extract unique values
+//       const unique = [...new Set(values)];
+//       setUniqueValues(unique);
+
+//       const initialColors = unique.reduce((acc, value) => {
+//         acc[value] = getRandomColor();
+//         return acc;
+//       }, {});
+//       setColors(initialColors);
+//     };
+
+//     const handleColorChange = (value, color) => {
+//       setColors((prevColors) => ({
+//         ...prevColors,
+//         [value]: color
+//       }));
+//     };
+
+//     console.log(colors)
+
+//   return (
+//     <>
+//       <FormControl fullWidth>
+//         <InputLabel id="demo-simple-select-label">Column</InputLabel>
+//         <Select
+//           labelId="demo-simple-select-label"
+//           id="demo-simple-select"
+//           value={column}
+//           label="Column"
+//           onChange={handleChange}
+//         >
+//           {columns.map((col) => (
+//             <MenuItem key={col} value={col}>
+//               {col}
+//             </MenuItem>
+//           ))}
+//         </Select>
+//       </FormControl>
+
+//       {/* {column && uniqueValues.length > 0 && (
+//         <ul style={{ marginTop: '16px' }}>
+//           {uniqueValues.map((value) => (
+//             <li key={value}>{value}</li>
+//           ))}
+//         </ul>
+//       )} */}
+//       {column && uniqueValues.length > 0 && (
+//         <>
+//         <ul style={{ marginTop: '16px', listStyle: 'none', padding: 0 }}>
+//           {uniqueValues.map((value) => (
+//             <li key={value} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+//               <input
+//                 type="color"
+//                 value={colors[value]}
+//                 onChange={(e) => handleColorChange(value, e.target.value)}
+//                 style={{ marginRight: '8px' }}
+//               />
+//               <span>{value}</span>
+//             </li>
+//           ))}
+//         </ul>
+//         <button onClick={handleSaveCategorizedStyle}>Save Categorized Style</button>
+//         </>
+//       )}
+//     </>
+//   );
+// };
+
+// export default CategorizedStyle;
 
 const ModalChangeData = ({ geojson,updateStyle,updateStyleCat }) => {
   const [selectedOption, setSelectedOption] = useState('global');
@@ -363,97 +530,7 @@ export const StyleControls = ({
   setChangeStyleData
  }) => {
 
-    // const [isModalOpen,setIsModalOpen] = useState(false)
-
-    // let isPoint = false;
-    // let isLine = false;
-
-    // const geojson = geojsondata.data.features === undefined ?
-    //     geojsondata.data :
-    //     geojsondata.data//.features[0]
-
-    // if (geojson.type === 'FeatureCollection') {
-    //     isPoint = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "Point" || feature.geometry.type === "MultiPoint"));
-    //     isLine = geojson.features.some(feature => feature.geometry && (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString"));
-    // } else {
-    //     isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
-    //     isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
-    // }
-
-    // const handleSaveStyle = async (geojson) => {
-    //     try {
-    //         const style = geojson.properties.style;
-    //         const vectorId = geojson.properties.id;
-    //         const token = Cookies.get('access_token');
-
-    //         const response = await axios.post(
-    //             `${API_URL}api/main/vectors/${vectorId}/save-style/`, {
-    //             style: style
-    //         }, {
-    //             headers: {
-    //                 Accept: 'application/json',
-    //                 Authorization: `Bearer ${token}`
-    //             }
-    //         });
-
-    //         if (response.status === 200) {
-    //             console.log('Style saved successfully!');
-    //         } else {
-    //             console.error('Unexpected response:', response);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error saving style:', error);
-    //     }
-    // };
-
-
-    
-
-    // const isPoint = geojson.geometry.type === "Point" || geojson.geometry.type === "MultiPoint";
-    // const isLine = geojson.geometry.type === "LineString" || geojson.geometry.type === "MultiLineString";
-
-    // const colorValue = geojsondata.style.fillColor
-    // const colorValue = geojsondata.data.properties.style.fillColor
-    // const colorRow = get_item_table("Color", "color", colorValue, "fillColor", geojson, updateStyle);
-
-    // const lineColorValue = geojsondata.data.properties.style.color
-    // const lineColorRow = get_item_table("Line Color", "color", lineColorValue, "color", geojson, updateStyle);
-
-    // const widthValue = geojsondata.data.properties.style.weight
-    // const widthRow = get_item_table("Line Size", "range", widthValue, "weight", geojson, updateStyle);
-
-    // const opacityValue = geojsondata.data.properties.style.fillOpacity
-    // const opacityRow = get_item_table("Opacity", "range", opacityValue, "fillOpacity", geojson, updateStyle);
-
-    // const saveStyle = <>
-    //   <tr>
-    //       <td><span>Save style</span></td>
-    //       <td className='alnright'>
-    //           <a onClick={() => handleSaveStyle(geojson)} className='btn blue'><i className='material-icons'>save</i></a>
-    //       </td>
-    //   </tr>
-    // </>
-
-    // const data = <>
-    //     <h4>Change Style</h4>
-    //     <p>Use the controls below to change the style of the layers.</p>
-    //     <table>
-    //       <tbody>
-    //         {!isPoint && !isLine && colorRow}
-    //         {!isPoint && lineColorRow}
-    //         {!isPoint && !isLine && opacityRow}
-    //         {!isPoint && widthRow}
-    //         {saveStyle}
-    //       </tbody>
-    //     </table>
-        
-    //   </>
-
-    // const data = 
-
-
     const openStyleModal = () => {
-      // setChangeStyleData(data)
       setChangeStyleData(<ModalChangeData 
                             geojson={geojsondata} 
                             updateStyle={updateStyle}

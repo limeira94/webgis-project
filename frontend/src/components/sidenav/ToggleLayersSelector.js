@@ -74,7 +74,7 @@ const ToggleLayersSelector = (
         return prevGeojsons.map(geojson => {
             if (geojson.data.properties.id === polygonId) {
                 const updatedGeoms = geojson.data.features.map(geom => {
-                    if (featureId && geom.id !== featureId) return geom;
+                    if (featureId && geom.id !== Number(featureId)) return geom;
                     return {
                         ...geom,
                         style: {
