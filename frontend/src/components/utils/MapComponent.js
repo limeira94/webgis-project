@@ -222,25 +222,20 @@ export const MapComponent = ({
         uploading
           ? loadingIcon : null}
 
-      <ToggleLayersSelector
+      <SideNav 
         rasters={rasters}
         setRasters={setRasters}
         vectors={vectors}
         setVectors={setVectors}
         geojsonLayerRefs={geojsonLayerRefs}
         mapInstance={mapInstance}
+        projectid={projectid}
+        setUploading={setUploading}
         selectedFeatureAttributes={selectedFeatureAttributes}
         inmemory={savetomemory}
         changeStyleData={changeStyleData}
         setChangeStyleData={setChangeStyleData}
-      />
-      {/* <SideNav 
-        setRasters={setRasters}
-        mapInstance={mapInstance}
-        projectid={projectid}
-        setUploading={setUploading}
-        setVectors={setVectors}
-        /> */}
+        />
 
       <BasemapSelector
         setSelectedTileLayer={setSelectedTileLayer}

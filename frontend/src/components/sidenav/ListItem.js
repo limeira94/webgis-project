@@ -195,30 +195,32 @@ export const ListItem = ({
 
     return (
         <div>
-        <MUIListItem key={`${datatype}-${dataset_id}`} className='list-dataset'>
-            <Box display="flex" alignItems="center">
-                <IconButton onClick={handleToggleClick}>
-                    {showStyleControls ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
-                </IconButton>
-
-                <Checkbox
-                    checked={dataset.visible}
-                    onChange={() => handleVisibilityChange(dataset)}
-                />
-
-                <Box display="flex" alignItems="center">
-                    <img className="icon-data" src={url + img_icon} alt={`${datatype}-item`} />
-                    <Typography variant="body1">
-                        {dataset_name.length > maxCharacters ? `${dataset_name.slice(0, maxCharacters)}...` : dataset_name}
-                    </Typography>
-                </Box>
-            </Box>
-
-            <Collapse in={showStyleControls}>
+            <MUIListItem key={`${datatype}-${dataset_id}`} className='list-dataset'>
                 <Box>
-                    {styleControlItem}
+                    <Box display="flex" alignItems="center">
+                        <IconButton onClick={handleToggleClick}>
+                            {showStyleControls ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
+                        </IconButton>
+
+                        <Checkbox
+                            checked={dataset.visible}
+                            onChange={() => handleVisibilityChange(dataset)}
+                        />
+
+                        <Box display="flex" alignItems="center">
+                            <img className="icon-data" src={url + img_icon} alt={`${datatype}-item`} />
+                            <Typography variant="body1">
+                                {dataset_name.length > maxCharacters ? `${dataset_name.slice(0, maxCharacters)}...` : dataset_name}
+                            </Typography>
+                        </Box>
+                    </Box>
+                    <Collapse in={showStyleControls}>
+                        <Box mt={2}>
+                            {styleControlItem}
+                        </Box>
+                    </Collapse>
                 </Box>
-            </Collapse>
+            </MUIListItem>
 
             <Modal
                 open={isModalOpen}
@@ -249,8 +251,8 @@ export const ListItem = ({
                     </Box>
                 </Box>
             </Modal>
-        </MUIListItem>
-        <Snackbar
+
+            <Snackbar
                 open={snackbarState.open}
                 autoHideDuration={5000}
                 onClose={handleCloseSnackbar}
@@ -261,4 +263,4 @@ export const ListItem = ({
             </Snackbar>
         </div>
     );
-};
+}

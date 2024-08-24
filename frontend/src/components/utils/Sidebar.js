@@ -9,6 +9,7 @@ import DrawIcon from '@mui/icons-material/Draw';
 import { styled } from '@mui/system';
 import { handleRaster, handleGeojson, handleDrawUpload } from './eventHandler';
 import DrawVector from './DrawVector';
+import ToggleLayersSelector from '../sidenav/ToggleLayersSelector';
 
 const drawerWidth = 360;
 const miniSidebarWidth = 60;
@@ -60,7 +61,7 @@ const ToggleButton = styled(IconButton)(({ open }) => ({
   },
 }));
 
-export default function SideNav({ setRasters, mapInstance, projectid, setUploading, setVectors }) {
+export default function SideNav({ rasters, setRasters, vectors, setVectors, geojsonLayerRefs, mapInstance, selectedFeatureAttributes, projectid, setUploading,changeStyleData, setChangeStyleData, inmemory }) {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('addData');
   const dispatch = useDispatch()
@@ -155,10 +156,22 @@ export default function SideNav({ setRasters, mapInstance, projectid, setUploadi
             </ListItem>
           )}
           {activeSection === 'layers' && (
-            <ListItem sx={{ width: '100%' }}>
+            <ListItem sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'  }}>
               <Typography variant="h6" sx={{ textAlign: 'center', width: '100%' }}>
                 Layers
               </Typography>
+              <ToggleLayersSelector
+                rasters={rasters}
+                setRasters={setRasters}
+                vectors={vectors}
+                setVectors={setVectors}
+                geojsonLayerRefs={geojsonLayerRefs}
+                mapInstance={mapInstance}
+                selectedFeatureAttributes={selectedFeatureAttributes}
+                changeStyleData={changeStyleData}
+                setChangeStyleData={setChangeStyleData}
+                inmemory={false}
+              />
             </ListItem>
           )}
           {activeSection === 'search' && (
@@ -167,7 +180,7 @@ export default function SideNav({ setRasters, mapInstance, projectid, setUploadi
                 Search
               </Typography>
 
-              
+
             </ListItem>
           )}
           {activeSection === 'draw' && (

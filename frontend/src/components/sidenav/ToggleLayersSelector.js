@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { zoomToLayerRaster } from './RasterFunctions';
 import { zoomToLayer } from './VectorFunctions';
 import { ListItem } from './ListItem';
-import M from 'materialize-css';
-import { useEffect } from 'react';
+import { List, ListItem as ListItemUI, Box, IconButton, Collapse } from '@mui/material';
+
 
 const ToggleLayersSelector = (
   {
@@ -16,120 +16,109 @@ const ToggleLayersSelector = (
     selectedFeatureAttributes,
     changeStyleData,
     setChangeStyleData,
-    inmemory=false
+    inmemory = false
   }) => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const updateStyle = (polygonId, styleKey, value) => {
     setVectors(prevGeojsons => {
-        return prevGeojsons.map(geojson => {
-            if (geojson.data.properties.id === polygonId) {
-                const updatedGeoms = geojson.data.features.map(geom => {
-                    return {
-                        ...geom,
-                        style: {
-                            ...geom.style,
-                            [styleKey]: value
-                        }
-                    }});
-                return {
-                    ...geojson,
-                    data: {
-                        ...geojson.data,
-                        features: updatedGeoms
-                    }
-                };
+      return prevGeojsons.map(geojson => {
+        if (geojson.data.properties.id === polygonId) {
+          const updatedGeoms = geojson.data.features.map(geom => {
+            return {
+              ...geom,
+              style: {
+                ...geom.style,
+                [styleKey]: value
+              }
             }
-            return geojson;
-        });
+          });
+          return {
+            ...geojson,
+            data: {
+              ...geojson.data,
+              features: updatedGeoms
+            }
+          };
+        }
+        return geojson;
+      });
     });
   };
 
   const updateStyleCat = (polygonId, styleKey, value, featureId = null) => {
     setVectors(prevGeojsons => {
-        return prevGeojsons.map(geojson => {
-            if (geojson.data.properties.id === polygonId) {
-                const updatedGeoms = geojson.data.features.map(geom => {
-                    if (featureId && geom.id !== Number(featureId)) return geom;
-                    return {
-                        ...geom,
-                        style: {
-                            ...geom.style,
-                            [styleKey]: value
-                        }
-                    }});
-                return {
-                    ...geojson,
-                    data: {
-                        ...geojson.data,
-                        features: updatedGeoms
-                    }
-                };
+      return prevGeojsons.map(geojson => {
+        if (geojson.data.properties.id === polygonId) {
+          const updatedGeoms = geojson.data.features.map(geom => {
+            if (featureId && geom.id !== Number(featureId)) return geom;
+            return {
+              ...geom,
+              style: {
+                ...geom.style,
+                [styleKey]: value
+              }
             }
-            return geojson;
-        });
+          });
+          return {
+            ...geojson,
+            data: {
+              ...geojson.data,
+              features: updatedGeoms
+            }
+          };
+        }
+        return geojson;
+      });
     });
-};
+  };
 
-
-
-  useEffect(()=>{
-    var options = {}
-    var elems = document.querySelectorAll('.sidenav');
-    M.Sidenav.init(elems, options);
-},[])
-  
 
   return (
     <>
-    <div className={`sidenav-toolbar ${isDrawerOpen ? 'active' : ''}`}>
-        <ul>
-        <div className="sidebar-title">Your dataset:</div>
+      
+        <Box sx={{ padding: 2 }}>
+          <List>
+            {vectors.map((geojson) => (
+              <ListItemUI
+                key={`$geojson-item-${geojson.data.properties.id}`}
+              >
 
-        {vectors.map((geojson) =>  (
+                <ListItem
+                  key={`$geojson-item-${geojson.data.properties.id}`}
+                  datasets={vectors}
+                  setDatasets={setVectors}
+                  polygonStyles={geojson.style}
+                  dataset={geojson}
+                  datatype={"geojson"}
+                  zoomToLayer={() => zoomToLayer(geojson.data.properties.id, geojsonLayerRefs, mapInstance)}
+                  updateStyle={updateStyle}
+                  updateStyleCat={updateStyleCat}
+                  selectedFeatureAttributes={selectedFeatureAttributes}
+                  inmemory={inmemory}
+                  changeStyleData={changeStyleData}
+                  setChangeStyleData={setChangeStyleData}
+                />
+              </ListItemUI>
+            ))
+            }
 
-            <ListItem
-              key={`$geojson-item-${geojson.data.properties.id}`}
-              datasets={vectors}
-              setDatasets={setVectors}
-              polygonStyles={geojson.style}
-              dataset={geojson}
-              datatype={"geojson"}
-              zoomToLayer={()=>zoomToLayer(geojson.data.properties.id,geojsonLayerRefs,mapInstance)}
-              updateStyle={updateStyle}
-              updateStyleCat={updateStyleCat}
-              selectedFeatureAttributes={selectedFeatureAttributes}
-              inmemory={inmemory}
-              changeStyleData={changeStyleData}
-              setChangeStyleData={setChangeStyleData}
-          />
-        ))}
-        
-        {rasters.map((raster) => (
-              <ListItem
-              key={`$raster-item-${raster.data.id}`}
-              datasets={rasters}
-              setDatasets={setRasters}
-              dataset={raster}
-              datatype={"raster"}
-              zoomToLayer={zoomToLayerRaster}
-              inmemory={inmemory}
-              />
-          ))}
-      </ul>
-    </div>
-
-    <div className={`btn-menu ${isDrawerOpen ? 'active' : ''}`}>
-      <a 
-        href="#" 
-        className="btn-floating waves-effect waves-light black"
-        onClick={()=>setIsDrawerOpen(!isDrawerOpen)}
-        >
-          <i className="material-icons">
-            {isDrawerOpen ? 'keyboard_arrow_left' : 'keyboard_arrow_right'}
-          </i>
-      </a>
-    </div>  
+            {rasters.map((raster) => (
+              <ListItemUI
+                key={`$raster-item-${raster.data.id}`}
+              >
+                <ListItem
+                  key={`$raster-item-${raster.data.id}`}
+                  datasets={rasters}
+                  setDatasets={setRasters}
+                  dataset={raster}
+                  datatype={"raster"}
+                  zoomToLayer={zoomToLayerRaster}
+                  inmemory={inmemory}
+                />
+              </ListItemUI>
+            ))}
+          </List>
+        </Box>
 
     </>
   );
