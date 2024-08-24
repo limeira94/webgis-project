@@ -9,8 +9,9 @@
 - [ ] Busca de atributo
 
 
-### `UploadAndDeleteButtons.js`
+### `UploadAndDeleteButtons.js` *será substituído por `Sidebar.js`*
 Possui botão de upload de dados GeoJSON e GeoTIFF.
 
 ### `DrawVector.js`
-Possui botão de desenho de polígonos, linhas e pontos.
+Possui função de desenho de polígonos, linhas e pontos.
+
