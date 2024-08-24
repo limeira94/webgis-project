@@ -1,8 +1,27 @@
-import { StyleControls,StyleRasterControls,StyleControlsMemory } from "./StyleControls";
-import { useState,useRef,useEffect } from "react";
-import { delete_geojson,delete_raster } from "../../features/data";
+import { StyleControls, StyleRasterControls, } from "./StyleControls";
+import React, { useState, useRef } from "react";
+import { delete_geojson, delete_raster } from "../../features/data";
 import { useDispatch } from "react-redux";
-import M from 'materialize-css';
+import {
+    ListItem as MUIListItem,
+    Checkbox,
+    IconButton,
+    Collapse,
+    Modal,
+    Box,
+    Typography,
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+    Snackbar,
+    Alert
+} from '@mui/material';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 const removeItemFromList = (datasets, setDatasets, fileId, datatype) => {
     if (datatype == "raster") {
@@ -20,36 +39,48 @@ export const handleDeleteFiles = (
     datasets,
     setDatasets,
     functionDelete,
+    setSnackbarState,
     inmemory = false,
     datatype = "raster"
 ) => {
 
     if (inmemory) {
-        removeItemFromList(datasets, setDatasets, fileId, datatype)
-    }
-    else {
+        removeItemFromList(datasets, setDatasets, fileId, datatype);
+        setSnackbarState({
+            open: true,
+            message: "File deleted successfully",
+            severity: "success"
+        });
+    } else {
         dispatch(functionDelete(fileId))
             .then((action) => {
                 if (action.meta.requestStatus === 'fulfilled') {
-
-                    removeItemFromList(datasets, setDatasets, fileId, datatype)
-                    M.toast(
-                        {
-                            html: "File delete sucessfully",
-                            classes: 'green rounded',
-                            displayLength: 5000
-                        });
+                    removeItemFromList(datasets, setDatasets, fileId, datatype);
+                    setSnackbarState({
+                        open: true,
+                        message: "File deleted successfully",
+                        severity: "success"
+                    });
                 } else {
                     console.error(`Failed to delete ${datatype}`);
+                    setSnackbarState({
+                        open: true,
+                        message: `Failed to delete ${datatype}`,
+                        severity: "error"
+                    });
                 }
             })
             .catch((error) => {
                 console.error('Error occurred while deleting request:', error);
+                setSnackbarState({
+                    open: true,
+                    message: 'Error occurred while deleting request',
+                    severity: "error"
+                });
             });
     }
 }
 
-var maxCharacters = 15
 export const ListItem = ({
     datasets,
     setDatasets,
@@ -68,14 +99,17 @@ export const ListItem = ({
     const dispatch = useDispatch();
     const [showStyleControls, setShowStyleControls] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedAttributes, setSelectedAttributes] = useState({});
+    const [selectedAttributes, setSelectedAttributes] = useState({ features: [] });
     const modalRef = useRef(null);
+    const [snackbarState, setSnackbarState] = useState({
+        open: false,
+        message: '',
+        severity: 'success', // ou 'error'
+    });
 
-    useEffect(() => {
-        const options = {};
-        M.Modal.init(document.querySelector('.modal'), options);
-    }, []);
-
+    const handleCloseSnackbar = () => {
+        setSnackbarState(prev => ({ ...prev, open: false }));
+    };
 
     const handleVisibilityChange = (dataset) => {
         const updatedDataset = { ...dataset, visible: !dataset.visible };
@@ -96,48 +130,46 @@ export const ListItem = ({
         setShowStyleControls(!showStyleControls);
     };
 
-    var url = process.env.PUBLIC_URL
-
-    let handleDelete, img_icon, styleControlItem, dataset_name
-    const deleteFunction = datatype === "raster" ? delete_raster : delete_geojson;
-    const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id;
-
-    handleDelete = () => handleDeleteFiles(
+    const handleDelete = () => handleDeleteFiles(
         dataset_id,
         dispatch,
         datasets,
         setDatasets,
         deleteFunction,
-        inmemory = inmemory,
-        datatype = datatype
-    )
+        setSnackbarState,
+        inmemory,
+        datatype
+    );
 
-    const zoomanddelete = <>
-        <tr>
-            <td>Zoom to</td>
-            <td className='alnright'>
-                <button className='zoom-button' onClick={() => zoomToLayer(dataset_id)}>
-                    <span className="material-icons">zoom_in_map</span>
-                </button>
-            </td>
-        </tr>
-        <tr>
-            <td>Delete</td>
-            <td className='alnright'>
-                <a
-                    href="#"
-                    onClick={handleDelete}
-                >
-                    <i className='material-icons'>delete</i>
-                </a>
-            </td>
-        </tr>
-    </>
-
+    const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id;
+    const deleteFunction = datatype === "raster" ? delete_raster : delete_geojson;
+    const url = process.env.PUBLIC_URL;
+    const maxCharacters = 20;
+    let img_icon, styleControlItem, dataset_name;
+    const zoomanddelete = (
+        <>
+            <TableRow>
+                <TableCell>Zoom to</TableCell>
+                <TableCell align="right">
+                    <IconButton onClick={() => zoomToLayer(dataset_id)}>
+                        <ZoomInIcon />
+                    </IconButton>
+                </TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell>Delete</TableCell>
+                <TableCell align="right">
+                    <IconButton onClick={handleDelete}>
+                        <DeleteIcon />
+                    </IconButton>
+                </TableCell>
+            </TableRow>
+        </>
+    );
     if (datatype === "raster") {
-        dataset_name = dataset.data.name
-        img_icon = "/raster.png"
-        styleControlItem =
+        dataset_name = dataset.data.name;
+        img_icon = "/raster.png";
+        styleControlItem = (
             <StyleRasterControls
                 rasters={datasets}
                 setRasters={setDatasets}
@@ -145,11 +177,11 @@ export const ListItem = ({
                 bands={dataset.data.bands}
                 zoomanddelete={zoomanddelete}
             />
-    }
-    else {
-        dataset_name = dataset.data.properties.name
-        img_icon = "/vector.png"
-        styleControlItem =
+        );
+    } else {
+        dataset_name = dataset.data.properties.name;
+        img_icon = "/vector.png";
+        styleControlItem = (
             <StyleControls
                 geojsondata={dataset}
                 updateStyle={updateStyle}
@@ -158,75 +190,75 @@ export const ListItem = ({
                 changeStyleData={changeStyleData}
                 setChangeStyleData={setChangeStyleData}
             />
+        );
     }
+
     return (
-        <li
-            key={`${datatype}-${dataset_id}`}
-            className='list-dataset'
-        >
-            <div
-                className='list-div-dataset'
-            >
-                <button
-                    className="dropdown-button"
-                    onClick={handleToggleClick}
-                    style={{ visibility: 'visible' }}
-                >
-                    {showStyleControls ? (
-                        <span className="material-icons">keyboard_arrow_down</span>
-                    ) : (<span className="material-icons">keyboard_arrow_right</span>)
-                    }
-                </button>
+        <div>
+        <MUIListItem key={`${datatype}-${dataset_id}`} className='list-dataset'>
+            <Box display="flex" alignItems="center">
+                <IconButton onClick={handleToggleClick}>
+                    {showStyleControls ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
+                </IconButton>
 
-                <p>
-                    <label className="checkbox-label">
-                        <input
-                            type="checkbox"
-                            className="filled-in"
-                            checked={
-                                dataset.visible
-                            }
-                            onClick={() => handleVisibilityChange(dataset)}
-                            onChange={() => { }}
-                        />
-                        <span className='tooltipped flex-container' data-position="bottom" data-tooltip={dataset_name}>
-                            <img className="icon-data" src={url + img_icon} alt={`${datatype}-item`} />
-                            <span className='text-container'>
-                                {dataset_name.length > maxCharacters ? dataset_name.slice(0, maxCharacters) + '...' : dataset_name}
-                            </span>
-                        </span>
-                    </label>
-                </p>
+                <Checkbox
+                    checked={dataset.visible}
+                    onChange={() => handleVisibilityChange(dataset)}
+                />
 
-            </div>
-            {showStyleControls && (
-                <div>
+                <Box display="flex" alignItems="center">
+                    <img className="icon-data" src={url + img_icon} alt={`${datatype}-item`} />
+                    <Typography variant="body1">
+                        {dataset_name.length > maxCharacters ? `${dataset_name.slice(0, maxCharacters)}...` : dataset_name}
+                    </Typography>
+                </Box>
+            </Box>
+
+            <Collapse in={showStyleControls}>
+                <Box>
                     {styleControlItem}
-                </div>
-            )}
+                </Box>
+            </Collapse>
 
-            {isModalOpen && (
-                <div ref={modalRef} className="modal">
-                    <div className="modal-content">
-                        <h4>Tabela de Atributos</h4>
-                        <table className="striped">
-                            {selectedAttributes.features.map((feature, featureIndex) => (
-                                <tbody key={featureIndex}>
+            <Modal
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                aria-labelledby="modal-title"
+                aria-describedby="modal-description"
+            >
+                <Box ref={modalRef} sx={{ p: 4, backgroundColor: 'white', margin: 'auto', maxWidth: 600 }}>
+                    <Typography id="modal-title" variant="h6">
+                        Tabela de Atributos
+                    </Typography>
+                    <Table className="striped">
+                        <TableBody>
+                            {selectedAttributes?.features?.map((feature, featureIndex) => (
+                                <React.Fragment key={featureIndex}>
                                     {Object.entries(feature.properties).map(([key, value], index) => (
-                                        <tr key={index}>
-                                            <th>{key}</th>
-                                            <td>{value}</td>
-                                        </tr>
+                                        <TableRow key={index}>
+                                            <TableCell>{key}</TableCell>
+                                            <TableCell>{value}</TableCell>
+                                        </TableRow>
                                     ))}
-                                </tbody>
+                                </React.Fragment>
                             ))}
-                        </table>
-                    </div>
-                    <div className="modal-footer">
-                        <button className="modal-close btn-flat">Fechar</button>
-                    </div>
-                </div>
-            )}
-        </li>
-    )
-}
+                        </TableBody>
+                    </Table>
+                    <Box textAlign="right" mt={2}>
+                        <button className="modal-close btn-flat" onClick={() => setIsModalOpen(false)}>Fechar</button>
+                    </Box>
+                </Box>
+            </Modal>
+        </MUIListItem>
+        <Snackbar
+                open={snackbarState.open}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert onClose={handleCloseSnackbar} severity={snackbarState.severity} sx={{ width: '100%' }}>
+                    {snackbarState.message}
+                </Alert>
+            </Snackbar>
+        </div>
+    );
+};

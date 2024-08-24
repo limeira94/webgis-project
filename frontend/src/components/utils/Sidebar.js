@@ -166,6 +166,8 @@ export default function SideNav({ setRasters, mapInstance, projectid, setUploadi
               <Typography variant="h6" sx={{ textAlign: 'center', width: '100%' }}>
                 Search
               </Typography>
+
+              
             </ListItem>
           )}
           {activeSection === 'draw' && (

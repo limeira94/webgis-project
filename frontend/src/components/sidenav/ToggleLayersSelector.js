@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { zoomToLayerRaster } from './RasterFunctions';
 import { zoomToLayer } from './VectorFunctions';
 import { ListItem } from './ListItem';
-// import L from 'leaflet';
 import M from 'materialize-css';
 import { useEffect } from 'react';
 
@@ -21,29 +20,6 @@ const ToggleLayersSelector = (
   }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-//   const updateStyle = (polygonId, styleKey, value) => {
-//     setVectors(prevGeojsons => {
-//         return prevGeojsons.map(geojson => {
-//             if (geojson.data.properties.id === polygonId) {
-//                 const updatedProperties = {
-//                     ...geojson.data.properties,
-//                     style: {
-//                         ...geojson.data.properties.style,
-//                         [styleKey]: value
-//                     }
-//                 };
-//                 return {
-//                     ...geojson,
-//                     data: {
-//                         ...geojson.data,
-//                         properties: updatedProperties
-//                     }
-//                 };
-//             }
-//             return geojson;
-//         });
-//     });
-// };
   const updateStyle = (polygonId, styleKey, value) => {
     setVectors(prevGeojsons => {
         return prevGeojsons.map(geojson => {
