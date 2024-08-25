@@ -11,13 +11,10 @@ import {
   ScaleControl,
 } from 'react-leaflet';
 import BasemapSelector from './BasemapSelector';
-import ToggleLayersSelector from '../sidenav/ToggleLayersSelector';
 import UpDelButttons from './UploadAndDeleteButtons';
 import MemoryButton from './Memory/component';
 import { leafletDefaultButtons } from './LeafletButtons';
 import L from 'leaflet';
-// import 'leaflet-draw';
-// import 'leaflet-draw/dist/leaflet.draw.css';
 import M from 'materialize-css';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
@@ -26,20 +23,11 @@ import { FullscreenControl } from 'react-leaflet-fullscreen';
 import 'leaflet.browser.print/dist/leaflet.browser.print.min.js';
 import 'leaflet-measure/dist/leaflet-measure.css';
 import 'leaflet-measure/dist/leaflet-measure.js';
-import { handleDropGeojson, handleGeojson } from './eventHandler';
+import { handleDropGeojson } from './eventHandler';
 import { useDispatch } from 'react-redux';
 import { UploadToMemoryDrop } from './Memory/eventHandlers';
 import MouseCoordinates from './MouseCoordinates';
 import SideNav from './Sidebar';
-
-// delete L.Icon.Default.prototype._getIconUrl;
-
-
-// L.Icon.Default.mergeOptions({
-//   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-//   iconUrl: require('leaflet/dist/images/marker-icon.png'),
-//   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-// });
 
 export const MapComponent = ({
   rasters,
@@ -57,12 +45,12 @@ export const MapComponent = ({
   const [modalData, setModalData] = useState([]);
   const [uploading, setUploading] = useState(false)
 
-  const [changeStyleData,setChangeStyleData] = useState(null)
+  const [changeStyleData, setChangeStyleData] = useState(null)
 
   const geojsonLayerRefs = useRef({});
   const fileInputRef = useRef(null);
 
-  const defaultCenter = [50.640, 10.553]; 
+  const defaultCenter = [50.640, 10.553];
   const defaultZoom = 5;
 
   useEffect(() => {
@@ -80,9 +68,6 @@ export const MapComponent = ({
   }, [mapInstance, buttonsCreated, setButtonsCreated]);
 
   useEffect(() => {
-
-    //TODO: Fix zoom to layer when open project
-
     if (project && mapInstance) {
       let center = defaultCenter;
       let zoom = defaultZoom;
@@ -94,7 +79,7 @@ export const MapComponent = ({
         zoom = mapInstance.getBoundsZoom([[minLat, minLng], [maxLat, maxLng]]);
       }
 
-      mapInstance.setView(center, zoom);  
+      mapInstance.setView(center, zoom);
     }
   }, [project, mapInstance]);
 
@@ -120,10 +105,7 @@ export const MapComponent = ({
   }
 
   const onEachFeatureVector = (vector) => (feature, layer) => {
-    if (feature){
-
-      // TODO: use this function to be able to highlight selected features
-      // layer.setStyle(feature.style);
+    if (feature) {
 
       layer.on('click', () => {
         const attributes = feature.properties.attributes;
@@ -132,19 +114,18 @@ export const MapComponent = ({
           setModalData([attributes]);
           const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
           modalInstance.open();
-          }
         }
+      }
       )
     }
   }
 
-  const vectorStyle = (feature,vector) => {
+  const vectorStyle = (feature, vector) => {
     const selected = vector.data.features.find(
       (v) => v.id === feature.id
     );
-    
-    return(selected.style)
 
+    return (selected.style)
   }
 
   const MapItem = <div
@@ -181,26 +162,26 @@ export const MapComponent = ({
         );
       })}
 
-      {vectors.map((vector,index)=>{
-        return vector.visible && 
-        (<GeoJSON
-          key={`vector-${index}`}
-          ref={(el) => {
-            if (el) {
-              geojsonLayerRefs.current[vector.data.properties.id] = el;
-            }
-          }}
-          data={vector.data}
-          style={(feature) => vectorStyle(feature,vector)}
-          onEachFeature={onEachFeatureVector(vector.data)}
-          pointToLayer={(feature, latlng) => {
-            if (feature.geometry.type === 'Point' || feature.geometry.type === 'MultiPoint') {
-              return L.circleMarker(latlng, vectorStyle(feature, vector));
-            }
-            return L.marker(latlng); 
-          }}
-        >
-        </GeoJSON>)
+      {vectors.map((vector, index) => {
+        return vector.visible &&
+          (<GeoJSON
+            key={`vector-${index}`}
+            ref={(el) => {
+              if (el) {
+                geojsonLayerRefs.current[vector.data.properties.id] = el;
+              }
+            }}
+            data={vector.data}
+            style={(feature) => vectorStyle(feature, vector)}
+            onEachFeature={onEachFeatureVector(vector.data)}
+            pointToLayer={(feature, latlng) => {
+              if (feature.geometry.type === 'Point' || feature.geometry.type === 'MultiPoint') {
+                return L.circleMarker(latlng, vectorStyle(feature, vector));
+              }
+              return L.marker(latlng);
+            }}
+          >
+          </GeoJSON>)
       })}
 
       <ScaleControl position="bottomleft" />
@@ -218,11 +199,9 @@ export const MapComponent = ({
 
   return (
     <>
-      {
-        uploading
-          ? loadingIcon : null}
+      {uploading ? loadingIcon : null}
 
-      <SideNav 
+      <SideNav
         rasters={rasters}
         setRasters={setRasters}
         vectors={vectors}
@@ -235,7 +214,7 @@ export const MapComponent = ({
         inmemory={savetomemory}
         changeStyleData={changeStyleData}
         setChangeStyleData={setChangeStyleData}
-        />
+      />
 
       <BasemapSelector
         setSelectedTileLayer={setSelectedTileLayer}
@@ -258,13 +237,6 @@ export const MapComponent = ({
             setVectors={setVectors}
           />
         )}
-
-      <div className='home-button-map'>
-        <a href="/" className="btn-floating waves-effect waves-light black">
-          <i className="material-icons tiny">home</i>
-        </a>
-      </div>
-
       <div id="attributesModal" className="modal">
         <div className="modal-content">
           <h4>Tabela de Atributos</h4>
@@ -285,26 +257,15 @@ export const MapComponent = ({
           <a href="#!" className="modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
       </div>
-
-
-
-    <div id="change-style-modal" className="modal">
+      <div id="change-style-modal" className="modal">
         <div className="modal-content">
-            {changeStyleData}
+          {changeStyleData}
         </div>
         <div className="modal-footer">
           <a href="#!" className="modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
-    </div>
-
-
-
-
+      </div>
       {MapItem}
-
-
-
-
     </>
   );
 };

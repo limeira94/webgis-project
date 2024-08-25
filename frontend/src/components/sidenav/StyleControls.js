@@ -455,8 +455,6 @@ export const StyleControls = ({
   geojsondata, 
   updateStyle, 
   updateStyleCat,
-  zoomanddelete,
-  changeStyleData,
   setChangeStyleData
  }) => {
 
@@ -486,7 +484,6 @@ export const StyleControls = ({
             <div className='side-nav-item-dropdown-style z-depth-5'>
                 <table>
                     <tbody>
-                        {zoomanddelete}
                         {changeStyleButton}
                     </tbody>
                 </table>
@@ -569,7 +566,6 @@ export const StyleRasterControls = ({
     // dispatch,
     // raster,
     // zoomToLayerRaster,
-    zoomanddelete,
     bands,
     raster_id,
     // updateStyle,
@@ -723,7 +719,6 @@ export const StyleRasterControls = ({
       <div className='side-nav-item-dropdown-style z-depth-5'>
         <table>
           <tbody>
-            {zoomanddelete}
           </tbody>
         </table>
         {bands > 0 && bandsItem}

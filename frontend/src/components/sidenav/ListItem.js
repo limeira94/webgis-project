@@ -15,12 +15,22 @@ import {
     TableCell,
     TableRow,
     Snackbar,
-    Alert
+    Alert,
+    Menu,
+    MenuItem,
+    Divider
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import DownloadIcon from '@mui/icons-material/Download';
+import RectangleRoundedIcon from '@mui/icons-material/RectangleRounded';
+import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded';
+import RadioButtonUncheckedRoundedIcon from '@mui/icons-material/RadioButtonUncheckedRounded';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 
 
 const removeItemFromList = (datasets, setDatasets, fileId, datatype) => {
@@ -101,6 +111,7 @@ export const ListItem = ({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAttributes, setSelectedAttributes] = useState({ features: [] });
     const modalRef = useRef(null);
+    const [anchorEl, setAnchorEl] = useState(null);
     const [snackbarState, setSnackbarState] = useState({
         open: false,
         message: '',
@@ -126,46 +137,46 @@ export const ListItem = ({
         });
     };
 
+    const handleMenuClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleDelete = () => {
+        handleDeleteFiles(
+            dataset_id,
+            dispatch,
+            datasets,
+            setDatasets,
+            deleteFunction,
+            setSnackbarState,
+            inmemory,
+            datatype
+        );
+        handleMenuClose();
+    };
+
+    const handleRename = () => {
+        handleMenuClose();
+    };
+
+    const handleDownload = () => {
+        handleMenuClose();
+    };
+
     const handleToggleClick = () => {
         setShowStyleControls(!showStyleControls);
     };
-
-    const handleDelete = () => handleDeleteFiles(
-        dataset_id,
-        dispatch,
-        datasets,
-        setDatasets,
-        deleteFunction,
-        setSnackbarState,
-        inmemory,
-        datatype
-    );
 
     const dataset_id = datatype === "raster" ? dataset.data.id : dataset.data.properties.id;
     const deleteFunction = datatype === "raster" ? delete_raster : delete_geojson;
     const url = process.env.PUBLIC_URL;
     const maxCharacters = 20;
     let img_icon, styleControlItem, dataset_name;
-    const zoomanddelete = (
-        <>
-            <TableRow>
-                <TableCell>Zoom to</TableCell>
-                <TableCell align="right">
-                    <IconButton onClick={() => zoomToLayer(dataset_id)}>
-                        <ZoomInIcon />
-                    </IconButton>
-                </TableCell>
-            </TableRow>
-            <TableRow>
-                <TableCell>Delete</TableCell>
-                <TableCell align="right">
-                    <IconButton onClick={handleDelete}>
-                        <DeleteIcon />
-                    </IconButton>
-                </TableCell>
-            </TableRow>
-        </>
-    );
+
     if (datatype === "raster") {
         dataset_name = dataset.data.name;
         img_icon = "/raster.png";
@@ -175,52 +186,145 @@ export const ListItem = ({
                 setRasters={setDatasets}
                 raster_id={dataset_id}
                 bands={dataset.data.bands}
-                zoomanddelete={zoomanddelete}
             />
         );
     } else {
         dataset_name = dataset.data.properties.name;
-        img_icon = "/vector.png";
+        const geometryType = dataset.data.features[0].geometry.type;
+        console.log("geometryType", geometryType);
+        if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {
+            img_icon = <RectangleRoundedIcon style={{ color: 'orange', width: 24, height: 24 }} />; // Ícone para polígono
+        } else if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
+            img_icon = <HorizontalRuleRoundedIcon style={{ color: 'pink', width: 24, height: 24 }} />; // Ícone para linha
+        } else if (geometryType === 'Point' || geometryType === 'MultiPoint') {
+            img_icon = <RadioButtonUncheckedRoundedIcon style={{ color: 'blue', width: 15, height: 15 }} />; // Ícone para ponto
+        }
+
         styleControlItem = (
             <StyleControls
                 geojsondata={dataset}
                 updateStyle={updateStyle}
                 updateStyleCat={updateStyleCat}
-                zoomanddelete={zoomanddelete}
                 changeStyleData={changeStyleData}
                 setChangeStyleData={setChangeStyleData}
             />
         );
     }
 
+    console.log(dataset)
     return (
         <div>
-            <MUIListItem key={`${datatype}-${dataset_id}`} className='list-dataset'>
-                <Box>
-                    <Box display="flex" alignItems="center">
-                        <IconButton onClick={handleToggleClick}>
-                            {showStyleControls ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
-                        </IconButton>
-
-                        <Checkbox
-                            checked={dataset.visible}
-                            onChange={() => handleVisibilityChange(dataset)}
-                        />
-
-                        <Box display="flex" alignItems="center">
-                            <img className="icon-data" src={url + img_icon} alt={`${datatype}-item`} />
-                            <Typography variant="body1">
+            <MUIListItem
+                key={`${datatype}-${dataset_id}`}
+                sx={{ paddingY: 0, paddingX: 2 }}
+                className='list-dataset'>
+                <Box sx={{}}>
+                    <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+                        <Box display="flex" alignItems="center" width="100%">
+                            <Box sx={{ display: 'flex', alignItems: 'center', width: 30, textAlign: 'center' }}>
+                                {img_icon}
+                            </Box>
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    ml: 1,
+                                    flexGrow: 1,
+                                    minWidth: 70, // Largura mínima para o nome
+                                    maxWidth: 70, // Largura máxima fixa para o nome
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    lineHeight: '1.2em',
+                                }}
+                            >
                                 {dataset_name.length > maxCharacters ? `${dataset_name.slice(0, maxCharacters)}...` : dataset_name}
                             </Typography>
+
+                            <IconButton
+                                onClick={() => zoomToLayer(dataset_id)}
+                                aria-label="zoom"
+                                sx={{ padding: 0, width: 40, height: 40 }}
+                            >
+                                <img src={`${process.env.PUBLIC_URL}/zoom-layer.png`} alt="Zoom Icon" style={{ width: 20, height: 20 }} />
+                            </IconButton>
+
+                            <Checkbox
+                                checked={dataset.visible}
+                                onClick={() => handleVisibilityChange(dataset)}
+                                sx={{
+                                    color: 'black',
+                                    '&.Mui-checked': {
+                                        color: 'black',
+                                        '& .MuiSvgIcon-root': {
+                                            backgroundColor: 'white',
+                                            border: '1px solid black',
+                                        },
+                                    },
+                                    width: 40,
+                                    height: 40,
+                                }}
+                            />
+
+                            <IconButton
+                                onClick={handleMenuClick}
+                                aria-label="more-options"
+                                sx={{ padding: 0, width: 40, height: 40, color: 'black' }}
+                            >
+                                <MoreVertIcon />
+                            </IconButton>
+                            <IconButton
+                                onClick={handleToggleClick}
+                                sx={{ padding: 0, width: 40, height: 40, color: 'black' }}
+                            >
+                                {showStyleControls ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
+                            </IconButton>
                         </Box>
                     </Box>
+
                     <Collapse in={showStyleControls}>
-                        <Box mt={2}>
+                        <Box mt={1}>
                             {styleControlItem}
                         </Box>
                     </Collapse>
                 </Box>
             </MUIListItem>
+
+            <Divider sx={{ borderColor: 'gray', borderWidth: 1, mt:0}} />
+
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                PaperProps={{
+                    sx: {
+                        borderRadius: 2,
+                        boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.16)',
+                        mt: 1.5,
+                        '& .MuiMenuItem-root': {
+                            '&:hover': {
+                                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                            }
+                        },
+                        '& .MuiMenuItem-root:last-child': {
+                            borderTop: '1px solid #e0e0e0',
+                            marginTop: '8px',
+                        },
+                    }
+                }}
+            >
+                <MenuItem onClick={handleRename}>
+                    <EditIcon sx={{ mr: 1 }} />
+                    Rename
+                </MenuItem>
+                <MenuItem onClick={handleDownload}>
+                    <DownloadIcon sx={{ mr: 1 }} />
+                    Download
+                </MenuItem>
+                <MenuItem onClick={handleDelete} sx={{ color: 'red' }}>
+                    <DeleteIcon sx={{ mr: 1 }} />
+                    Delete
+                </MenuItem>
+            </Menu>
 
             <Modal
                 open={isModalOpen}
@@ -261,6 +365,6 @@ export const ListItem = ({
                     {snackbarState.message}
                 </Alert>
             </Snackbar>
-        </div>
+        </div >
     );
-}
+};

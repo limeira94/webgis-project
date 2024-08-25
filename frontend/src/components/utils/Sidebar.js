@@ -10,10 +10,11 @@ import { styled } from '@mui/system';
 import { handleRaster, handleGeojson, handleDrawUpload } from './eventHandler';
 import DrawVector from './DrawVector';
 import ToggleLayersSelector from '../sidenav/ToggleLayersSelector';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 360;
 const miniSidebarWidth = 60;
-const headerHeight = 64;
+const headerHeight = 70;
 
 const url = process.env.PUBLIC_URL;
 
@@ -61,7 +62,7 @@ const ToggleButton = styled(IconButton)(({ open }) => ({
   },
 }));
 
-export default function SideNav({ rasters, setRasters, vectors, setVectors, geojsonLayerRefs, mapInstance, selectedFeatureAttributes, projectid, setUploading,changeStyleData, setChangeStyleData, inmemory }) {
+export default function SideNav({ rasters, setRasters, vectors, setVectors, geojsonLayerRefs, mapInstance, selectedFeatureAttributes, projectid, setUploading, changeStyleData, setChangeStyleData, inmemory }) {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('addData');
   const dispatch = useDispatch()
@@ -86,12 +87,12 @@ export default function SideNav({ rasters, setRasters, vectors, setVectors, geoj
       <MiniSidebar>
         <List sx={{ marginTop: 10 }}>
           <ListItem key="addData" onClick={() => setActiveSection('addData')} sx={{ cursor: 'pointer' }}>
-            <ListItemIcon>
+            <ListItemIcon sx={{ color: 'black', marginBottom: 1 }}>
               <PlaylistAddIcon fontSize='large' />
             </ListItemIcon>
           </ListItem>
           <ListItem key="layers" onClick={() => setActiveSection('layers')} sx={{ cursor: 'pointer' }} >
-            <ListItemIcon>
+            <ListItemIcon sx={{ color: 'black', marginBottom: 1 }}>
               <Layers fontSize='large' />
             </ListItemIcon>
           </ListItem>
@@ -100,7 +101,7 @@ export default function SideNav({ rasters, setRasters, vectors, setVectors, geoj
             onClick={() => setActiveSection('search')}
             sx={{ cursor: 'pointer' }}
           >
-            <ListItemIcon>
+            <ListItemIcon sx={{ color: 'black', marginBottom: 1 }}>
               <Search fontSize='large' />
             </ListItemIcon>
           </ListItem>
@@ -109,19 +110,19 @@ export default function SideNav({ rasters, setRasters, vectors, setVectors, geoj
             onClick={() => setActiveSection('draw')}
             sx={{ cursor: 'pointer' }}
           >
-            <ListItemIcon>
+            <ListItemIcon sx={{ color: 'black', marginBottom: 1 }}>
               <DrawIcon fontSize='large' />
             </ListItemIcon>
           </ListItem>
         </List>
         <List>
-          <ListItem key="home">
-            <ListItemIcon>
+          <ListItem key="home" component={Link} to="/">
+            <ListItemIcon sx={{ color: 'black', marginBottom: 1 }}>
               <Home fontSize='large' />
             </ListItemIcon>
           </ListItem>
           <ListItem key="language">
-            <ListItemIcon>
+            <ListItemIcon sx={{ color: 'black', marginBottom: 1 }}>
               <Language fontSize='large' />
             </ListItemIcon>
           </ListItem>
@@ -133,15 +134,16 @@ export default function SideNav({ rasters, setRasters, vectors, setVectors, geoj
           sx={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             height: headerHeight,
             backgroundColor: '#dcdcdc',
             transition: 'padding-left 0.3s ease-in-out',
+            paddingLeft: 2
           }}
         >
-          <img src={url + "/logo-world.svg"} alt="Logo" style={{ width: 40, height: 40, marginRight: open ? 8 : 0 }} />
+          <img src={url + "/logo-world.svg"} alt="Logo" style={{ width: 50, height: 50, marginRight: 20 }} />
           {open && (
-            <Typography variant="h6" noWrap>
+            <Typography variant="h5" noWrap sx={{ fontWeight: 'bold', fontSize: '1.4rem', marginLeft: 1 }}>
               WebGIS Project
             </Typography>
           )}
@@ -150,14 +152,14 @@ export default function SideNav({ rasters, setRasters, vectors, setVectors, geoj
         <List sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {activeSection === 'addData' && (
             <ListItem sx={{ width: '100%' }}>
-              <Typography variant="h6" sx={{ textAlign: 'center', width: '100%' }}>
+              <Typography variant="h6" sx={{ textAlign: 'center', width: '100%', fontWeight: 'bold' }}>
                 Add Data
               </Typography>
             </ListItem>
           )}
           {activeSection === 'layers' && (
-            <ListItem sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'  }}>
-              <Typography variant="h6" sx={{ textAlign: 'center', width: '100%' }}>
+            <ListItem sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Typography variant="h6" sx={{ textAlign: 'center', width: '100%', fontWeight: 'bold' }}>
                 Layers
               </Typography>
               <ToggleLayersSelector
@@ -176,7 +178,7 @@ export default function SideNav({ rasters, setRasters, vectors, setVectors, geoj
           )}
           {activeSection === 'search' && (
             <ListItem sx={{ width: '100%' }}>
-              <Typography variant="h6" sx={{ textAlign: 'center', width: '100%' }}>
+              <Typography variant="h6" sx={{ textAlign: 'center', width: '100%', fontWeight: 'bold' }}>
                 Search
               </Typography>
 
@@ -184,11 +186,11 @@ export default function SideNav({ rasters, setRasters, vectors, setVectors, geoj
             </ListItem>
           )}
           {activeSection === 'draw' && (
-            <ListItem sx={{ width: '100%', display:'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Typography variant="h6" sx={{ textAlign: 'center', width: '100%' }}>
+            <ListItem sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Typography variant="h6" sx={{ textAlign: 'center', width: '100%', fontWeight: 'bold' }}>
                 Draw Vector
               </Typography>
-              
+
               <div id="draw-toolbar-container" style={{ marginTop: '10px' }}>
                 {/* O toolbar será inserido aqui */}
               </div>
