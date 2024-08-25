@@ -193,11 +193,11 @@ export const ListItem = ({
         const geometryType = dataset.data.features[0].geometry.type;
         console.log("geometryType", geometryType);
         if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {
-            img_icon = <RectangleRoundedIcon style={{ color: 'orange', width: 24, height: 24 }} />; // Ícone para polígono
+            img_icon = <RectangleRoundedIcon style={{ color: 'orange', width: 24, height: 24 }} />; 
         } else if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
-            img_icon = <HorizontalRuleRoundedIcon style={{ color: 'pink', width: 24, height: 24 }} />; // Ícone para linha
+            img_icon = <HorizontalRuleRoundedIcon style={{ color: 'pink', width: 24, height: 24 }} />; 
         } else if (geometryType === 'Point' || geometryType === 'MultiPoint') {
-            img_icon = <RadioButtonUncheckedRoundedIcon style={{ color: 'blue', width: 15, height: 15 }} />; // Ícone para ponto
+            img_icon = <RadioButtonUncheckedRoundedIcon style={{ color: 'blue', width: 15, height: 15 }} />; 
         }
 
         styleControlItem = (

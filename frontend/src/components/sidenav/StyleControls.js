@@ -1,14 +1,26 @@
 import Cookies from 'js-cookie'
 import axios from 'axios';
 import M from 'materialize-css';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography
 } from "@mui/material"
-
+import EditIcon from '@mui/icons-material/Edit';
 import "./StyleControls.css"
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
@@ -63,7 +75,7 @@ const GlobalStyle = ({ geojson, updateStyle }) => {
       };
 
       const response = await axios.post(
-        `${API_URL}api/main/vectors/${vectorId}/save-style/`, 
+        `${API_URL}api/main/vectors/${vectorId}/save-style/`,
         { style: updatedStyle },
         {
           headers: {
@@ -146,8 +158,8 @@ const CategorizedStyle = ({ geojson, updateStyle }) => {
   const [column, setColumn] = useState(null);
   const [uniqueValues, setUniqueValues] = useState([]);
   const [colors, setColors] = useState({});
-  const [weight, setWeight] = useState(2); 
-  const [fillOpacity, setFillOpacity] = useState(1.0); 
+  const [weight, setWeight] = useState(2);
+  const [fillOpacity, setFillOpacity] = useState(1.0);
 
   const handleSaveCategorizedStyle = async () => {
     try {
@@ -157,17 +169,17 @@ const CategorizedStyle = ({ geojson, updateStyle }) => {
       const categorizedStyles = geojson.data.features.reduce((acc, feature) => {
         const attributeValue = feature.properties.attributes[column];
         const style = { ...feature.style };
-  
+
         switch (feature.geometry.type) {
           case 'Point':
           case 'MultiPoint':
             acc[feature.id] = {
               ...style,
-              radius: weight, 
+              radius: weight,
               fillColor: colors[attributeValue],
               color: 'black',
-              weight: 2, 
-              opacity: 1, 
+              weight: 2,
+              opacity: 1,
               fillOpacity,
             };
             break;
@@ -229,113 +241,81 @@ const CategorizedStyle = ({ geojson, updateStyle }) => {
     ? Object.keys(geojson.data.features[0].properties.attributes)
     : [];
 
-    const handleChange = (event) => {
-      const selectedColumn = event.target.value;
-      setColumn(selectedColumn);
+  const handleChange = (event) => {
+    const selectedColumn = event.target.value;
+    setColumn(selectedColumn);
 
-      // Get all values for the selected column
-      const values = geojson.data.features.map(
-        (feature) => feature.properties.attributes[selectedColumn]
-      );
-      console.log("VALUES", values);
+    // Get all values for the selected column
+    const values = geojson.data.features.map(
+      (feature) => feature.properties.attributes[selectedColumn]
+    );
+    console.log("VALUES", values);
 
-      // Extract unique values
-      const unique = [...new Set(values)];
-      setUniqueValues(unique);
+    // Extract unique values
+    const unique = [...new Set(values)];
+    setUniqueValues(unique);
 
-      const initialColors = unique.reduce((acc, value) => {
-        acc[value] = getRandomColor();
-        return acc;
-      }, {});
-      setColors(initialColors);
-    };
+    const initialColors = unique.reduce((acc, value) => {
+      acc[value] = getRandomColor();
+      return acc;
+    }, {});
+    setColors(initialColors);
+  };
 
-    const handleColorChange = (value, color) => {
-      setColors((prevColors) => ({
-        ...prevColors,
-        [value]: color
-      }));
-    };
+  const handleColorChange = (value, color) => {
+    setColors((prevColors) => ({
+      ...prevColors,
+      [value]: color
+    }));
+  };
 
-    const handleWeightChange = (event) => {
-      setWeight(Number(event.target.value));
-    };
+  const handleWeightChange = (event) => {
+    setWeight(Number(event.target.value));
+  };
 
-    const handleFillOpacityChange = (event) => {
-      setFillOpacity(Number(event.target.value));
-    };
-    return (
-      <>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Column</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={column}
-            label="Column"
-            onChange={handleChange}
-          >
-            {columns.map((col) => (
-              <MenuItem key={col} value={col}>
-                {col}
-              </MenuItem>
+  const handleFillOpacityChange = (event) => {
+    setFillOpacity(Number(event.target.value));
+  };
+  return (
+    <>
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Column</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={column}
+          label="Column"
+          onChange={handleChange}
+        >
+          {columns.map((col) => (
+            <MenuItem key={col} value={col}>
+              {col}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {column && uniqueValues.length > 0 && (
+        <>
+          <ul style={{ marginTop: '16px', listStyle: 'none', padding: 0 }}>
+            {uniqueValues.map((value) => (
+              <li key={value} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                <input
+                  type="color"
+                  value={colors[value]}
+                  onChange={(e) => handleColorChange(value, e.target.value)}
+                  style={{ marginRight: '8px' }}
+                />
+                <span>{value}</span>
+              </li>
             ))}
-          </Select>
-        </FormControl>
-    
-        {column && uniqueValues.length > 0 && (
-          <>
-            <ul style={{ marginTop: '16px', listStyle: 'none', padding: 0 }}>
-              {uniqueValues.map((value) => (
-                <li key={value} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                  <input
-                    type="color"
-                    value={colors[value]}
-                    onChange={(e) => handleColorChange(value, e.target.value)}
-                    style={{ marginRight: '8px' }}
-                  />
-                  <span>{value}</span>
-                </li>
-              ))}
-            </ul>
-    
-            {['Point', 'MultiPoint', 'Polygon', 'MultiPolygon'].includes(geojson.data.features[0].geometry.type) && (
-              <>
-                <div style={{ marginTop: '16px' }}>
-                  <label>
-                    Radius:
-                    <input
-                      type="range"
-                      value={weight}
-                      onChange={handleWeightChange}
-                      min="0"
-                      max="10"
-                      step="1"
-                      style={{ marginLeft: '8px' }}
-                    />
-                  </label>
-                </div>
-                <div style={{ marginTop: '16px' }}>
-                  <label>
-                    Opacity:
-                    <input
-                      type="range"
-                      value={fillOpacity}
-                      onChange={handleFillOpacityChange}
-                      min="0"
-                      max="1"
-                      step="0.1"
-                      style={{ marginLeft: '8px' }}
-                    />
-                  </label>
-                </div>
-              </>
-            )}
-    
-            {['LineString', 'MultiLineString'].includes(geojson.data.features[0].geometry.type) && (
+          </ul>
+
+          {['Point', 'MultiPoint', 'Polygon', 'MultiPolygon'].includes(geojson.data.features[0].geometry.type) && (
+            <>
               <div style={{ marginTop: '16px' }}>
                 <label>
-                  Line size:
+                  Radius:
                   <input
                     type="range"
                     value={weight}
@@ -347,159 +327,189 @@ const CategorizedStyle = ({ geojson, updateStyle }) => {
                   />
                 </label>
               </div>
-            )}
-    
-            <button onClick={handleSaveCategorizedStyle}>
-              Save Categorized Style
-            </button>
-          </>
-        )}
-      </>
-    );
-  }
-  export default CategorizedStyle;
+              <div style={{ marginTop: '16px' }}>
+                <label>
+                  Opacity:
+                  <input
+                    type="range"
+                    value={fillOpacity}
+                    onChange={handleFillOpacityChange}
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    style={{ marginLeft: '8px' }}
+                  />
+                </label>
+              </div>
+            </>
+          )}
 
+          {['LineString', 'MultiLineString'].includes(geojson.data.features[0].geometry.type) && (
+            <div style={{ marginTop: '16px' }}>
+              <label>
+                Line size:
+                <input
+                  type="range"
+                  value={weight}
+                  onChange={handleWeightChange}
+                  min="0"
+                  max="10"
+                  step="1"
+                  style={{ marginLeft: '8px' }}
+                />
+              </label>
+            </div>
+          )}
 
-const ModalChangeData = ({ geojson,updateStyle,updateStyleCat }) => {
-  const [selectedOption, setSelectedOption] = useState('global');
-
-  const handleOptionChange = (e) => setSelectedOption(e.target.value);
-
-  return (
-    <>
-      <div className='center'>
-      
-        <label>
-          <input
-            className="with-gap"
-            name="styleOption"
-            type="radio"
-            value="global"
-            checked={selectedOption === 'global'}
-            onChange={handleOptionChange}
-          />
-          <span>Global</span>
-        </label>
-      
-        <label>
-          <input
-            className="with-gap"
-            name="styleOption"
-            type="radio"
-            value="category"
-            checked={selectedOption === 'category'}
-            onChange={handleOptionChange}
-          />
-          <span>Categorized</span>
-        </label>
-      
-      </div>
-
-      {selectedOption === 'global' ? (
-        <GlobalStyle geojson={geojson} updateStyle={updateStyle}/>
-      ) : (
-        <CategorizedStyle geojson={geojson} updateStyle={updateStyleCat}/>
+          <button onClick={handleSaveCategorizedStyle}>
+            Save Categorized Style
+          </button>
+        </>
       )}
     </>
+  );
+}
+export default CategorizedStyle;
+
+
+const ModalChangeData = ({ geojson, updateStyle, updateStyleCat }) => {
+  const [selectedOption, setSelectedOption] = useState('global');
+
+  const handleOptionChange = (event, newOption) => {
+    if (newOption !== null) {
+      setSelectedOption(newOption);
+    }
+  };
+
+  return (
+    <Box sx={{ textAlign: 'center', p: 2 }}>
+      <Box sx={{ mb: 2 }}>Choose Style</Box>
+      <ToggleButtonGroup
+        value={selectedOption}
+        exclusive
+        onChange={handleOptionChange}
+        aria-label="style selection"
+        sx={{ justifyContent: 'center' }}
+      >
+        <ToggleButton value="global" aria-label="global">
+          Global
+        </ToggleButton>
+        <ToggleButton value="category" aria-label="category">
+          Categorized
+        </ToggleButton>
+      </ToggleButtonGroup>
+
+      <Box mt={3}>
+        {selectedOption === 'global' ? (
+          <GlobalStyle geojson={geojson} updateStyle={updateStyle} />
+        ) : (
+          <CategorizedStyle geojson={geojson} updateStyle={updateStyleCat} />
+        )}
+      </Box>
+    </Box>
   );
 };
 
 export const get_item_table = (title, inputType, value, name, geojson, updateStyle) => {
 
-    const onChange = e => updateStyle(
-      geojson.properties.id, name, e.target.value
-    )
-    const isRange = inputType === 'range';
+  const onChange = e => updateStyle(
+    geojson.properties.id, name, e.target.value
+  )
+  const isRange = inputType === 'range';
 
-    let min, max, step;
-    let classname
+  let min, max, step;
+  let classname
 
-    if (name === 'weight') {
-        min = 0; max = 10; step = 1;
-    } else if (name === 'fillOpacity') {
-        min = 0; max = 1; step = 0.1;
-    }
-    else {
-        min = undefined; max = undefined; step = undefined;
-    }
-
-
-    if (isRange) {
-        classname = `sidenav-range-style`
-    }
-    else {
-        classname = `input-color-style`
-    }
+  if (name === 'weight') {
+    min = 0; max = 10; step = 1;
+  } else if (name === 'fillOpacity') {
+    min = 0; max = 1; step = 0.1;
+  }
+  else {
+    min = undefined; max = undefined; step = undefined;
+  }
 
 
-    return (
-        <tr>
-            <td><span>{title}</span></td>
-            <td className='alnright'>
-                <input
-                    className={classname}
-                    type={inputType}
-                    value={value}
-                    onChange={onChange}
-                    min={min}
-                    max={max}
-                    step={step}
-                />
-            </td>
-        </tr>
-    )
+  if (isRange) {
+    classname = `sidenav-range-style`
+  }
+  else {
+    classname = `input-color-style`
+  }
+
+
+  return (
+    <tr>
+      <td><span>{title}</span></td>
+      <td className='alnright'>
+        <input
+          className={classname}
+          type={inputType}
+          value={value}
+          onChange={onChange}
+          min={min}
+          max={max}
+          step={step}
+        />
+      </td>
+    </tr>
+  )
 }
 
-
-export const StyleControls = ({ 
-  geojsondata, 
-  updateStyle, 
+export const StyleControls = ({
+  geojsondata,
+  updateStyle,
   updateStyleCat,
-  setChangeStyleData
- }) => {
+}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const openStyleModal = () => {
-      setChangeStyleData(<ModalChangeData 
-                            geojson={geojsondata} 
-                            updateStyle={updateStyle}
-                            updateStyleCat={updateStyleCat}
-                            />)
+  const openStyleModal = () => {
+    setIsModalOpen(true);
   };
 
-    const changeStyleButton = <>
-        <tr>
-            <td><span>Change style</span></td>
-            <td className='alnright'>
-                {/* <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a> */}
-                <a onClick={openStyleModal} className='btn blue modal-trigger' href="#change-style-modal">
-                    <i className='material-icons'>edit</i>
-                </a>
-            </td>
-        </tr>
+  const closeStyleModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const changeStyleButton = (
+    <Box display="flex" justifyContent="space-between" alignItems="center">
+    <Typography variant="string" sx={{}}>
+      Change style
+    </Typography>
+    <IconButton
+      color="primary"
+      onClick={openStyleModal}
+      aria-label="change style"
+      sx={{ p: 0, color: 'black' }}
+    >
+      <EditIcon />
+    </IconButton>
+  </Box>
+  );
+
+  return (
+    <>
+      <Box sx={{  p: 2, borderRadius: 1 }}>
+        <Table>
+          <TableBody>
+            {changeStyleButton}
+          </TableBody>
+        </Table>
+      </Box>
+
+      <Dialog open={isModalOpen} onClose={closeStyleModal}>
+        <DialogTitle >Change Style</DialogTitle>
+        <DialogContent>
+          <ModalChangeData
+            geojson={geojsondata}
+            updateStyle={updateStyle}
+            updateStyleCat={updateStyleCat}
+          />
+        </DialogContent>
+      </Dialog>
     </>
-
-
-    return (
-        <>
-            <div className='side-nav-item-dropdown-style z-depth-5'>
-                <table>
-                    <tbody>
-                        {changeStyleButton}
-                    </tbody>
-                </table>
-            </div>
-        </>
-
-
-    );
+  );
 };
-
-
-
-
-
-
-
 
 const changeVisual = async (rasters, setRasters, raster_id, visual_type, params) => {
   try {
@@ -561,170 +571,170 @@ const changeVisual = async (rasters, setRasters, raster_id, visual_type, params)
 
 
 export const StyleRasterControls = ({
-    rasters,
-    setRasters,
-    // dispatch,
-    // raster,
-    // zoomToLayerRaster,
-    bands,
-    raster_id,
-    // updateStyle,
-    // rasterStyles
-  }) => {
-  
-    const [selectedValues, setSelectedValues] = useState({ R: '', G: '', B: '', Gray: '' });
-  
-    useEffect(() => {
-      var options = {}
-      var elems = document.querySelectorAll('.collapsible');
-      M.Collapsible.init(elems, options);
-  
-      var elems = document.querySelectorAll('select');
-      M.FormSelect.init(elems);
-  
-    }, [])
-  
-    const handleSubmitComposition = () => {
-  
-      const visual_type = "composition"
-  
-      const params = {
-        R: selectedValues['R'],
-        G: selectedValues['G'],
-        B: selectedValues['B']
-      };
-  
-      if (!selectedValues['R'] || !selectedValues['G'] || !selectedValues['B']) {
-        alert('Please select values for R, G, and B.');
-        return;
-      }
-  
-      changeVisual(rasters, setRasters, raster_id, visual_type, params)
-  
+  rasters,
+  setRasters,
+  // dispatch,
+  // raster,
+  // zoomToLayerRaster,
+  bands,
+  raster_id,
+  // updateStyle,
+  // rasterStyles
+}) => {
+
+  const [selectedValues, setSelectedValues] = useState({ R: '', G: '', B: '', Gray: '' });
+
+  useEffect(() => {
+    var options = {}
+    var elems = document.querySelectorAll('.collapsible');
+    M.Collapsible.init(elems, options);
+
+    var elems = document.querySelectorAll('select');
+    M.FormSelect.init(elems);
+
+  }, [])
+
+  const handleSubmitComposition = () => {
+
+    const visual_type = "composition"
+
+    const params = {
+      R: selectedValues['R'],
+      G: selectedValues['G'],
+      B: selectedValues['B']
     };
-  
-    const handleSubmitGrayscale = () => {
-      const visual_type = "grayscale"
-      const params = {
-        Gray: selectedValues['Gray'],
-      };
-  
-      if (!selectedValues['Gray']) {
-        alert('Please select the band.')
-        return;
-      }
-  
-      changeVisual(rasters, setRasters, raster_id, visual_type, params)
-  
-    };
-  
-    const selectItems = (key) => {
-      return (
-        <select
-          // ref={key}
-          // value={}
-          onChange={(e) => setSelectedValues({ ...selectedValues, [key]: e.target.value })}
-          defaultValue={selectedValues[key]}
-        >
-          <option value="" disabled>
-            Choose your option
-          </option>
-          {Array.from({ length: bands }, (_, index) => (
-            <option key={index} value={index}>
-              {`Band ${index + 1}`}
-            </option>
-          ))}
-        </select>
-      );
+
+    if (!selectedValues['R'] || !selectedValues['G'] || !selectedValues['B']) {
+      alert('Please select values for R, G, and B.');
+      return;
     }
-  
-    const tableComposition = (
-      <table className='centered'>
-        <thead>
-          <tr>
-            <th>Band</th>
-            <th>Options</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Red</td>
-            <td>
-              {selectItems("R")}
-            </td>
-          </tr>
-          <tr>
-            <td>Green</td>
-            <td>
-              {selectItems("G")}
-            </td>
-          </tr>
-          <tr>
-            <td>Blue</td>
-            <td>
-              {selectItems("B")}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    );
-  
-    const tableGray = (
-      <table className='centered'>
-        <thead>
-          <tr>
-            <th>Band</th>
-            <th>Options</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Choose your option:</td>
-            <td>
-              {selectItems("Gray")}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    )
-  
-    const bandsItem =
-      <div className='collapsible-raster'>
-        <h5 className='center'>Display:</h5>
-        <ul className="collapsible">
-          <li>
-            <div className="collapsible-header">Composition</div>
-            <div className="collapsible-body">
-              {tableComposition}
-              <button onClick={handleSubmitComposition} type='submit' className="btn submit-display-button center">
-                Submit
-              </button>
-            </div>
-          </li>
-          <li>
-            <div className="collapsible-header">
-              Grayscale
-            </div>
-            <div className="collapsible-body">
-              {tableGray}
-              <button onClick={handleSubmitGrayscale} type='submit' className="btn submit-display-button center">
-                Submit
-              </button>
-            </div>
-          </li>
-        </ul>
-      </div>
-  
+
+    changeVisual(rasters, setRasters, raster_id, visual_type, params)
+
+  };
+
+  const handleSubmitGrayscale = () => {
+    const visual_type = "grayscale"
+    const params = {
+      Gray: selectedValues['Gray'],
+    };
+
+    if (!selectedValues['Gray']) {
+      alert('Please select the band.')
+      return;
+    }
+
+    changeVisual(rasters, setRasters, raster_id, visual_type, params)
+
+  };
+
+  const selectItems = (key) => {
     return (
-      <div className='side-nav-item-dropdown-style z-depth-5'>
-        <table>
-          <tbody>
-          </tbody>
-        </table>
-        {bands > 0 && bandsItem}
-      </div>
-    )
+      <select
+        // ref={key}
+        // value={}
+        onChange={(e) => setSelectedValues({ ...selectedValues, [key]: e.target.value })}
+        defaultValue={selectedValues[key]}
+      >
+        <option value="" disabled>
+          Choose your option
+        </option>
+        {Array.from({ length: bands }, (_, index) => (
+          <option key={index} value={index}>
+            {`Band ${index + 1}`}
+          </option>
+        ))}
+      </select>
+    );
   }
+
+  const tableComposition = (
+    <table className='centered'>
+      <thead>
+        <tr>
+          <th>Band</th>
+          <th>Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Red</td>
+          <td>
+            {selectItems("R")}
+          </td>
+        </tr>
+        <tr>
+          <td>Green</td>
+          <td>
+            {selectItems("G")}
+          </td>
+        </tr>
+        <tr>
+          <td>Blue</td>
+          <td>
+            {selectItems("B")}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+
+  const tableGray = (
+    <table className='centered'>
+      <thead>
+        <tr>
+          <th>Band</th>
+          <th>Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Choose your option:</td>
+          <td>
+            {selectItems("Gray")}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  )
+
+  const bandsItem =
+    <div className='collapsible-raster'>
+      <h5 className='center'>Display:</h5>
+      <ul className="collapsible">
+        <li>
+          <div className="collapsible-header">Composition</div>
+          <div className="collapsible-body">
+            {tableComposition}
+            <button onClick={handleSubmitComposition} type='submit' className="btn submit-display-button center">
+              Submit
+            </button>
+          </div>
+        </li>
+        <li>
+          <div className="collapsible-header">
+            Grayscale
+          </div>
+          <div className="collapsible-body">
+            {tableGray}
+            <button onClick={handleSubmitGrayscale} type='submit' className="btn submit-display-button center">
+              Submit
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+  return (
+    <div className='side-nav-item-dropdown-style z-depth-5'>
+      <table>
+        <tbody>
+        </tbody>
+      </table>
+      {bands > 0 && bandsItem}
+    </div>
+  )
+}
 
 
 
