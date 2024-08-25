@@ -76,6 +76,7 @@ export default function SideNav(
     changeStyleData, 
     setChangeStyleData, 
     handleDownload,
+    handleDownloadSelected,
     inmemory 
   }) {
   const [open, setOpen] = useState(false);
@@ -188,6 +189,7 @@ export default function SideNav(
                 changeStyleData={changeStyleData}
                 setChangeStyleData={setChangeStyleData}
                 handleDownload={handleDownload}
+                handleDownloadSelected={handleDownloadSelected}
                 inmemory={false}
               />
             </ListItem>

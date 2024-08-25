@@ -26,6 +26,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DownloadIcon from '@mui/icons-material/Download';
+import { DownloadForOffline } from "@mui/icons-material";
 import RectangleRoundedIcon from '@mui/icons-material/RectangleRounded';
 import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded';
 import RadioButtonUncheckedRoundedIcon from '@mui/icons-material/RadioButtonUncheckedRounded';
@@ -104,6 +105,7 @@ export const ListItem = ({
     changeStyleData,
     setChangeStyleData,
     handleDownload,
+    handleDownloadSelected,
     inmemory = false
 }) => {
 
@@ -192,7 +194,6 @@ export const ListItem = ({
     } else {
         dataset_name = dataset.data.properties.name;
         const geometryType = dataset.data.features[0].geometry.type;
-        console.log("geometryType", geometryType);
         if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {
             img_icon = <RectangleRoundedIcon style={{ color: 'orange', width: 24, height: 24 }} />; 
         } else if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
@@ -212,7 +213,6 @@ export const ListItem = ({
         );
     }
 
-    console.log(dataset)
     return (
         <div>
             <MUIListItem
@@ -323,6 +323,12 @@ export const ListItem = ({
                     >
                     <DownloadIcon sx={{ mr: 1 }} />
                     Download
+                </MenuItem>
+                <MenuItem
+                    onClick={()=>handleDownloadSelected(dataset)}
+                    >
+                    <DownloadForOffline sx={{ mr: 1 }} />
+                    Download Selected
                 </MenuItem>
                 <MenuItem onClick={handleDelete} sx={{ color: 'red' }}>
                     <DeleteIcon sx={{ mr: 1 }} />

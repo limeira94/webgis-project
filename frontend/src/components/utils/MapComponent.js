@@ -111,6 +111,7 @@ export const MapComponent = ({
   }
 
   const handleClickFeature = (feature, layer, e) => {
+
     const attributes = feature.properties.attributes;
     const isCtrlPressed = e.originalEvent.ctrlKey;
     const featureId = feature.id;
@@ -120,11 +121,9 @@ export const MapComponent = ({
         const isSelected = prevSelectedFeatures.includes(featureId);
     
         if (isSelected) {
-          console.log("DESELECTING", prevSelectedFeatures);
           layer.setStyle({ color: feature.style.color });
           return prevSelectedFeatures.filter(id => id !== featureId);
         } else {
-          console.log("SELECTING", prevSelectedFeatures);
           layer.setStyle({ color: 'yellow' });
           return [...prevSelectedFeatures, featureId];
         }
@@ -132,7 +131,6 @@ export const MapComponent = ({
     } 
   
     if (!isCtrlPressed && attributes) {
-      console.log("OPENING MODAL");
       setSelectedFeatureAttributes(attributes);
       setModalData([attributes]);
       const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
@@ -172,6 +170,62 @@ export const MapComponent = ({
     }
   };
 
+
+// TODO
+//   useEffect(() => {
+//     if (mapInstance) {
+//         mapInstance.on('click', () => {
+//             setSelectedFeatures([])
+//         });
+//     }
+// }, [mapInstance]);
+
+  const handleDownloadSelected = async (geojson) => {
+    const id = geojson.data.properties.id;
+    const token = Cookies.get('access_token');
+  
+    const filteredFeatures = selectedFeatures.filter((featureId) => {
+      const layer = geojsonLayerRefs.current[id];
+      if (layer) {
+        const feature = layer.toGeoJSON().features.find(f => f.id === featureId || f.properties.id === featureId);
+        return !!feature;
+      }
+      return false;
+    });
+  
+    if (filteredFeatures.length === 0) {
+      console.warn('No selected features to download for this layer.');
+      return;
+    }
+  
+    try {
+      const response = await axios.post(
+        `${API_URL}api/main/download-selected/${id}/`,
+        { selectedFeatures: filteredFeatures },
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: 'blob', 
+        }
+      );
+  
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `selected_features_${id}.geojson`);
+      document.body.appendChild(link);
+      link.click();
+  
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+  
+    } catch (error) {
+      console.error('Error downloading the selected features', error);
+    }
+  };
+  
   
   
 
@@ -185,31 +239,6 @@ export const MapComponent = ({
     }
   }
 
-
-  // const onEachFeatureVector = (vector) => (feature, layer) => {
-  //   if (feature) {
-
-  //     layer.on('click', () => {
-  //       const attributes = feature.properties.attributes;
-  //       if (attributes) {
-  //         setSelectedFeatureAttributes(attributes);
-  //         setModalData([attributes]);
-  //         const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
-  //         modalInstance.open();
-  //       }
-  //     }
-  //     )
-  //   }
-  // }
-
-  // const vectorStyle = (feature, vector) => {
-  //   const selected = vector.data.features.find(
-  //     (v) => v.id === feature.id
-  //   );
-
-  //   return (selected.style)
-  // }
-
   const vectorStyle = (feature,vector) => {
     const selected = vector.data.features.find(
       (v) => v.id === feature.id
@@ -220,7 +249,7 @@ export const MapComponent = ({
     
     return isSelected
       ? { color: 'yellow',fillColor:"yellow" } 
-      : feature.style
+      : selected.style//feature.style
   }
 
   const MapItem = <div
@@ -310,6 +339,7 @@ export const MapComponent = ({
         changeStyleData={changeStyleData}
         setChangeStyleData={setChangeStyleData}
         handleDownload={handleDownload}
+        handleDownloadSelected={handleDownloadSelected}
       />
 
       <BasemapSelector

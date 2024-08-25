@@ -2,6 +2,7 @@
 .env
 commands.txt
 tempfiles
+tempfiles/backps
 
 .env.deepforest
 .env.ricardo

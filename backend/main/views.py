@@ -17,9 +17,56 @@ from .serializers import *
 
 from shapely.geometry import box
 
+class DownloadSelectedGeoJSONView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, vector_file_id):
+        vector_file = get_object_or_404(VectorFileModel, id=vector_file_id)
+
+        if vector_file.user != request.user:
+            return Response({"detail": "You do not have permission to access this resource."},
+                            status=status.HTTP_403_FORBIDDEN)
+        
+        # Get the list of selected feature IDs from the request data
+        selected_features = request.data.get('selectedFeatures', [])
+
+        output_features = []
+        for feature_id in selected_features:
+            # Find the corresponding Geojson object
+            geojson = get_object_or_404(Geojson, id=feature_id)
+            
+            # Create the feature dictionary
+            feature = {
+                "type": "Feature",
+                "geometry": json.loads(geojson.geometry.geojson),
+                "properties": geojson.attributes,
+                "style": geojson.style
+            }
+
+            output_features.append(feature)
+
+        # Construct the FeatureCollection
+        geojson_data = {
+            "type": "FeatureCollection",
+            "features": output_features
+        }
+
+        # Create the response with appropriate headers for downloading
+        response = Response(geojson_data, status=status.HTTP_200_OK)
+        response['Content-Disposition'] = f'attachment; filename="{vector_file.name}_selected_features.geojson"'
+        return response
+
 class DownloadGeoJSONView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request, vector_file_id):
         vector_file = get_object_or_404(VectorFileModel, id=vector_file_id)
+
+        if vector_file.user != request.user:
+            return Response({"detail": "You do not have permission to access this resource."},
+                            status=status.HTTP_403_FORBIDDEN)
+        
+        
         features = []
 
         for geojson in vector_file.geoms.all():
@@ -41,46 +88,6 @@ class DownloadGeoJSONView(APIView):
         return response
 
 
-
-# class UpdateVectorStyle(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def post(self, request, pk):
-#         vector = get_object_or_404(VectorFileModel, pk=pk)
-#         style_data = request.data.get('style')  # Assume que os estilos são enviados como um dicionário com o ID do geom como chave.
-
-#         if not style_data:
-#             return Response({"error": "Styles data is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # Itera sobre as geometrias e aplica os estilos individuais
-#         for geom_id, style in style_data.items():
-#             try:
-#                 geom = vector.geoms.get(id=geom_id)
-#                 geom.style = style
-#                 geom.save()
-#             except Geojson.DoesNotExist:
-#                 return Response({"error": f"Geojson with ID {geom_id} not found"}, status=status.HTTP_404_NOT_FOUND)
-
-#         return Response({"message": "Success updating styles"}, status=status.HTTP_200_OK)
-
-# class UpdateVectorStyle(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def post(self, request, pk):
-#         vector = get_object_or_404(VectorFileModel, pk=pk)
-#         style = request.data.get('style')
-
-#         if not style:
-#             return Response({"error": "Style data is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-#         print(style)
-#         vector.style = style
-#         vector.save()
-
-#         # print(vector.style)
-
-#         # serializer = VectorFileModelSerializer(vector)
-#         return Response({"message":"Success updating style"}, status=status.HTTP_200_OK)
 class UpdateCategorizedStyle(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

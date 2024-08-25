@@ -17,6 +17,7 @@ const ToggleLayersSelector = (
     changeStyleData,
     setChangeStyleData,
     handleDownload,
+    handleDownloadSelected,
     inmemory = false
   }) => {
 
@@ -99,6 +100,7 @@ const ToggleLayersSelector = (
                   changeStyleData={changeStyleData}
                   setChangeStyleData={setChangeStyleData}
                   handleDownload={handleDownload}
+                  handleDownloadSelected={handleDownloadSelected}
                 />
               </ListItemUI>
             ))
