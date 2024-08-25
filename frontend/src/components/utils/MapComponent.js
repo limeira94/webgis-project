@@ -30,6 +30,7 @@ import MouseCoordinates from './MouseCoordinates';
 import SideNav from './Sidebar';
 import Cookies from 'js-cookie'
 import axios from 'axios';
+import html2canvas from 'html2canvas';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
@@ -58,6 +59,10 @@ export const MapComponent = ({
 
   const defaultCenter = [50.640, 10.553];
   const defaultZoom = 5;
+
+  const [ticking, setTicking] = useState(true),
+        [count, setCount] = useState(0)
+
 
   useEffect(() => {
     M.AutoInit();
@@ -115,11 +120,11 @@ export const MapComponent = ({
     const attributes = feature.properties.attributes;
     const isCtrlPressed = e.originalEvent.ctrlKey;
     const featureId = feature.id;
-    
+
     if (isCtrlPressed){
       setSelectedFeatures((prevSelectedFeatures) => {
         const isSelected = prevSelectedFeatures.includes(featureId);
-    
+
         if (isSelected) {
           layer.setStyle({ color: feature.style.color });
           return prevSelectedFeatures.filter(id => id !== featureId);
@@ -128,8 +133,8 @@ export const MapComponent = ({
           return [...prevSelectedFeatures, featureId];
         }
       })
-    } 
-  
+    }
+
     if (!isCtrlPressed && attributes) {
       setSelectedFeatureAttributes(attributes);
       setModalData([attributes]);
@@ -138,7 +143,7 @@ export const MapComponent = ({
     }
   };
 
-  
+
 
   const handleDownload = async (geojson) => {
     const id = geojson.data.properties.id
@@ -151,7 +156,7 @@ export const MapComponent = ({
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          responseType: 'blob', 
+          responseType: 'blob',
         }
       );
 
@@ -170,20 +175,50 @@ export const MapComponent = ({
     }
   };
 
+  const takeScreenshot = () => {
+    setCount(count+1)
+    if (mapInstance) {
+        html2canvas(
+          document.body, {
+            scale: 2, 
+            useCORS: true, 
+        }
 
-// TODO
-//   useEffect(() => {
-//     if (mapInstance) {
-//         mapInstance.on('click', () => {
-//             setSelectedFeatures([])
-//         });
-//     }
-// }, [mapInstance]);
+        ).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+
+            const token = Cookies.get('access_token');
+            const response = axios.post(
+              `${API_URL}api/main/update-project-thumbnail/${projectid}/`, 
+              { thumbnail: imgData },
+              { 
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                }
+            }
+            )
+                .then(response => {
+                    console.log('Thumbnail updated successfully');
+                })
+                .catch(error => {
+                    console.error('Error updating thumbnail', error);
+                });
+
+        });
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => ticking && takeScreenshot(), 60000)
+    return () => clearTimeout(timer)
+  }, [count, ticking])
+
 
   const handleDownloadSelected = async (geojson) => {
     const id = geojson.data.properties.id;
     const token = Cookies.get('access_token');
-  
+
     const filteredFeatures = selectedFeatures.filter((featureId) => {
       const layer = geojsonLayerRefs.current[id];
       if (layer) {
@@ -192,12 +227,12 @@ export const MapComponent = ({
       }
       return false;
     });
-  
+
     if (filteredFeatures.length === 0) {
       console.warn('No selected features to download for this layer.');
       return;
     }
-  
+
     try {
       const response = await axios.post(
         `${API_URL}api/main/download-selected/${id}/`,
@@ -207,32 +242,32 @@ export const MapComponent = ({
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          responseType: 'blob', 
+          responseType: 'blob',
         }
       );
-  
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `selected_features_${id}.geojson`);
       document.body.appendChild(link);
       link.click();
-  
+
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
-  
+
     } catch (error) {
       console.error('Error downloading the selected features', error);
     }
   };
-  
-  
-  
+
+
+
 
 
   const onEachFeatureVector = (vector) => (feature, layer) => {
     if (feature) {
-  
+
       layer.on('click', (e) => {
         handleClickFeature(feature,layer,e)
       });
@@ -244,11 +279,11 @@ export const MapComponent = ({
       (v) => v.id === feature.id
     );
 
-    const featureId = feature.id || feature.properties.id; 
+    const featureId = feature.id || feature.properties.id;
     const isSelected = selectedFeatures.includes(featureId);
-    
+
     return isSelected
-      ? { color: 'yellow',fillColor:"yellow" } 
+      ? { color: 'yellow',fillColor:"yellow" }
       : selected.style//feature.style
   }
 

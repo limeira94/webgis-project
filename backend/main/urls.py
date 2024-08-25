@@ -24,4 +24,5 @@ urlpatterns = [
     path("vectors/<int:pk>/save-style-cat/",views.UpdateCategorizedStyle.as_view(),name="update-style-vector"),
     path('download/<int:vector_file_id>/', views.DownloadGeoJSONView.as_view(), name='download_geojson'),
     path('download-selected/<int:vector_file_id>/', views.DownloadSelectedGeoJSONView.as_view(), name='download_selected_geojson'),
+    path('update-project-thumbnail/<int:project_id>/', views.UpdateProjectThumbnailView.as_view(), name='update-project-thumbnail'),
 ]

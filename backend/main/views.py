@@ -17,6 +17,29 @@ from .serializers import *
 
 from shapely.geometry import box
 
+from django.core.files.base import ContentFile
+import base64
+
+
+class UpdateProjectThumbnailView(APIView):
+    def post(self, request, project_id):
+        try:
+            project = Project.objects.get(id=project_id)
+            data = request.data.get('thumbnail')
+            format, imgstr = data.split(';base64,')
+            ext = format.split('/')[-1]
+            thumbnail = ContentFile(base64.b64decode(imgstr), name=f'thumbnail_{project_id}.{ext}')
+            
+            # Update the thumbnail field
+            project.thumbnail.save(thumbnail.name, thumbnail)
+            project.save()
+
+            return Response({'status': 'success'}, status=status.HTTP_200_OK)
+        except Project.DoesNotExist:
+            return Response({'status': 'error', 'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 class DownloadSelectedGeoJSONView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
