@@ -17,6 +17,31 @@ from .serializers import *
 
 from shapely.geometry import box
 
+class DownloadGeoJSONView(APIView):
+    def get(self, request, vector_file_id):
+        vector_file = get_object_or_404(VectorFileModel, id=vector_file_id)
+        features = []
+
+        for geojson in vector_file.geoms.all():
+            feature = {
+                "type": "Feature",
+                "geometry": json.loads(geojson.geometry.geojson),
+                "properties": geojson.attributes,
+                "style": geojson.style
+            }
+            features.append(feature)
+        
+        geojson_data = {
+            "type": "FeatureCollection",
+            "features": features
+        }
+
+        response = Response(geojson_data, status=status.HTTP_200_OK)
+        response['Content-Disposition'] = f'attachment; filename="{vector_file.name}.geojson"'
+        return response
+
+
+
 # class UpdateVectorStyle(APIView):
 #     permission_classes = [permissions.IsAuthenticated]
 

@@ -62,7 +62,22 @@ const ToggleButton = styled(IconButton)(({ open }) => ({
   },
 }));
 
-export default function SideNav({ rasters, setRasters, vectors, setVectors, geojsonLayerRefs, mapInstance, selectedFeatureAttributes, projectid, setUploading, changeStyleData, setChangeStyleData, inmemory }) {
+export default function SideNav(
+  { 
+    rasters, 
+    setRasters, 
+    vectors, 
+    setVectors, 
+    geojsonLayerRefs, 
+    mapInstance, 
+    selectedFeatureAttributes, 
+    projectid, 
+    setUploading, 
+    changeStyleData, 
+    setChangeStyleData, 
+    handleDownload,
+    inmemory 
+  }) {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('addData');
   const dispatch = useDispatch()
@@ -172,6 +187,7 @@ export default function SideNav({ rasters, setRasters, vectors, setVectors, geoj
                 selectedFeatureAttributes={selectedFeatureAttributes}
                 changeStyleData={changeStyleData}
                 setChangeStyleData={setChangeStyleData}
+                handleDownload={handleDownload}
                 inmemory={false}
               />
             </ListItem>

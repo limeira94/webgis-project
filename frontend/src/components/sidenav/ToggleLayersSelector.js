@@ -16,6 +16,7 @@ const ToggleLayersSelector = (
     selectedFeatureAttributes,
     changeStyleData,
     setChangeStyleData,
+    handleDownload,
     inmemory = false
   }) => {
 
@@ -97,6 +98,7 @@ const ToggleLayersSelector = (
                   inmemory={inmemory}
                   changeStyleData={changeStyleData}
                   setChangeStyleData={setChangeStyleData}
+                  handleDownload={handleDownload}
                 />
               </ListItemUI>
             ))

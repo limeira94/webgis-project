@@ -28,6 +28,10 @@ import { useDispatch } from 'react-redux';
 import { UploadToMemoryDrop } from './Memory/eventHandlers';
 import MouseCoordinates from './MouseCoordinates';
 import SideNav from './Sidebar';
+import Cookies from 'js-cookie'
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
 export const MapComponent = ({
   rasters,
@@ -44,6 +48,8 @@ export const MapComponent = ({
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] = useState(null);
   const [modalData, setModalData] = useState([]);
   const [uploading, setUploading] = useState(false)
+
+  const [selectedFeatures,setSelectedFeatures] = useState([])
 
   const [changeStyleData, setChangeStyleData] = useState(null)
 
@@ -104,28 +110,117 @@ export const MapComponent = ({
     }
   }
 
+  const handleClickFeature = (feature, layer, e) => {
+    const attributes = feature.properties.attributes;
+    const isCtrlPressed = e.originalEvent.ctrlKey;
+    const featureId = feature.id;
+    
+    if (isCtrlPressed){
+      setSelectedFeatures((prevSelectedFeatures) => {
+        const isSelected = prevSelectedFeatures.includes(featureId);
+    
+        if (isSelected) {
+          console.log("DESELECTING", prevSelectedFeatures);
+          layer.setStyle({ color: feature.style.color });
+          return prevSelectedFeatures.filter(id => id !== featureId);
+        } else {
+          console.log("SELECTING", prevSelectedFeatures);
+          layer.setStyle({ color: 'yellow' });
+          return [...prevSelectedFeatures, featureId];
+        }
+      })
+    } 
+  
+    if (!isCtrlPressed && attributes) {
+      console.log("OPENING MODAL");
+      setSelectedFeatureAttributes(attributes);
+      setModalData([attributes]);
+      const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
+      modalInstance.open();
+    }
+  };
+
+  
+
+  const handleDownload = async (geojson) => {
+    const id = geojson.data.properties.id
+    const token = Cookies.get('access_token');
+    try {
+      const response = await axios.get(
+        `${API_URL}api/main/download/${id}/`,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: 'blob', 
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `vector_${id}.geojson`);
+      document.body.appendChild(link);
+      link.click();
+
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error('Error downloading the file', error);
+    }
+  };
+
+  
+  
+
+
   const onEachFeatureVector = (vector) => (feature, layer) => {
     if (feature) {
-
-      layer.on('click', () => {
-        const attributes = feature.properties.attributes;
-        if (attributes) {
-          setSelectedFeatureAttributes(attributes);
-          setModalData([attributes]);
-          const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
-          modalInstance.open();
-        }
-      }
-      )
+  
+      layer.on('click', (e) => {
+        handleClickFeature(feature,layer,e)
+      });
     }
   }
 
-  const vectorStyle = (feature, vector) => {
+
+  // const onEachFeatureVector = (vector) => (feature, layer) => {
+  //   if (feature) {
+
+  //     layer.on('click', () => {
+  //       const attributes = feature.properties.attributes;
+  //       if (attributes) {
+  //         setSelectedFeatureAttributes(attributes);
+  //         setModalData([attributes]);
+  //         const modalInstance = M.Modal.getInstance(document.getElementById('attributesModal'));
+  //         modalInstance.open();
+  //       }
+  //     }
+  //     )
+  //   }
+  // }
+
+  // const vectorStyle = (feature, vector) => {
+  //   const selected = vector.data.features.find(
+  //     (v) => v.id === feature.id
+  //   );
+
+  //   return (selected.style)
+  // }
+
+  const vectorStyle = (feature,vector) => {
     const selected = vector.data.features.find(
       (v) => v.id === feature.id
     );
 
-    return (selected.style)
+    const featureId = feature.id || feature.properties.id; 
+    const isSelected = selectedFeatures.includes(featureId);
+    
+    return isSelected
+      ? { color: 'yellow',fillColor:"yellow" } 
+      : feature.style
   }
 
   const MapItem = <div
@@ -214,6 +309,7 @@ export const MapComponent = ({
         inmemory={savetomemory}
         changeStyleData={changeStyleData}
         setChangeStyleData={setChangeStyleData}
+        handleDownload={handleDownload}
       />
 
       <BasemapSelector

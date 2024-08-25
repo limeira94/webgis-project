@@ -103,6 +103,7 @@ export const ListItem = ({
     mapInstance,
     changeStyleData,
     setChangeStyleData,
+    handleDownload,
     inmemory = false
 }) => {
 
@@ -163,9 +164,9 @@ export const ListItem = ({
         handleMenuClose();
     };
 
-    const handleDownload = () => {
-        handleMenuClose();
-    };
+    // const handleDownload = () => {
+    //     handleMenuClose();
+    // };
 
     const handleToggleClick = () => {
         setShowStyleControls(!showStyleControls);
@@ -316,7 +317,10 @@ export const ListItem = ({
                     <EditIcon sx={{ mr: 1 }} />
                     Rename
                 </MenuItem>
-                <MenuItem onClick={handleDownload}>
+                <MenuItem
+                    // href={""}
+                    onClick={()=>handleDownload(dataset)}
+                    >
                     <DownloadIcon sx={{ mr: 1 }} />
                     Download
                 </MenuItem>
