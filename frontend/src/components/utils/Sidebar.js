@@ -11,6 +11,7 @@ import { handleRaster, handleGeojson, handleDrawUpload } from './eventHandler';
 import DrawVector from './DrawVector';
 import ToggleLayersSelector from '../sidenav/ToggleLayersSelector';
 import { Link } from 'react-router-dom';
+import DrawOption from '../sidenav/Draw';
 
 const drawerWidth = 360;
 const miniSidebarWidth = 60;
@@ -77,6 +78,7 @@ export default function SideNav(
     setChangeStyleData, 
     handleDownload,
     handleDownloadSelected,
+    featureGroupRef,
     inmemory 
   }) {
   const [open, setOpen] = useState(false);
@@ -211,6 +213,9 @@ export default function SideNav(
 
               <div id="draw-toolbar-container" style={{ marginTop: '10px' }}>
                 {/* O toolbar será inserido aqui */}
+                {/* <DrawOption
+                  map={mapInstance}
+                />  */}
               </div>
             </ListItem>
           )}

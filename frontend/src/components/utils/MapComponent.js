@@ -9,6 +9,7 @@ import {
   GeoJSON,
   ImageOverlay,
   ScaleControl,
+  FeatureGroup
 } from 'react-leaflet';
 import BasemapSelector from './BasemapSelector';
 import UpDelButttons from './UploadAndDeleteButtons';
@@ -62,6 +63,8 @@ export const MapComponent = ({
 
   const [ticking, setTicking] = useState(true),
         [count, setCount] = useState(0)
+
+  const featureGroupRef = useRef(new L.FeatureGroup());
 
 
   useEffect(() => {
@@ -343,6 +346,8 @@ export const MapComponent = ({
           </GeoJSON>)
       })}
 
+      <FeatureGroup ref={featureGroupRef} />
+
       <ScaleControl position="bottomleft" />
       <FullscreenControl className="custom-fullscreen-control" position="bottomright" />
       <ZoomControl position="bottomright" />
@@ -375,6 +380,7 @@ export const MapComponent = ({
         setChangeStyleData={setChangeStyleData}
         handleDownload={handleDownload}
         handleDownloadSelected={handleDownloadSelected}
+        featureGroupRef={featureGroupRef}
       />
 
       <BasemapSelector
