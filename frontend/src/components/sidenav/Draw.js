@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet-draw';
 import { Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { handleDrawUpload, handleDrawUpload2 } from '../utils/eventHandler';
+import { useDispatch } from 'react-redux';
 
-const Draw = ({ map }) => {
+const Draw = ({ map,setVectors,projectid,setUploading }) => {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [geometryName, setGeometryName] = useState('');
     const [geometryType, setGeometryType] = useState('');
     const [isDrawing, setIsDrawing] = useState(false);
     const [drawControl, setDrawControl] = useState(null);
     const [drawnItems, setDrawnItems] = useState(null);
+
+    const dispatch = useDispatch()
 
     useEffect(() => {
         if (map && !drawnItems) {
@@ -30,13 +34,11 @@ const Draw = ({ map }) => {
     };
 
     const handleAddNewGeometry = () => {
-        disableDrawingMode();  // Disable any active drawing mode before re-enabling it
         startLeafletDrawing(geometryType);
     };
 
     const handleSaveGeometry = () => {
         setIsDrawing(false);
-        disableDrawingMode();  // Turn off the event listener and remove the control
         saveGeometry();
     };
 
@@ -78,29 +80,74 @@ const Draw = ({ map }) => {
         }
     };
 
-    const disableDrawingMode = () => {
-        if (drawControl && drawControl._toolbars && drawControl._toolbars.draw && drawControl._toolbars.draw._modes) {
-            if (drawControl._toolbars.draw._modes.marker && drawControl._toolbars.draw._modes.marker.handler.enabled()) {
-                drawControl._toolbars.draw._modes.marker.handler.disable();
-            }
-            if (drawControl._toolbars.draw._modes.polyline && drawControl._toolbars.draw._modes.polyline.handler.enabled()) {
-                drawControl._toolbars.draw._modes.polyline.handler.disable();
-            }
-            if (drawControl._toolbars.draw._modes.polygon && drawControl._toolbars.draw._modes.polygon.handler.enabled()) {
-                drawControl._toolbars.draw._modes.polygon.handler.disable();
-            }
-        }
-    };
-
     const handleNewLayer = (layer) => {
         const geojson = layer.toGeoJSON();
-        console.log('New Geometry:', geojson); // You can store it or handle it as needed
+        console.log('New Geometry:', geojson);
+        drawnItems.addLayer(layer); 
     };
 
+    useEffect(() => {
+        if (map && drawControl) {
+            map.on(L.Draw.Event.CREATED, (e) => {
+                const { layer } = e;
+                handleNewLayer(layer);
+            });
+        }
+    }, [map, drawControl]);
+
+    // const saveGeometry = async () => {
+    //     console.log('Saving geometries...');
+    //     handleDrawUpload2(geometryJsons, 
+    //                         setVectors,
+    //                         map,
+    //                         dispatch,
+    //                         projectid,
+    //                         setUploading)
+    // };
     const saveGeometry = async () => {
-        // Collect and send geometries to the backend
-        console.log('Saving geometries...');
+        if (!drawnItems) {
+            console.error('No drawn items found.');
+            return;
+        }
+    
+        // Convert all drawn layers to GeoJSON
+        const geometryJsons = [];
+        drawnItems.eachLayer((layer) => {
+            const geojson = layer.toGeoJSON();
+            
+            if (!geojson.geometry.type===geometryType){
+                window.alert("All geometries should match the geometry choice.")
+            }
+            geometryJsons.push(geojson);
+        });
+    
+        if (geometryJsons.length === 0) {
+            console.warn('No geometries to save.');
+            return;
+        }
+
+        if (geometryName===""){
+            window.alert("You need to provide a name!")
+            return
+        }
+
+        console.log('Saving geometries...', geometryJsons);
+    
+        handleDrawUpload2(
+            geometryJsons,
+            geometryName,
+            setVectors,
+            map,
+            dispatch,
+            projectid,
+            setUploading
+        );
+
+        if (drawnItems) {
+            drawnItems.clearLayers();
+        }
     };
+    
 
     return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

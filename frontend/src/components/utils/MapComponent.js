@@ -282,6 +282,10 @@ export const MapComponent = ({
       (v) => v.id === feature.id
     );
 
+    if (!selected){
+      return
+    }
+
     const featureId = feature.id || feature.properties.id;
     const isSelected = selectedFeatures.includes(featureId);
 

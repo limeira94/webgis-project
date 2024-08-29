@@ -319,3 +319,48 @@ export const handleDrawUpload = async (
     setUploading(false);
   }
 };
+
+
+export const handleDrawUpload2 = async (
+  geometryJsons,
+  name, 
+  setVectors,
+  mapInstance,
+  dispatch,
+  projectid,
+  setUploading
+) => {
+  try {
+    setUploading(true);
+      const response = await dispatch(uploadDraw({
+        geometries: geometryJsons,
+        projectid: projectid,
+        name: name,
+      }));
+
+      if (response.type === 'draw/upload/fulfilled') {
+        const { payload } = response;
+        const savedGeometry = payload.savedGeometries;
+        const savedDraw = savedGeometry
+        const parsed = parseVector([savedDraw]);
+        const geojson = createGeojsons(parsed);
+        setVectors(prevGeoJSONs => [...prevGeoJSONs, ...geojson]);
+
+        if (mapInstance) {
+          console.log(savedDraw)
+          const bounds = L.geoJSON(parsed).getBounds();
+          console.log(bounds)
+          mapInstance.fitBounds(bounds, { maxZoom: 16 });
+        }
+      } else {
+        console.error('Draw upload failed with status:', response.type);
+        alert('There was an error uploading the drawing. Please try again.');
+      }
+    
+  } catch (error) {
+    console.error('Error during draw upload:', error);
+    alert('There was an error uploading the drawing. Please try again.');
+  } finally {
+    setUploading(false);
+  }
+};

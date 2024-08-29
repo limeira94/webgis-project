@@ -213,9 +213,12 @@ export default function SideNav(
 
               <div id="draw-toolbar-container" style={{ marginTop: '10px' }}>
                 {/* O toolbar será inserido aqui */}
-                {/* <DrawOption
+                <DrawOption
                   map={mapInstance}
-                />  */}
+                  setVectors={setVectors}
+                  projectid={projectid}
+                  setUploading={setUploading}
+                /> 
               </div>
             </ListItem>
           )}
@@ -295,13 +298,13 @@ export default function SideNav(
         </ToggleButton>
       </Sidebar>
 
-      <DrawVector
+      {/* <DrawVector
         mapInstance={mapInstance}
         setVectors={setVectors}
         projectid={projectid}
         setUploading={setUploading}
         active={activeSection === 'draw'}
-      />
+      /> */}
     </>
   );
 }

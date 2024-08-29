@@ -544,62 +544,156 @@ class GeoJSONFileUploadViewSet(viewsets.ViewSet):
         #         {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
         #     )
 
+# class LeafletDrawUploadViewSet(viewsets.ViewSet):
+#     def create(self, request):
+#         try:
+#             geometry_data = request.data.get('geometry')
+#             projectid = request.data.get('projectid')
+            
+#             if not geometry_data or not projectid:
+#                 raise ValueError("Missing 'geometry' or 'projectid'")
+            
+#             geometry_feature = geometry_data['geometry']
+#             project = get_object_or_404(Project, pk=projectid)
+#             assert request.user == project.user
+            
+#             geometry = GEOSGeometry(json.dumps(geometry_feature))
+#             properties = geometry_data.get('properties', {})
+
+#             # next_group_id = GeoJSONFile.objects.latest('id').id + 1 if GeoJSONFile.objects.exists() else 1
+            
+#             # geometry_instance = GeoJSONFile(
+#             #     name=request.data.get('name'),
+#             #     user=request.user,
+#             #     geojson=geometry,
+#             #     attributes=properties,
+#             #     group_id=next_group_id
+#             # )
+
+#             geo = Geojson(
+#                 geometry=geometry,
+#                 attributes=properties
+#             )
+#             geo.save()
+
+#             vector = VectorFileModel(
+#                 name=request.data.get('name'),
+#                 format_name="draw",
+#                 user=request.user,
+#                 # geoms=geo
+#             )
+#             vector.save()
+#             vector.geoms.add(geo)
+#             vector.save()
+#             # geometry_instance.save()
+#             # project.geojson.add(geometry_instance.id)
+#             project.vector.add(vector)
+#             project.save()
+
+#             serializer = VectorFileSerializer(vector)
+            
+#             return Response(
+#                 {
+#                     'message': 'Data saved successfully',
+#                     'savedGeometry': {
+#                         'id': vector.id,#geometry_instance.id,
+#                         'geojson': serializer.data,#json.loads(geo.geometry.geojson),#geometry_instance.geojson.geojson),
+#                         'properties': properties,
+#                     }
+#                 },
+#                 status=status.HTTP_201_CREATED,
+#             )
+            
+#         except Exception as e:
+#             print("Error", e)
+#             return Response(
+#                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
+#             )
+            
+#     # def update(self, request, pk=None):
+#     #     try:
+#     #         geometry_data = request.data.get('geometry')
+#     #         if not geometry_data:
+#     #             raise ValueError("Missing 'geometry'")
+            
+#     #         geometry_feature = geometry_data['geometry']
+#     #         geometry = GEOSGeometry(json.dumps(geometry_feature))
+            
+#     #         try:
+#     #             geometry_instance = GeoJSONFile.objects.get(pk=pk, user=request.user)
+#     #         except GeoJSONFile.DoesNotExist:
+#     #             return Response(
+#     #                 {'error': 'Geometry not found'}, status=status.HTTP_404_NOT_FOUND
+#     #             )
+            
+#     #         geometry_instance.geojson = geometry
+#     #         geometry_instance.save()
+            
+#     #         return Response(
+#     #             {
+#     #                 'message': 'Geometry updated successfully',
+#     #                 'updatedGeometry': {
+#     #                     'id': geometry_instance.id,
+#     #                     'geojson': json.loads(geometry_instance.geojson.geojson)
+#     #                 }
+#     #             },
+#     #             status=status.HTTP_200_OK,
+#     #         )
+        
+#     #     except Exception as e:
+#     #         return Response(
+#     #             {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
+#     #         )
+            
+
+    
+
+
+
+
+
 class LeafletDrawUploadViewSet(viewsets.ViewSet):
     def create(self, request):
         try:
-            geometry_data = request.data.get('geometry')
+            geometries = request.data.get('geometries')
             projectid = request.data.get('projectid')
+            name = request.data.get('name')
+
+            if not geometries or not projectid:
+                raise ValueError("Missing 'geometries' or 'projectid'")
             
-            if not geometry_data or not projectid:
-                raise ValueError("Missing 'geometry' or 'projectid'")
-            
-            geometry_feature = geometry_data['geometry']
             project = get_object_or_404(Project, pk=projectid)
             assert request.user == project.user
-            
-            geometry = GEOSGeometry(json.dumps(geometry_feature))
-            properties = geometry_data.get('properties', {})
-
-            # next_group_id = GeoJSONFile.objects.latest('id').id + 1 if GeoJSONFile.objects.exists() else 1
-            
-            # geometry_instance = GeoJSONFile(
-            #     name=request.data.get('name'),
-            #     user=request.user,
-            #     geojson=geometry,
-            #     attributes=properties,
-            #     group_id=next_group_id
-            # )
-
-            geo = Geojson(
-                geometry=geometry,
-                attributes=properties
-            )
-            geo.save()
 
             vector = VectorFileModel(
-                name=request.data.get('name'),
-                format_name="draw",
-                user=request.user,
-                # geoms=geo
-            )
+                    name=name,
+                    format_name="draw",
+                    user=request.user,
+                )
             vector.save()
-            vector.geoms.add(geo)
-            vector.save()
-            # geometry_instance.save()
-            # project.geojson.add(geometry_instance.id)
+
             project.vector.add(vector)
             project.save()
 
+            for geometry_data in geometries:
+                geometry_feature = geometry_data['geometry']
+                geometry = GEOSGeometry(json.dumps(geometry_feature))
+                properties = geometry_data.get('properties', {})
+
+                geo = Geojson(
+                    geometry=geometry,
+                    attributes=properties
+                )
+                geo.save()
+
+                vector.geoms.add(geo)
+                vector.save()
+
             serializer = VectorFileSerializer(vector)
-            
             return Response(
                 {
                     'message': 'Data saved successfully',
-                    'savedGeometry': {
-                        'id': vector.id,#geometry_instance.id,
-                        'geojson': serializer.data,#json.loads(geo.geometry.geojson),#geometry_instance.geojson.geojson),
-                        'properties': properties,
-                    }
+                    'savedGeometries': serializer.data
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -609,42 +703,3 @@ class LeafletDrawUploadViewSet(viewsets.ViewSet):
             return Response(
                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
-            
-    # def update(self, request, pk=None):
-    #     try:
-    #         geometry_data = request.data.get('geometry')
-    #         if not geometry_data:
-    #             raise ValueError("Missing 'geometry'")
-            
-    #         geometry_feature = geometry_data['geometry']
-    #         geometry = GEOSGeometry(json.dumps(geometry_feature))
-            
-    #         try:
-    #             geometry_instance = GeoJSONFile.objects.get(pk=pk, user=request.user)
-    #         except GeoJSONFile.DoesNotExist:
-    #             return Response(
-    #                 {'error': 'Geometry not found'}, status=status.HTTP_404_NOT_FOUND
-    #             )
-            
-    #         geometry_instance.geojson = geometry
-    #         geometry_instance.save()
-            
-    #         return Response(
-    #             {
-    #                 'message': 'Geometry updated successfully',
-    #                 'updatedGeometry': {
-    #                     'id': geometry_instance.id,
-    #                     'geojson': json.loads(geometry_instance.geojson.geojson)
-    #                 }
-    #             },
-    #             status=status.HTTP_200_OK,
-    #         )
-        
-    #     except Exception as e:
-    #         return Response(
-    #             {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
-    #         )
-            
-
-    
-
