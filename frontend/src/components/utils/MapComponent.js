@@ -219,6 +219,17 @@ export const MapComponent = ({
     return () => clearTimeout(timer)
   }, [count, ticking])
 
+  useEffect(() => {
+    const adjustZoomControlPosition = () => {
+      const zoomControl = document.querySelector('.leaflet-control-zoom');
+      if (zoomControl) {
+        zoomControl.style.left = sideNavExpanded ? '360px' : '60px'; // Ajusta com base na expansão do sidenav
+      }
+    };
+  
+    adjustZoomControlPosition(); // Chama a função para ajustar a posição inicialmente
+  }, [sideNavExpanded]);
+
 
   const handleDownloadSelected = async (geojson) => {
     const id = geojson.data.properties.id;
@@ -352,7 +363,7 @@ export const MapComponent = ({
 
       {/* <ScaleControl position="bottomleft" /> */}
       {/* <FullscreenControl className="custom-fullscreen-control" position="bottomright" /> */}
-      <ZoomControl position="bottomright" />
+      <ZoomControl position="bottomleft" className="custom-buttom-zoom"/>
       {/* <MouseCoordinates /> */}
       {/* <BasemapSelector setSelectedTileLayer={setSelectedTileLayer} tileLayersData={tileLayersData} /> */}
     </MapContainer>
@@ -391,7 +402,7 @@ export const MapComponent = ({
       <div
         style={{
           position: 'absolute',
-          bottom: '100px',
+          bottom: '200px',
           left: sideNavExpanded ? '420px' : '120px', // Adjust based on the expanded state
           transition: 'left 0.3s ease-in-out', // Smooth transition
           zIndex: 1000,

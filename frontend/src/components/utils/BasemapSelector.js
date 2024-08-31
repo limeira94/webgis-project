@@ -26,7 +26,7 @@ const BasemapSelector = ({ setSelectedTileLayer, tileLayersData, sideNavExpanded
         PaperProps={{
           style: {
             position: 'absolute',
-            bottom: '50px', // Ajusta a posição vertical, logo acima do botão
+            bottom: '100px', // Ajusta a posição vertical, logo acima do botão
             left: sideNavExpanded ? '430px' : '130px', // Ajusta a posição horizontal com base na SideNav
             margin: 0,
           }
