@@ -51,9 +51,11 @@ export const MapComponent = ({
   const [modalData, setModalData] = useState([]);
   const [uploading, setUploading] = useState(false)
 
-  const [selectedFeatures,setSelectedFeatures] = useState([])
+  const [selectedFeatures, setSelectedFeatures] = useState([])
 
   const [changeStyleData, setChangeStyleData] = useState(null)
+
+  const [sideNavExpanded, setSideNavExpanded] = useState(false);
 
   const geojsonLayerRefs = useRef({});
   const fileInputRef = useRef(null);
@@ -62,7 +64,7 @@ export const MapComponent = ({
   const defaultZoom = 5;
 
   const [ticking, setTicking] = useState(true),
-        [count, setCount] = useState(0)
+    [count, setCount] = useState(0)
 
   const featureGroupRef = useRef(new L.FeatureGroup());
 
@@ -124,7 +126,7 @@ export const MapComponent = ({
     const isCtrlPressed = e.originalEvent.ctrlKey;
     const featureId = feature.id;
 
-    if (isCtrlPressed){
+    if (isCtrlPressed) {
       setSelectedFeatures((prevSelectedFeatures) => {
         const isSelected = prevSelectedFeatures.includes(featureId);
 
@@ -179,36 +181,36 @@ export const MapComponent = ({
   };
 
   const takeScreenshot = () => {
-    setCount(count+1)
+    setCount(count + 1)
     if (mapInstance) {
-        html2canvas(
-          document.body, {
-            scale: 2, 
-            useCORS: true, 
-        }
+      html2canvas(
+        document.body, {
+        scale: 2,
+        useCORS: true,
+      }
 
-        ).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
+      ).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
 
-            const token = Cookies.get('access_token');
-            const response = axios.post(
-              `${API_URL}api/main/update-project-thumbnail/${projectid}/`, 
-              { thumbnail: imgData },
-              { 
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                }
+        const token = Cookies.get('access_token');
+        const response = axios.post(
+          `${API_URL}api/main/update-project-thumbnail/${projectid}/`,
+          { thumbnail: imgData },
+          {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
             }
-            )
-                .then(response => {
-                    console.log('Thumbnail updated successfully');
-                })
-                .catch(error => {
-                    console.error('Error updating thumbnail', error);
-                });
+          }
+        )
+          .then(response => {
+            console.log('Thumbnail updated successfully');
+          })
+          .catch(error => {
+            console.error('Error updating thumbnail', error);
+          });
 
-        });
+      });
     }
   };
 
@@ -264,25 +266,21 @@ export const MapComponent = ({
     }
   };
 
-
-
-
-
   const onEachFeatureVector = (vector) => (feature, layer) => {
     if (feature) {
 
       layer.on('click', (e) => {
-        handleClickFeature(feature,layer,e)
+        handleClickFeature(feature, layer, e)
       });
     }
   }
 
-  const vectorStyle = (feature,vector) => {
+  const vectorStyle = (feature, vector) => {
     const selected = vector.data.features.find(
       (v) => v.id === feature.id
     );
 
-    if (!selected){
+    if (!selected) {
       return
     }
 
@@ -290,7 +288,7 @@ export const MapComponent = ({
     const isSelected = selectedFeatures.includes(featureId);
 
     return isSelected
-      ? { color: 'yellow',fillColor:"yellow" }
+      ? { color: 'yellow', fillColor: "yellow" }
       : selected.style//feature.style
   }
 
@@ -352,10 +350,11 @@ export const MapComponent = ({
 
       <FeatureGroup ref={featureGroupRef} />
 
-      <ScaleControl position="bottomleft" />
-      <FullscreenControl className="custom-fullscreen-control" position="bottomright" />
+      {/* <ScaleControl position="bottomleft" /> */}
+      {/* <FullscreenControl className="custom-fullscreen-control" position="bottomright" /> */}
       <ZoomControl position="bottomright" />
-      <MouseCoordinates />
+      {/* <MouseCoordinates /> */}
+      {/* <BasemapSelector setSelectedTileLayer={setSelectedTileLayer} tileLayersData={tileLayersData} /> */}
     </MapContainer>
   </div>
 
@@ -385,29 +384,26 @@ export const MapComponent = ({
         handleDownload={handleDownload}
         handleDownloadSelected={handleDownloadSelected}
         featureGroupRef={featureGroupRef}
+        open={sideNavExpanded}
+        setOpen={setSideNavExpanded}
       />
 
-      <BasemapSelector
-        setSelectedTileLayer={setSelectedTileLayer}
-        tileLayersData={tileLayersData}
-      />
-
-      {savetomemory ?
-        <MemoryButton
-          handleButtonClick={handleButtonClick}
-          fileInputRef={fileInputRef}
-          setVectors={setVectors}
-          mapInstance={mapInstance}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '100px',
+          left: sideNavExpanded ? '420px' : '120px', // Adjust based on the expanded state
+          transition: 'left 0.3s ease-in-out', // Smooth transition
+          zIndex: 1000,
+        }}
+      >
+        <BasemapSelector
+          setSelectedTileLayer={setSelectedTileLayer}
+          tileLayersData={tileLayersData}
+          sideNavExpanded={sideNavExpanded}
         />
-        : (
-          <UpDelButttons
-            setRasters={setRasters}
-            mapInstance={mapInstance}
-            projectid={projectid}
-            setUploading={setUploading}
-            setVectors={setVectors}
-          />
-        )}
+      </div>
+
       <div id="attributesModal" className="modal">
         <div className="modal-content">
           <h4>Tabela de Atributos</h4>

@@ -1,14 +1,32 @@
 [
   {
     "key": 1,
-    "name": "OpenStreetMap",
+    "name": "Default",
     "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     "thumbnail": "https://a.tile.openstreetmap.org/0/0/0.png"
   },
   {
     "key": 2,
-    "name": "World Imagery",
+    "name": "Satellite",
     "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     "thumbnail": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+  },
+  {
+    "key": 3,
+    "name": "CyclOSM",
+    "url": "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
+    "thumbnail": "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/0/0/0.png"
+  },
+  {
+    "key": 6,
+    "name": "CartoDB",
+    "url": "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+    "thumbnail": "https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/0/0/0.png"
+  },
+  {
+    "key": 7,
+    "name": "Humanitarian",
+    "url": "https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+    "thumbnail": "https://a.tile.openstreetmap.fr/hot/0/0/0.png"
   }
 ]

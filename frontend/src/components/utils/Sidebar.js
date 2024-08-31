@@ -79,9 +79,10 @@ export default function SideNav(
     handleDownload,
     handleDownloadSelected,
     featureGroupRef,
-    inmemory 
+    inmemory,
+    open,
+    setOpen 
   }) {
-  const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('addData');
   const dispatch = useDispatch()
 
