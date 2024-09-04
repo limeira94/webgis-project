@@ -25,4 +25,5 @@ urlpatterns = [
     path('download/<int:vector_file_id>/', views.DownloadGeoJSONView.as_view(), name='download_geojson'),
     path('download-selected/<int:vector_file_id>/', views.DownloadSelectedGeoJSONView.as_view(), name='download_selected_geojson'),
     path('update-project-thumbnail/<int:project_id>/', views.UpdateProjectThumbnailView.as_view(), name='update-project-thumbnail'),
+    path('convert-geopackage/', views.ConvertGeoPackageToGeoJSONView.as_view(), name='convert_geopackage_to_geojson'),
 ]

@@ -64,24 +64,24 @@ const ToggleButton = styled(IconButton)(({ open }) => ({
 }));
 
 export default function SideNav(
-  { 
-    rasters, 
-    setRasters, 
-    vectors, 
-    setVectors, 
-    geojsonLayerRefs, 
-    mapInstance, 
-    selectedFeatureAttributes, 
-    projectid, 
-    setUploading, 
-    changeStyleData, 
-    setChangeStyleData, 
+  {
+    rasters,
+    setRasters,
+    vectors,
+    setVectors,
+    geojsonLayerRefs,
+    mapInstance,
+    selectedFeatureAttributes,
+    projectid,
+    setUploading,
+    changeStyleData,
+    setChangeStyleData,
     handleDownload,
     handleDownloadSelected,
     featureGroupRef,
     inmemory,
     open,
-    setOpen 
+    setOpen
   }) {
   const [activeSection, setActiveSection] = useState('addData');
   const dispatch = useDispatch()
@@ -219,7 +219,7 @@ export default function SideNav(
                   setVectors={setVectors}
                   projectid={projectid}
                   setUploading={setUploading}
-                /> 
+                />
               </div>
             </ListItem>
           )}
@@ -239,7 +239,7 @@ export default function SideNav(
                     )}
                     ref={fileInputRef}
                     style={{ display: 'none' }}
-                    accept=".geojson, application/geo+json"
+                    accept=".geojson, application/geo+json, .zip, .kml, .gpkg, application/vnd.google-earth.kml+xml, application/geopackage+sqlite3"
                   />
                   <Button
                     variant="contained"
@@ -256,7 +256,7 @@ export default function SideNav(
                     startIcon={<FileUploadIcon />}
                     onClick={handleFileClick}
                   >
-                    Upload GeoJson
+                    Upload GEOData
                   </Button>
                   <input
                     type="file"

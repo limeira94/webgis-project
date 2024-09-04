@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 
 from django.contrib.gis.geos import GEOSGeometry
 from django.shortcuts import get_object_or_404
@@ -12,9 +13,11 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.http import JsonResponse
+from django.core.files.storage import default_storage
+from django.views import View
 from .models import  Project, RasterFile,VectorFileModel #,GeoJSONFile
 from .serializers import *
-
 from shapely.geometry import box
 
 from django.core.files.base import ContentFile
@@ -703,3 +706,44 @@ class LeafletDrawUploadViewSet(viewsets.ViewSet):
             return Response(
                 {'error': str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ConvertGeoPackageToGeoJSONView(View):
+    
+    def post(self, request, *args, **kwargs):
+        if request.FILES.get('file'):
+            file = request.FILES['file']
+            
+            # Salvar o arquivo temporariamente
+            file_path = default_storage.save(f'temp/{file.name}', ContentFile(file.read()))
+
+            try:
+                # Caminho do arquivo salvo
+                full_path = os.path.join(default_storage.location, file_path)
+                
+                # Definir o caminho para o arquivo GeoJSON de saída
+                output_geojson = full_path.replace(".gpkg", ".geojson")
+                
+                # Usar GDAL para converter GeoPackage para GeoJSON
+                subprocess.run([
+                    "ogr2ogr", "-f", "GeoJSON", output_geojson, full_path
+                ], check=True)
+
+                # Ler o arquivo GeoJSON convertido
+                with open(output_geojson, 'r') as geojson_file:
+                    geojson_data = json.load(geojson_file)
+
+                # Retornar o GeoJSON para o frontend
+                return JsonResponse(geojson_data)
+
+            except subprocess.CalledProcessError:
+                return JsonResponse({"error": "Falha na conversão do GeoPackage para GeoJSON"}, status=500)
+            
+            finally:
+                # Remover os arquivos temporários
+                default_storage.delete(file_path)
+                if os.path.exists(output_geojson):
+                    os.remove(output_geojson)
+
+        return JsonResponse({"error": "Requisição inválida"}, status=400)
