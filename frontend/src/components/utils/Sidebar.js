@@ -245,9 +245,11 @@ export default function SideNav(
                     variant="contained"
                     sx={{
                       width: '100%',
-                      marginBottom: '10px',
-                      backgroundColor: '#555',
+                      marginBottom: '15px',
+                      backgroundColor: '#264653',
                       border: '1px solid #000',
+                      borderRadius: '28px',
+                      boxShadow: 'none',
                       color: '#fff',
                       '&:hover': {
                         backgroundColor: '#666',
@@ -276,9 +278,11 @@ export default function SideNav(
                     variant="contained"
                     sx={{
                       width: '100%',
-                      backgroundColor: '#ddd',
+                      backgroundColor: '#14213D',
                       border: '1px solid #999',
-                      color: '#000',
+                      borderRadius: '28px',
+                      boxShadow: 'none',
+                      color: '#FFFFFF',
                       '&:hover': {
                         backgroundColor: '#ccc',
                       }
