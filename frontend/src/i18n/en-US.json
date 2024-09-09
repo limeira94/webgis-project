@@ -1,6 +1,9 @@
 {
     "about": "About",
     "take_tour": "Take a Tour",
+    "data_size_raster":"Stored raster data",
+    "data_size_vector":"Stored vector data",
+    "no_bio":"No bio available",
     "login": "Sign In",
     "register": "Sign Up",
     "projects": "Project",

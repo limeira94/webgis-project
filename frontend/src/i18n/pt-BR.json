@@ -1,6 +1,9 @@
 {
     "about": "Sobre",
     "take_tour": "Faça um teste",
+    "data_size_raster":"Dados raster armazenados",
+    "data_size_vector":"Dados vetoriais armazenados",
+    "no_bio":"Biografia não disponível",
     "login": "Login",
     "register": "Criar conta",
     "projects": "Projeto",

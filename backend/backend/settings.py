@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'main',
+    "users",
     'corsheaders',
     'crispy_forms',
     'crispy_bootstrap4',

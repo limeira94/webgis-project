@@ -7,10 +7,43 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import *
 
 
+
+
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)  
+
+    class Meta:
+        model = Profile
+        fields = ['id', 'user', 'profile_picture', 'total_vector_usage', 'total_raster_usage', 'bio']
+
+    def to_representation(self, instance):
+        instance.update_profile()
+        return super().to_representation(instance)
+
 class UserSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer()
+
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile']
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', None)
+        user = super().update(instance, validated_data)
+
+        if profile_data:
+            profile = Profile.objects.get_or_create(user=user)[0]
+            for attr, value in profile_data.items():
+                setattr(profile, attr, value)
+            profile.save()
+        else:
+            print(profile_data)
+
+        return user
+
+
 
 class resetpasswordSerializer(serializers.ModelSerializer):
 

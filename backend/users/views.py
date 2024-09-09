@@ -26,8 +26,15 @@ from rest_framework_simplejwt.views import (
 
 from .serializers import *
 
+
+class UpdateSize(APIView):
+    queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+
 class ResetPasswordView(APIView):
     queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         to_email = request.data.get('email')
