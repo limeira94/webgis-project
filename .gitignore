@@ -1,0 +1,7 @@
+tempfiles
+webgis-project-key.pem
+commands.txt
+
+.env.ricardo
+.env.deepforest
+frontend/.env.production.ricardo

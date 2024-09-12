@@ -1,44 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import NavbarComponent from './include/Navbar';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { deleteUser, logout } from '../features/user';
-import M from 'materialize-css';
 import { useTranslation } from 'react-i18next';
+import { Card, CardContent, Typography, Button, CircularProgress, Avatar, Box } from '@mui/material';
+
+const formatDataSize = (sizeInBytes) => {
+  if (sizeInBytes < 1024) {
+    return `${sizeInBytes} B`;
+  } else if (sizeInBytes < 1048576) { // 1024 * 1024
+    return `${(sizeInBytes / 1024).toFixed(2)} KB`;
+  } else if (sizeInBytes < 1073741824) { // 1024 * 1024 * 1024
+    return `${(sizeInBytes / 1048576).toFixed(2)} MB`;
+  } else {
+    return `${(sizeInBytes / 1073741824).toFixed(2)} GB`;
+  }
+};
+
 
 function Dashboard() {
   const dispatch = useDispatch();
   const [confirmDelete, setConfirmDelete] = useState(false);
-
   const { user, loading } = useSelector(state => state.user);
-
   const { t } = useTranslation();
 
-  useEffect(() => {
-    M.AutoInit();
-  }, []);
+  const profile = user && user.profile;
 
   const handleDeleteUser = () => {
     if (confirmDelete) {
-
+      
       dispatch(deleteUser(user.id))
         .unwrap()
         .then(() => {
-          M.toast({
-            html: 'User deleted successfully',
-            classes: 'green rounded',
-            displayLength: 5000
-          });
           dispatch(logout());
         })
         .catch((error) => {
-          M.toast({
-            html: error.detail,
-            classes: 'red rounded',
-            displayLength: 5000
-          });
+          alert(error.detail);
         });
-
     } else {
       setConfirmDelete(true);
     }
@@ -48,41 +46,68 @@ function Dashboard() {
     <>
       <NavbarComponent />
       {loading || user === null ? (
-        <div className='spinner-border text-primary' role='status'>
-          <span className='visually-hidden'>{t('loading')}</span>
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <CircularProgress />
+        </Box>
       ) : (
-        <div className='container'>
-          <h1 className='mb-5 center'>{t('dashboard')}</h1>
-          <div className='card'>
-            <div className='card-body'>
-              <h5 className='card-title center'>{t('user_detail')}</h5>
-              <div className='row'>
-                <div className='col-2'>{t('username')}</div>
-                <div className='col'>{user.username}</div>
-              </div>
-              <div className='row'>
-                <div className='col-2'>Email:</div>
-                <div className='col'>{user.email}</div>
-              </div>
-            </div>
-          </div>
-          {!confirmDelete ? (
-            <button className='btn btn-primary mt-3' onClick={() => setConfirmDelete(true)}>
-              {t('delete_user')}
-            </button>
-          ) : (
-            <>
-              <p>{t('he_is_sure')}</p>
-              <button className='btn btn-danger mt-3' onClick={handleDeleteUser}>
-                {t('yes')}
-              </button>
-              <button className='btn btn-secondary mt-3' onClick={() => setConfirmDelete(false)}>
-                {t('no')}
-              </button>
-            </>
-          )}
-        </div>
+        <Box sx={{ padding: 3 }}>
+          <Typography variant="h4" gutterBottom align="center">
+            {t('profile')}
+          </Typography>
+          <Card sx={{ maxWidth: 500, margin: 'auto', padding: 2 }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Avatar
+                  sx={{ width: 100, height: 100, mb: 2 }}
+                  src={profile.profile_picture || '/default-profile.png'}
+                />
+                <Typography variant="h6">{user.username}</Typography>
+                <Typography variant="subtitle1" color="textSecondary">{user.email}</Typography>
+                <Typography variant="body1" color="textSecondary" mt={2}>
+                  {t('data_size_raster')}: {formatDataSize(profile.total_raster_usage)}
+                </Typography>
+                <Typography variant="body1" color="textSecondary" mt={2}>
+                  {t('data_size_vector')}: {formatDataSize(profile.total_vector_usage)}
+                </Typography>
+                <Typography variant="body2" color="textSecondary" mt={2}>
+                  {profile.bio || t('no_bio')}
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+            {!confirmDelete ? (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setConfirmDelete(true)}
+              >
+                {t('delete_user')}
+              </Button>
+            ) : (
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="body1">{t('he_is_sure')}</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleDeleteUser}
+                    sx={{ mr: 2 }}
+                  >
+                    {t('yes')}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => setConfirmDelete(false)}
+                  >
+                    {t('no')}
+                  </Button>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </Box>
       )}
     </>
   );
