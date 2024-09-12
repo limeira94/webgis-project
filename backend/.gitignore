@@ -1,6 +1,7 @@
 media
 tests/data
 ricardo
+static/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
