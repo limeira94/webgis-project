@@ -11,7 +11,8 @@ router.register('upload_draw', views.LeafletDrawUploadViewSet, basename='upload_
 
 urlpatterns = [
     path('', include(router.urls)),
-    
+    path('share/<uuid:token>/', views.ShareProjectView.as_view(), name='share-project'),
+    path('projects/<int:project_id>/share/', views.GenerateShareTokenView.as_view(), name='generate-share-token'),
     path('geojson/<int:pk>/', views.GeoJSONDetailView.as_view(), name='get_geojson'),
     # path('geojson/', views.GeoJSONListView.as_view(), name='get_all_geojson'),
     path('project/<int:pk>/', views.ProjectGetList.as_view(), name='get-project'),
@@ -26,4 +27,5 @@ urlpatterns = [
     path('download-selected/<int:vector_file_id>/', views.DownloadSelectedGeoJSONView.as_view(), name='download_selected_geojson'),
     path('update-project-thumbnail/<int:project_id>/', views.UpdateProjectThumbnailView.as_view(), name='update-project-thumbnail'),
     path('convert-geopackage/', views.ConvertGeoPackageToGeoJSONView.as_view(), name='convert_geopackage_to_geojson'),
+    
 ]

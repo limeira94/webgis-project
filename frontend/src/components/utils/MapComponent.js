@@ -32,6 +32,7 @@ import SideNav from './Sidebar';
 import Cookies from 'js-cookie'
 import axios from 'axios';
 import html2canvas from 'html2canvas';
+import ShareButton from './ShareButton';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/'
 
@@ -42,7 +43,9 @@ export const MapComponent = ({
   setVectors,
   projectid = null,
   project = null,
-  savetomemory = true
+  savetomemory = true,
+  isSharedView
+
 }) => {
   const [selectedTileLayer, setSelectedTileLayer] = useState(tileLayersData[0].url);
   const [buttonsCreated, setButtonsCreated] = useState(false);
@@ -226,7 +229,7 @@ export const MapComponent = ({
         zoomControl.style.left = sideNavExpanded ? '360px' : '60px'; // Ajusta com base na expansão do sidenav
       }
     };
-  
+
     adjustZoomControlPosition(); // Chama a função para ajustar a posição inicialmente
   }, [sideNavExpanded]);
 
@@ -338,6 +341,7 @@ export const MapComponent = ({
       })}
 
       {vectors.map((vector, index) => {
+        console.log('Vector:', vector);
         return vector.visible &&
           (<GeoJSON
             key={`vector-${index}`}
@@ -363,7 +367,7 @@ export const MapComponent = ({
 
       {/* <ScaleControl position="bottomleft" /> */}
       {/* <FullscreenControl className="custom-fullscreen-control" position="bottomright" /> */}
-      <ZoomControl position="bottomleft" className="custom-buttom-zoom"/>
+      <ZoomControl position="bottomleft" className="custom-buttom-zoom" />
       {/* <MouseCoordinates /> */}
       {/* <BasemapSelector setSelectedTileLayer={setSelectedTileLayer} tileLayersData={tileLayersData} /> */}
     </MapContainer>
@@ -414,7 +418,19 @@ export const MapComponent = ({
           sideNavExpanded={sideNavExpanded}
         />
       </div>
-
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '150px',
+          left: sideNavExpanded ? '420px' : '120px', // Adjust based on the expanded state
+          transition: 'left 0.3s ease-in-out', // Smooth transition
+          zIndex: 1000,
+        }}
+      >
+        {!isSharedView && projectid && (
+          <ShareButton projectId={projectid} />
+        )}
+      </div >
       <div id="attributesModal" className="modal">
         <div className="modal-content">
           <h4>Tabela de Atributos</h4>
@@ -443,7 +459,7 @@ export const MapComponent = ({
           <a href="#!" className="modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
       </div>
-      {MapItem}
+  { MapItem }
     </>
   );
 };

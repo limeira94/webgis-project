@@ -8,11 +8,10 @@ from django.db import transaction
 from django.db.models import Max
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-
+from rest_framework.permissions import AllowAny
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.views import View
@@ -747,3 +746,29 @@ class ConvertGeoPackageToGeoJSONView(View):
                     os.remove(output_geojson)
 
         return JsonResponse({"error": "Requisição inválida"}, status=400)
+    
+    
+class ShareProjectView(APIView):
+    permission_classes = [AllowAny]  # Permite que qualquer usuário acesse esta view
+
+    def get(self, request, token, *args, **kwargs):
+        try:
+            project = Project.objects.get(share_token=token)
+            print(project.vector.all())
+            # Usa o serializer para retornar os dados do projeto
+            serializer = ProjectPkSerializer(project)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Project.DoesNotExist:
+            return Response({'detail': 'Project not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+class GenerateShareTokenView(APIView):
+    def get(self, request, project_id, *args, **kwargs):
+        try:
+            project = Project.objects.get(pk=project_id)
+
+            # Retorna o token de compartilhamento do projeto
+            return Response({'token': project.share_token}, status=status.HTTP_200_OK)
+
+        except Project.DoesNotExist:
+            return Response({'detail': 'Project not found.'}, status=status.HTTP_404_NOT_FOUND)

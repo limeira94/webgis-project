@@ -239,9 +239,9 @@ if USE_S3:
 }
 else:
     STATIC_URL = 'static/'
-    STATIC_ROOT = os.path.join(DATA_DIR, STATIC_URL)
+    STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
     MEDIA_URL = 'media/'
-    MEDIA_ROOT = os.path.join(DATA_DIR, MEDIA_URL) 
+    MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL) 
 
 # DATA_UPLOAD_MAX_NUMBER_FIELDS = 102400
 

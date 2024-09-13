@@ -17,16 +17,16 @@ import { checkAuth } from './features/user';
 
 function App() {
   const [
-    cookies, 
+    cookies,
     // setCookie
   ] = useCookies(['access_token', 'refresh_token'])
 
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     dispatch(
       checkAuth(cookies.refresh_token)
-      ).catch((error) => {
+    ).catch((error) => {
       if (error.message !== '400') {
         console.error('Error:', error);
       }
@@ -41,10 +41,11 @@ function App() {
         <Route path="/login" exact element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/reset" element={<ResetPassword />}/>
-        <Route path="/project" element={<Project />}/>
+        <Route path="/reset" element={<ResetPassword />} />
+        <Route path="/project" element={<Project />} />
+        <Route path="/share/:token" element={<Project />} />
         <Route path="/project/:project_id" element={<Project />} />
-        <Route path="/about" element={<About/>}/>
+        <Route path="/about" element={<About />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

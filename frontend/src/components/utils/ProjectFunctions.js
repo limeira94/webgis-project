@@ -258,20 +258,43 @@ export const createGeojsons = (geojsons) => {
 
     return result
 }
-
+export const setSharedData = async (
+    projectData,
+    setProject,
+    setRasters,
+    setVectors
+  ) => {
+    try {
+      if (projectData) {
+        // Definindo o projeto
+        setProject(projectData);
+  
+        // Formatação dos vetores
+        const parsedVectors = createGeojsons(parseVector(projectData.vector));
+        setVectors(parsedVectors);
+  
+        // Formatação dos rasters
+        const parsedRasters = createRasters(projectData.raster);
+        setRasters(parsedRasters);
+      }
+    } catch (error) {
+      console.error('Erro ao definir os dados compartilhados:', error);
+    }
+  };
+  
 
 export const setData = async (
     setProject, 
     setRasters, 
     project_id, 
     projects, 
-    navigate,
+    navigate,       
     setVectors
 ) => {
     try {
         const selectedProject = await getProject(project_id); // Wait for the project data to be fetched
         if (selectedProject) {
-            // console.log("AAAA",selectedProject.vector)
+            console.log("AAAA",selectedProject.vector)
             setProject(selectedProject);
             setVectors(createGeojsons(parseVector(selectedProject.vector)))
             // setGeoJSONs(createGeojsons(parseGeoJSON(selectedProject.geojson)));
